@@ -1,0 +1,2 @@
+# sdypy
+Structural Dynamics Python
