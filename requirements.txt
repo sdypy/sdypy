@@ -1,0 +1,4 @@
+# Package requirements for users
+numpy
+scipy
+matplotlib
