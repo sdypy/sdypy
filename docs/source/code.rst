@@ -1,13 +1,9 @@
 Code documentation
 ==================
 
-Core
------
-.. automodule:: sdypy.core
-    :members:
-
-
-Visualization
--------------
-.. automodule:: sdypy.visualize
-    :members:
+..
+    Some module
+    -----------
+    .. automodule:: sdypy.module_name
+        :members:
+..
