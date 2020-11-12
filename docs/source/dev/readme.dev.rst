@@ -1,5 +1,5 @@
-sdypy - Structural Dynamics Python development notes
------------------------
+SDyPy - Structural Dynamics Python development notes
+----------------------------------------------------
 
 To download the source code:
 
@@ -110,13 +110,13 @@ The built project can be tested locally by installing the resulting ``.whl`` fil
 
 For more information on the publishng process, see this simpel `Python packaging tutorial <https://packaging.python.org/tutorials/packaging-projects/>`_.
 
-3. After that,  the sdypy will be available on PyPI and can be installed with `pip <https://pip.pypa.io>`_.
+3. After that,  the SDyPy will be available on PyPI and can be installed with `pip <https://pip.pypa.io>`_.
 
 .. code-block:: console
 
     $ pip install sdypy
 
-After installing sdypy you can use it like any other Python module.
+After installing SDyPy you can use it like any other Python module.
 
 Here is a simple example with the current example code:
 

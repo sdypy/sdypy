@@ -1,78 +1,32 @@
-Contributing Guide
-==================
+SDyPy pull request guidelines
+-----------------------------
 
-Contributions are welcome and greatly appreciated!
+Pull requests are always welcome, and the SDyPy community appreciates
+any help you give. Note that a code of conduct applies to all spaces
+managed by the SDyPy project, including issues and pull requests:
+https://github.com/sdypy/sdypy/blob/master/docs/source/dev/code_of_conduct.rst.
 
+When submitting a pull request, we ask you check the following:
 
-.. _contributing-workflow-label:
+1. **Unit tests**, **documentation**, and **code style** are in order.
+   For details, please see follow the SciPy notes:
+   https://github.com/scipy/scipy/blob/master/HACKING.rst.txt.
 
-Workflow
---------
+   It's also OK to submit work in progress if you're unsure of what
+   this exactly means, in which case you'll likely be asked to make
+   some further changes.
 
-A bug-fix or enhancement is delivered using a pull request. A good pull request
-should cover one bug-fix or enhancement feature. This ensures the change set is
-easier to review and less likely to need major re-work or even be rejected.
-
-The workflow that developers typically use to fix a bug or add enhancements
-is as follows.
-
-* Fork the ``sdypy`` repo into your account.
-
-* Obtain the source by cloning it onto your development machine.
-
-  .. code-block:: console
-
-      $ git clone ttps://github.com/sdypy/sdypy.git
-      $ cd sdypy
-
-* Create a branch for local development:
-
-  .. code-block:: console
-
-      $ git checkout -b name-of-your-bugfix-or-feature
-
-  Now you can make your changes locally.
+2. The contributed code will be **licensed under SDyPy's license**,
+   https://github.com/sdypy/sdypy/blob/master/LICENSE.txt.
+   If you did not write the code yourself, you ensure the existing
+   license is compatible and include the license information in the
+   contributed files, or obtain a permission from the original
+   author to relicense the contributed code.
 
 
-* Develop fix or enhancement:
+Acknowledgements
+----------------
 
-  * Make a fix or enhancement (e.g. modify a class, method, function, module,
-    etc).
-
-  * Update an existing unit test or create a new unit test module to verify
-    the change works as expected.
-
-  * Run the test suite.
-
-    .. code-block:: console
-
-        $ pytest
-
-
-* The docs should be updated for anything but trivial bug fixes. 
-
-
-Perform docs check.
-
-    .. code-block:: console
-
-        $ cd docs
-        $ make clean
-        $ make html
-
-
-* Commit and push changes to your fork.
-
-  .. code-block:: console
-
-      $ git add .
-      $ git commit -m "A detailed description of the changes."
-      $ git push origin name-of-your-bugfix-or-feature
-
-  A pull request should preferably only have one commit upon the current
-  master HEAD, (via rebases and squash).
-
-* Submit a pull request through the service website (e.g. Github, Gitlab).
-
-* Check automated continuous integration steps all pass. Fix any problems
-  if necessary and update the pull request.
+Substantial portions of this document were adapted from the
+`SciPy project's contributing document
+<https://github.com/scipy/scipy/blob/master/CONTRIBUTING.rst>`_.

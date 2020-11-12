@@ -5,7 +5,7 @@ import numpy as np
 # Pytest will discover and run all test functions named `test_*` or `*_test`.
 
 def test_version():
-    """ check ladisk_template_project exposes a version attribute """
+    """ check the exposes a version attribute """
     assert hasattr(sd, "__version__")
     assert isinstance(sd.__version__, str)
 
