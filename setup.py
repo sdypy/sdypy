@@ -7,7 +7,7 @@ base_path = os.path.dirname(__file__)
 # Read the project version from "__init__.py"
 regexp = re.compile(r'.*__version__ = [\'\"](.*?)[\'\"]', re.S)
 
-init_file = os.path.join(base_path, 'ladisk_template_project', '__init__.py')
+init_file = os.path.join(base_path, 'sdypy', '__init__.py')
 with open(init_file, 'r') as f:
     module_content = f.read()
 
@@ -38,7 +38,7 @@ requirements = parse_requirements('requirements.txt')
 if __name__ == '__main__':
     setup(
         name='sdypy',
-        description='A project template for the sdypy effort.',
+        description='Structural Dynamics Python.',
         long_description=readme,
         license='MIT license',
         url='https://github.com/sdypy/sdypy',

@@ -1,0 +1,316 @@
+.. _SEP00:
+
+===========================
+SEP 0 — Purpose and Process
+===========================
+
+:Author: Janko Slavič <janko.slavic@fs.uni-lj.si>
+:Status: Active
+:Type: Process
+:Created: 2-Nov-2020
+
+
+What is a SEP?
+--------------
+
+SEP stands for SDyPy Enhancement Proposal.  A SEP is a design
+document providing information to the SDyPy community, or describing
+a new feature for SDyPy or its processes or environment.  The SEP
+should provide a concise technical specification of the feature and a
+rationale for the feature. SEPs follow the idea of NEPs (NumPy Enhancement 
+Proposals) and PEPs (Python Enhancement Proposals). 
+
+Acknowledgement: 
+this SEP heavily based on NEP0 (by Jarrod Millman <millman@berkeley.edu>)!
+Good practices from the Python ecosystem should be applied wherever possible!
+
+We intend SEPs to be the primary mechanisms for proposing major new
+features, for collecting community input on an issue, and for
+documenting the design decisions that have gone into SDyPy.  The SEP
+author is responsible for building consensus within the community and
+documenting dissenting opinions.
+
+Because the SEPs are maintained as text files in a versioned
+repository, their revision history is the historical record of the
+feature proposal [1]_.
+
+
+Types
+^^^^^
+
+There are three kinds of SEPs:
+
+1. A **Standards Track** SEP describes a new feature or implementation
+   for SDyPy.
+
+2. An **Informational** SEP describes a SDyPy design issue, or provides
+   general guidelines or information to the Python community, but does not
+   propose a new feature. Informational SEPs do not necessarily represent a
+   SDyPy community consensus or recommendation, so users and implementers are
+   free to ignore Informational SEPs or follow their advice.
+
+3. A **Process** SEP describes a process surrounding SDyPy, or
+   proposes a change to (or an event in) a process.  Process SEPs are
+   like Standards Track SEPs but apply to areas other than the SDyPy
+   language itself.  They may propose an implementation, but not to
+   SDyPy's codebase; they require community consensus.  Examples include
+   procedures, guidelines, changes to the decision-making process, and
+   changes to the tools or environment used in SDyPy development.
+   Any meta-SEP is also considered a Process SEP.
+
+
+SEP Workflow
+------------
+
+The SEP process begins with a new idea for SDyPy.  It is highly
+recommended that a single SEP contain a single key proposal or new
+idea. Small enhancements or patches often don't need
+a SEP and can be injected into the SDyPy development workflow with a
+pull request to the SDyPy `repo`_. The more focused the
+SEP, the more successful it tends to be.
+If in doubt, split your SEP into several well-focused ones.
+
+Each SEP must have a champion---someone who writes the SEP using the style
+and format described below, shepherds the discussions in the appropriate
+forums, and attempts to build community consensus around the idea.  The SEP
+champion (a.k.a. Author) should first attempt to ascertain whether the idea is
+suitable for a SEP. Writting to the sdypy-discussion mailing list with the `SEP`
+tag is the best way to doing this `mailing list`_.
+
+.. TODO: mailing list needs to be created
+
+The proposal should be submitted as a draft SEP via a `GitHub pull
+request`_ to the ``docs/seps`` directory with the name ``sep-<n>.rst``
+where ``<n>`` is an appropriately assigned four-digit number (e.g.,
+``sep-0000.rst``). The draft must use the :docs:`sep-template` file.
+
+Once the PR for the SEP is in place, a post should be made to the
+mailing list containing the sections up to "Backward compatibility",
+with the purpose of limiting discussion there to usage and impact.
+Discussion on the pull request will have a broader scope, also including
+details of implementation.
+
+At the earliest convenience, the PR should be merged (regardless of
+whether it is accepted during discussion).  Additional PRs may be made
+by the Author to update or expand the SEP, or by maintainers to set
+its status, discussion URL, etc.
+
+Standards Track SEPs consist of two parts, a design document and a
+reference implementation.  It is generally recommended that at least a
+prototype implementation be co-developed with the SEP, as ideas that sound
+good in principle sometimes turn out to be impractical when subjected to the
+test of implementation.  Often it makes sense for the prototype implementation
+to be made available as PR to the SDyPy repo (making sure to appropriately
+mark the PR as a WIP).
+
+
+Review and Resolution
+^^^^^^^^^^^^^^^^^^^^^
+
+SEPs are discussed as issues `SEP`_.  The possible paths of the
+status of SEPs are as follows:
+
+.. image:: _static/sep-0000.png
+
+All SEPs should be created with the ``Draft`` status.
+
+Eventually, after discussion, there may be a consensus that the SEP
+should be accepted – see the next section for details. At this point
+the status becomes ``Accepted``.
+
+Once a SEP has been ``Accepted``, the reference implementation must be
+completed.  When the reference implementation is complete and incorporated
+into the main source code repository, the status will be changed to ``Final``.
+
+To allow gathering of additional design and interface feedback before
+committing to long term stability for a language feature or standard library
+API, a SEP may also be marked as "Provisional". This is short for
+"Provisionally Accepted", and indicates that the proposal has been accepted for
+inclusion in the reference implementation, but additional user feedback is
+needed before the full design can be considered "Final". Unlike regular
+accepted SEPs, provisionally accepted SEPs may still be Rejected or Withdrawn
+even after the related changes have been included in a Python release.
+
+Wherever possible, it is considered preferable to reduce the scope of a
+proposal to avoid the need to rely on the "Provisional" status (e.g. by
+deferring some features to later SEPs), as this status can lead to version
+compatibility challenges in the wider NumPy ecosystem.
+
+A SEP can also be assigned status ``Deferred``.  The SEP author or a
+core developer can assign the SEP this status when no progress is being made
+on the SEP.
+
+A SEP can also be ``Rejected``.  Perhaps after all is said and done it
+was not a good idea.  It is still important to have a record of this
+fact. The ``Withdrawn`` status is similar---it means that the SEP author
+themselves has decided that the SEP is actually a bad idea, or has
+accepted that a competing proposal is a better alternative.
+
+When a SEP is ``Accepted``, ``Rejected``, or ``Withdrawn``, the SEP should be
+updated accordingly. In addition to updating the status field, at the very
+least the ``Resolution`` header should be added with a link to the relevant
+thread in the mailing list archives.
+
+SEPs can also be ``Superseded`` by a different SEP, rendering the
+original obsolete.  The ``Replaced-By`` and ``Replaces`` headers
+should be added to the original and new SEPs respectively.
+
+Process SEPs may also have a status of ``Active`` if they are never
+meant to be completed, e.g. SEP 0 (this SEP).
+
+
+How a SEP becomes Accepted
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A SEP is ``Accepted`` by consensus of all interested contributors. We
+need a concrete way to tell whether consensus has been reached. When
+you think a SEP is ready to accept, send an email to the
+sdypy-discussion mailing list with a subject like:
+
+  Proposal to accept SEP #<number>: <title>
+
+In the body of your email, you should:
+
+* link to the latest version of the SEP,
+
+* briefly describe any major points of contention and how they were
+  resolved,
+
+* include a sentence like: "If there are no substantive objections
+  within 7 days from this email, then the SEP will be accepted; see
+  SEP 0 for more details."
+
+.. For an example, see: https://mail.python.org/pipermail/numpy-discussion/2018-June/078345.html
+
+After you send the email, you should make sure to link to the email
+thread from the ``Discussion`` section of the SEP, so that people can
+find it later.
+
+Generally the SEP author will be the one to send this email, but
+anyone can do it – the important thing is to make sure that everyone
+knows when a SEP is on the verge of acceptance, and give them a final
+chance to respond. If there's some special reason to extend this final
+comment period beyond 7 days, then that's fine, just say so in the
+email. You shouldn't do less than 7 days, because sometimes people are
+travelling or similar and need some time to respond.
+
+In general, the goal is to make sure that the community has consensus,
+not provide a rigid policy for people to try to game. When in doubt,
+err on the side of asking for more feedback and looking for
+opportunities to compromise.
+
+If the final comment period passes without any substantive objections,
+then the SEP can officially be marked ``Accepted``. You should send a
+followup email notifying the list (celebratory emoji optional but
+encouraged 🎉✨), and then update the SEP by setting its ``:Status:``
+to ``Accepted``, and its ``:Resolution:`` header to a link to your
+followup email.
+
+If there *are* substantive objections, then the SEP remains in
+``Draft`` state, discussion continues as normal, and it can be
+proposed for acceptance again later once the objections are resolved.
+
+In unusual cases, the `SDyPy Steering Council`_ may be asked to decide
+whether a controversial SEP is ``Accepted``.
+
+
+Maintenance
+^^^^^^^^^^^
+
+In general, Standards track SEPs are no longer modified after they have
+reached the Final state as the code and project documentation are considered
+the ultimate reference for the implemented feature.
+However, finalized Standards track SEPs may be updated as needed.
+
+Process SEPs may be updated over time to reflect changes
+to development practices and other details. The precise process followed in
+these cases will depend on the nature and purpose of the NEP being updated.
+
+
+Format and Template
+-------------------
+
+SEPs are UTF-8 encoded text files using the reStructuredText_ format.  Please
+see the :doc:`sep-template` file and the reStructuredTextPrimer_ for more
+information.  We use Sphinx_ to convert SEPs to HTML for viewing on the web
+[2]_.
+
+
+Header Preamble
+^^^^^^^^^^^^^^^
+
+Each SEP must begin with a header preamble.  The headers
+must appear in the following order.  Headers marked with ``*`` are
+optional.  All other headers are required.
+
+.. code-block:: rst
+
+    :Author: <list of authors' real names and optionally, email addresses>
+    :Status: <Draft | Active | Accepted | Deferred | Rejected |
+             Withdrawn | Final | Superseded>
+    :Type: <Standards Track | Process>
+    :Created: <date created on, in dd-mmm-yyyy format>
+  * :Requires: <sep numbers>
+  * :SDyPy-Version: <version number>
+  * :Replaces: <sep number>
+  * :Replaced-By: <sep number>
+  * :Resolution: <url>
+
+The Author header lists the names, and optionally the email addresses
+of all the authors of the SEP.  The format of the Author header
+value must be
+
+.. code-block:: rst
+
+    Random J. User <address@dom.ain>
+
+if the email address is included, and just
+
+.. code-block:: rst
+
+    Random J. User
+
+if the address is not given.  If there are multiple authors, each should be on
+a separate line.
+
+
+Discussion
+----------
+
+- https://mail.python.org/pipermail/numpy-discussion/2017-December/077481.html
+
+
+References and Footnotes
+------------------------
+
+.. [1] This historical record is available by the normal git commands
+   for retrieving older revisions, and can also be browsed on
+   `GitHub <https://github.com/numpy/numpy/tree/master/doc/neps>`_.
+
+.. [2] The URL for viewing NEPs on the web is
+   https://www.numpy.org/neps/.
+
+.. _repo: https://github.com/sdypy/sdypy
+
+.. _sep: https://github.com/sdypy/sdypy/issues?q=is%3Aopen+is%3Aissue+label%3A%2223+-+SEP%22>
+
+.. _mailing list: https://mail.python.org/mailman/listinfo/numpy-discussion
+
+.. _issue tracker: https://github.com/numpy/numpy/issues
+
+.. _NumPy Steering Council:
+   https://docs.scipy.org/doc/numpy/dev/governance/governance.html
+
+.. _`GitHub pull request`: https://github.com/numpy/numpy/pulls
+
+.. _reStructuredText: http://docutils.sourceforge.net/rst.html
+
+.. _reStructuredTextPrimer: http://www.sphinx-doc.org/en/stable/rest.html
+
+.. _Sphinx: http://www.sphinx-doc.org/en/stable/
+
+
+Copyright
+---------
+
+This document has been placed in the public domain.

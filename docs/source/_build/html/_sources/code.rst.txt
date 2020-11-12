@@ -3,11 +3,11 @@ Code documentation
 
 Core
 -----
-.. automodule:: sdypy.core
+.. automodule:: ladisk_template_project.core
     :members:
 
 
 Visualization
 -------------
-.. automodule:: sdypy.visualize
+.. automodule:: ladisk_template_project.visualize
     :members:
