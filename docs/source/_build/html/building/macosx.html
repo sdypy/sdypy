@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Building from source on Mac OSX &mdash; SDyPy - Structural Dynamics Scientific Python 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> SDyPy - Structural Dynamics Scientific Python
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SDyPy - Structural Dynamics Scientific Python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Building from source on Mac OSX</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/building/macosx.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="building-from-source-on-mac-osx">
+<h1>Building from source on Mac OSX<a class="headerlink" href="#building-from-source-on-mac-osx" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This document has not been maintained and is retained for reference only.
+For building on macOS, please see <span class="xref std std-ref">quickstart-mac</span>.</p>
+</div>
+<p>These instructions describe how to build NumPy and SciPy libraries from
+source.</p>
+<p>If you just want to use NumPy or SciPy, install pre-built binaries as described
+in <span class="xref std std-ref">installing-upgrading</span>.</p>
+<div class="section" id="python">
+<h2>Python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h2>
+<p>Apple ships its own version of Python with OS X. However, we
+<em>strongly</em> recommend installing the <a class="reference external" href="https://www.python.org/downloads/">official Python distribution</a>.</p>
+<p>Alternatively, use Python from one of the OS X package managers
+(Homebrew, MacPorts, Fink).</p>
+</div>
+<div class="section" id="compilers-c-c-fortran-cython">
+<h2>Compilers (C/C++/FORTRAN/Cython)<a class="headerlink" href="#compilers-c-c-fortran-cython" title="Permalink to this headline">¶</a></h2>
+<p>Though virtually any commercial C/C++ compiler may be used with SciPy, Clang C/C++ compiler,
+which is a Xcode command line tool, can be used for OS X.
+The only thing missing is the GNU FORTRAN compiler.</p>
+<p>We recommend gfortran; this is a free, open source, F95 compiler. We suggest you
+use the following binaries:</p>
+<ul class="simple">
+<li><p>gfortran installed via <a class="reference external" href="https://brew.sh/">Homebrew</a>, or,</p></li>
+<li><p><a class="reference external" href="http://r.research.att.com/tools/gcc-42-5666.3-darwin11.pkg">http://r.research.att.com/tools/gcc-42-5666.3-darwin11.pkg</a> (for Xcode
+4.2 or higher)</p></li>
+</ul>
+<p>See <a class="reference external" href="http://r.research.att.com/tools/">this site</a> for the most recent links.</p>
+<p>Unless you are building from released source packages, the <a class="reference external" href="https://cython.org/">Cython</a> compiler is also needed.</p>
+</div>
+<div class="section" id="blas-lapack-installation">
+<h2>BLAS/LAPACK Installation<a class="headerlink" href="#blas-lapack-installation" title="Permalink to this headline">¶</a></h2>
+<p>You will also need to install a library providing the BLAS and LAPACK
+interfaces. ATLAS, OpenBLAS, and MKL all work. OpenBLAS can be installed
+via <cite>Homebrew &lt;https://brew.sh/&gt;</cite>.</p>
+<p>As of SciPy version 1.2.0, we do not support compiling against the system
+Accelerate library for BLAS and LAPACK. It does not support a sufficiently
+recent LAPACK interface.</p>
+</div>
+<div class="section" id="version-specific-notes">
+<h2>Version-specific notes<a class="headerlink" href="#version-specific-notes" title="Permalink to this headline">¶</a></h2>
+<p>This section notes only things specific to one version of OS X or Python.
+The build instructions in <a class="reference internal" href="#osx-obtaining-and-building"><span class="std std-ref">Obtaining and Building NumPy and SciPy</span></a> apply to all versions.</p>
+</div>
+<div class="section" id="obtaining-and-building-numpy-and-scipy">
+<span id="osx-obtaining-and-building"></span><h2>Obtaining and Building NumPy and SciPy<a class="headerlink" href="#obtaining-and-building-numpy-and-scipy" title="Permalink to this headline">¶</a></h2>
+<p>You may install NumPy and SciPy either by checking out the source
+files or downloading a source archive file from
+<a class="reference external" href="https://github.com/scipy/scipy">GitHub</a>. If you choose the latter,
+simply expand the archive (generally a gzipped tar file), otherwise
+check out the following branches from the repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/numpy/numpy.git
+$ git clone https://github.com/scipy/scipy.git
+</pre></div>
+</div>
+<p>Both NumPy and SciPy are built as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py build
+$ python setup.py install
+</pre></div>
+</div>
+<p>The above applies to the <a class="reference external" href="https://www.python.org/downloads/">official Python distribution</a>, which is 32-bit
+only for 2.6 while 32/64-bit bundles are available for 2.7 and
+3.x. For alternative 64-bit Pythons (either from Apple or home-built)
+on Snow Leopard, you may need to extend your build flags to specify
+the architecture by setting LDFLAGS and FFLAGS.</p>
+<p>Note that with distutils (setup.py) given build flags like LDFLAGS
+<strong>do not extend but override the defaults</strong>, so you have to specify
+all necessary flags. Only try this if you know what you’re doing!</p>
+<p>After a successful build, you may try running the built-in unit tests
+for SciPy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; np.test(&#39;full&#39;)
+&gt;&gt;&gt; import scipy
+&gt;&gt;&gt; scipy.test()
+</pre></div>
+</div>
+<p>Be sure not to import numpy or scipy while you’re in the numpy/scipy
+source tree. Change directory first.</p>
+<p>If you have any problems installing SciPy on your Mac
+based on these instructions, please check the <a class="reference external" href="https://www.scipy.org/scipylib/mailing-lists.html">scipy-users and
+scipy-dev mailing list archives</a>
+for possible solutions. If you
+are still stuck, feel free to join scipy-users for further
+assistance. Please have the following information ready:</p>
+<ul class="simple">
+<li><p>Your OS version</p></li>
+<li><p>The versions of gcc and gfortran and where you obtained gfortran</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">gcc</span> <span class="pre">--version</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">gfortran</span> <span class="pre">--version</span></code></p></li>
+</ul>
+</li>
+<li><p>The versions of numpy and scipy that you are trying to install</p></li>
+<li><p>The full output of <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">build</span></code></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, SDyPy Consortium
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

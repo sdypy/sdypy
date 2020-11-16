@@ -1,0 +1,263 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Contributing Guide &mdash; SDyPy - Structural Dynamics Scientific Python 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> SDyPy - Structural Dynamics Scientific Python
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SDyPy - Structural Dynamics Scientific Python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Contributing Guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/dev/contributing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="contributing-guide">
+<h1>Contributing Guide<a class="headerlink" href="#contributing-guide" title="Permalink to this headline">¶</a></h1>
+<p>Contributions are welcome and greatly appreciated!</p>
+<div class="section" id="workflow">
+<span id="contributing-workflow-label"></span><h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
+<p>A bug-fix or enhancement is delivered using a pull request. A good pull request
+should cover one bug-fix or enhancement feature. This ensures the change set is
+easier to review and less likely to need major re-work or even be rejected.</p>
+<p>The workflow that developers typically use to fix a bug or add enhancements
+is as follows.</p>
+<ul>
+<li><p>Fork the <code class="docutils literal notranslate"><span class="pre">sdypy</span></code> repo into your account.</p></li>
+<li><p>Obtain the source by cloning it onto your development machine.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone ttps://github.com/sdypy/sdypy.git
+<span class="gp">$</span> <span class="nb">cd</span> sdypy
+</pre></div>
+</div>
+</li>
+<li><p>Create a branch for local development:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git checkout -b name-of-your-bugfix-or-feature
+</pre></div>
+</div>
+<p>Now you can make your changes locally.</p>
+</li>
+<li><p>Develop fix or enhancement:</p>
+<ul>
+<li><p>Make a fix or enhancement (e.g. modify a class, method, function, module,
+etc).</p></li>
+<li><p>Update an existing unit test or create a new unit test module to verify
+the change works as expected.</p></li>
+<li><p>Run the test suite.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> pytest
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>The docs should be updated for anything but trivial bug fixes.</p></li>
+</ul>
+<p>Perform docs check.</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> docs
+<span class="gp">$</span> make clean
+<span class="gp">$</span> make html
+</pre></div>
+</div>
+</div></blockquote>
+<ul>
+<li><p>Commit and push changes to your fork.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git add .
+<span class="gp">$</span> git commit -m <span class="s2">&quot;A detailed description of the changes.&quot;</span>
+<span class="gp">$</span> git push origin name-of-your-bugfix-or-feature
+</pre></div>
+</div>
+<p>A pull request should preferably only have one commit upon the current
+master HEAD, (via rebases and squash).</p>
+</li>
+<li><p>Submit a pull request through the service website (e.g. Github, Gitlab).</p></li>
+<li><p>Check automated continuous integration steps all pass. Fix any problems
+if necessary and update the pull request.</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, SDyPy Consortium
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

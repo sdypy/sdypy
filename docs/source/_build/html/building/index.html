@@ -1,0 +1,253 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Building from sources &mdash; SDyPy - Structural Dynamics Scientific Python 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> SDyPy - Structural Dynamics Scientific Python
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SDyPy - Structural Dynamics Scientific Python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Building from sources</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/building/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="building-from-sources">
+<span id="building"></span><h1>Building from sources<a class="headerlink" href="#building-from-sources" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are only trying to install SciPy, see
+<span class="xref std std-doc">../install_upgrade</span>.</p>
+</div>
+<p>Build instructions for different operating systems and an FAQ:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="linux.html">Building from source on Linux</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="linux.html#generic-instructions">Generic instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linux.html#specific-instructions">Specific instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linux.html#fortran-abi-mismatch">Fortran ABI mismatch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="windows.html">Building from source on Windows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="windows.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="windows.html#building-the-released-scipy">Building the Released SciPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="windows.html#building-against-an-older-numpy-version">Building Against an Older NumPy Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="windows.html#additional-resources">Additional Resources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="macosx.html">Building from source on Mac OSX</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="macosx.html#python">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macosx.html#compilers-c-c-fortran-cython">Compilers (C/C++/FORTRAN/Cython)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macosx.html#blas-lapack-installation">BLAS/LAPACK Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macosx.html#version-specific-notes">Version-specific notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macosx.html#obtaining-and-building-numpy-and-scipy">Obtaining and Building NumPy and SciPy</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Build/Install FAQ</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="reference-for-build-options">
+<h1>Reference for build options<a class="headerlink" href="#reference-for-build-options" title="Permalink to this headline">¶</a></h1>
+<p>Scipy has several tunable build-time options, which can be set.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">site.cfg</span></code>: build-time library configuration file, see
+<code class="docutils literal notranslate"><span class="pre">site.cfg.example</span></code> for details.</p></li>
+<li><p>Environment variables <code class="docutils literal notranslate"><span class="pre">NPY_LAPACK_ORDER</span></code>, <code class="docutils literal notranslate"><span class="pre">NPY_BLAS_ORDER</span></code>, <code class="docutils literal notranslate"><span class="pre">OPENBLAS</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ATLAS</span></code>, etc., also controlling library configuration.
+See <a class="reference external" href="numpy-blasdoc">Numpy documentation</a> for more details.</p></li>
+<li><p>Environment variable <code class="docutils literal notranslate"><span class="pre">NPY_USE_BLAS_ILP64=1</span></code>: build using 64-bit
+integer size (ILP64) BLAS+LAPACK libraries.</p>
+<p>Note that even when this is set, Scipy requires <em>also</em> 32-bit
+integer size (LP64) BLAS+LAPACK libraries to be available and
+configured. This is because only some components in Scipy make use
+of the 64-bit capabilities.</p>
+</li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, SDyPy Consortium
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
