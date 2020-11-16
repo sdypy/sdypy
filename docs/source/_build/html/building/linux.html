@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Building from source on Linux &mdash; SDyPy - Structural Dynamics Scientific Python 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> SDyPy - Structural Dynamics Scientific Python
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SDyPy - Structural Dynamics Scientific Python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Building from source on Linux</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/building/linux.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="building-from-source-on-linux">
+<h1>Building from source on Linux<a class="headerlink" href="#building-from-source-on-linux" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="generic-instructions">
+<h2>Generic instructions<a class="headerlink" href="#generic-instructions" title="Permalink to this headline">¶</a></h2>
+<p>To build NumPy/SciPy from source, get the <a class="reference external" href="https://github.com/scipy/scipy">source package</a>, unpack it, and:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span> <span class="o">--</span><span class="n">user</span>   <span class="c1"># installs to your home directory</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python setup.py build
+python setup.py install --prefix=$HOME/local
+</pre></div>
+</div>
+<p>Before building, you will also need to install packages that NumPy and
+SciPy depend on</p>
+<ul class="simple">
+<li><p>BLAS and LAPACK libraries (optional but strongly recommended for
+NumPy, required for SciPy): typically <a class="reference external" href="http://math-atlas.sourceforge.net/">ATLAS</a> + <a class="reference external" href="https://github.com/xianyi/OpenBLAS/">OpenBLAS</a>, or <a class="reference external" href="https://software.intel.com/en-us/intel-mkl">MKL</a>.</p></li>
+<li><p>C and Fortran compilers (typically <code class="docutils literal notranslate"><span class="pre">gcc</span></code> and <code class="docutils literal notranslate"><span class="pre">gfortran</span></code>).</p></li>
+<li><p>Python header files (typically a package named <code class="docutils literal notranslate"><span class="pre">python-dev</span></code> or <code class="docutils literal notranslate"><span class="pre">python-devel</span></code>)</p></li>
+<li><p>Unless you are building from released source packages, the <a class="reference external" href="https://cython.org/">Cython</a> compiler is necessary (typically in a
+package named <code class="docutils literal notranslate"><span class="pre">cython</span></code>). For building recent SciPy, it is possible
+that you need Cython in a newer version than is available in your
+distribution.</p></li>
+</ul>
+<p>Typically, you will want to install all of the above from packages
+supplied by your Linux distribution, as building them yourself is
+complicated. If you need to use specific BLAS/LAPACK libraries, you
+can do</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">BLAS</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">libblas</span><span class="o">.</span><span class="n">so</span>
+<span class="n">export</span> <span class="n">LAPACK</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">liblapack</span><span class="o">.</span><span class="n">so</span>
+<span class="n">export</span> <span class="n">ATLAS</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">libatlas</span><span class="o">.</span><span class="n">so</span>
+<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="o">............</span>
+</pre></div>
+</div>
+<p>If you don’t want to any LAPACK, just do “<code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">LAPACK=</span></code>”.</p>
+<p>Below, you will find additional installation instructions and advice
+for many major Linux distributions.</p>
+</div>
+<div class="section" id="specific-instructions">
+<h2>Specific instructions<a class="headerlink" href="#specific-instructions" title="Permalink to this headline">¶</a></h2>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#debian-ubuntu" id="id1">Debian / Ubuntu</a></p></li>
+<li><p><a class="reference internal" href="#fedora-26" id="id2">Fedora 26</a></p></li>
+<li><p><a class="reference internal" href="#intel-c-compiler-and-mkl" id="id3">Intel C compiler and MKL</a></p>
+<ul>
+<li><p><a class="reference internal" href="#intel-mkl-11-0-updated-dec-2012" id="id4">Intel MKL 11.0 (updated Dec 2012)</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="debian-ubuntu">
+<h3><a class="toc-backref" href="#id1">Debian / Ubuntu</a><a class="headerlink" href="#debian-ubuntu" title="Permalink to this headline">¶</a></h3>
+<p>To build from source, the following packages are needed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">gcc</span> <span class="n">gfortran</span> <span class="n">python</span><span class="o">-</span><span class="n">dev</span> <span class="n">libopenblas</span><span class="o">-</span><span class="n">dev</span> <span class="n">liblapack</span><span class="o">-</span><span class="n">dev</span> <span class="n">cython</span>
+</pre></div>
+</div>
+<p>To customize which BLAS is used, you can set up a <cite>site.cfg</cite> file. See
+the <cite>site.cfg.example</cite> file in the numpy source for the options you
+can set.</p>
+<p>Note that Debian and Ubuntu package optimized BLAS libraries in an
+exchangeable way. You can install libraries, such as ATLAS or OpenBLAS
+and change the default one used via the alternatives mechanism:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo apt-get install libopenblas-base libatlas3-base
+$ update-alternatives --list libblas.so.3
+/usr/lib/atlas-base/atlas/libblas.so.3
+/usr/lib/libblas/libblas.so.3
+/usr/lib/openblas-base/libopenblas.so.0
+
+$ sudo update-alternatives --set libblas.so.3 /usr/lib/openblas-base/libopenblas.so.0
+</pre></div>
+</div>
+<p>See /usr/share/doc/libatlas3-base/README.Debian for instructions on
+how to build optimized ATLAS packages for your specific CPU. The
+packaged OpenBLAS chooses the optimal code at runtime so it does not
+need recompiling unless the packaged version does not yet support the
+used CPU.</p>
+<p>You can also use a library you built yourself by preloading it. This does not
+require administrator rights.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LD_PRELOAD</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">libatlas</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">3</span> <span class="o">./</span><span class="n">my</span><span class="o">-</span><span class="n">application</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fedora-26">
+<h3><a class="toc-backref" href="#id2">Fedora 26</a><a class="headerlink" href="#fedora-26" title="Permalink to this headline">¶</a></h3>
+<p>To install scipy build requirements, you can do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">dnf</span> <span class="n">install</span> <span class="n">gcc</span><span class="o">-</span><span class="n">gfortran</span> <span class="n">python3</span><span class="o">-</span><span class="n">devel</span> <span class="n">python2</span><span class="o">-</span><span class="n">devel</span> <span class="n">openblas</span><span class="o">-</span><span class="n">devel</span> <span class="n">lapack</span><span class="o">-</span><span class="n">devel</span> <span class="n">Cython</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="intel-c-compiler-and-mkl">
+<h3><a class="toc-backref" href="#id3">Intel C compiler and MKL</a><a class="headerlink" href="#intel-c-compiler-and-mkl" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="intel-mkl-11-0-updated-dec-2012">
+<h4><a class="toc-backref" href="#id4">Intel MKL 11.0 (updated Dec 2012)</a><a class="headerlink" href="#intel-mkl-11-0-updated-dec-2012" title="Permalink to this headline">¶</a></h4>
+<p>Add the following lines to site.cfg in your top level NumPy directory
+to use Intel® MKL for Intel® 64 (or earlier known as em64t)
+architecture, considering the default installation path of Intel® MKL,
+which is bundled with Intel® Composer XE SP1 version on Linux:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">mkl</span><span class="p">]</span>
+<span class="n">library_dirs</span> <span class="o">=</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">intel</span><span class="o">/</span><span class="n">composer_xe_2013</span><span class="o">/</span><span class="n">mkl</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">intel64</span>
+<span class="n">include_dirs</span> <span class="o">=</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">intel</span><span class="o">/</span><span class="n">composer_xe_2013</span><span class="o">/</span><span class="n">mkl</span><span class="o">/</span><span class="n">include</span>
+<span class="n">mkl_libs</span> <span class="o">=</span> <span class="n">mkl_intel_lp64</span><span class="p">,</span><span class="n">mkl_intel_thread</span><span class="p">,</span><span class="n">mkl_core</span>
+</pre></div>
+</div>
+<p>If you are building NumPy for 32 bit, please add as the following</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">mkl</span><span class="p">]</span>
+<span class="n">library_dirs</span> <span class="o">=</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">intel</span><span class="o">/</span><span class="n">composer_xe_2013</span><span class="o">/</span><span class="n">mkl</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">ia32</span>
+<span class="n">include_dirs</span> <span class="o">=</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">intel</span><span class="o">/</span><span class="n">composer_xe_2013</span><span class="o">/</span><span class="n">mkl</span><span class="o">/</span><span class="n">include</span>
+<span class="n">mkl_libs</span> <span class="o">=</span> <span class="n">mkl_intel</span><span class="p">,</span><span class="n">mkl_intel_thread</span><span class="p">,</span><span class="n">mkl_core</span>
+</pre></div>
+</div>
+<p>Instead of the layered linking approach for the Intel® MKL as shown
+above, you may also use the dynamic interface lib mkl_rt.lib. So, for
+both the ia32 and intel64 architecture, make the change as below</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkl_libs</span> <span class="o">=</span> <span class="n">mkl_rt</span>
+</pre></div>
+</div>
+<p>Modify cc_exe in numpy/numpy/distutils/intelccompiler.py to be
+something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cc_exe</span> <span class="o">=</span> <span class="s1">&#39;icc -O2 -g -openmp -avx&#39;</span>
+</pre></div>
+</div>
+<p>Here, we use default optimizations (-O2), OpenMP threading (-openmp),
+and Intel® AVX optimizations for Intel® Xeon E5 or E3 Series, which are
+based on Intel® SandyBridge Architecture (-avx). Run icc –help for
+more information on processor-specific options.</p>
+<p>Compile and install NumPy with the Intel compiler (on 64-bit platforms replace “intel” with “intelem”):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">config</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">intel</span> <span class="n">build_clib</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">intel</span> <span class="n">build_ext</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">intel</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>Compile and install SciPy with the Intel compilers (on 64-bit
+platforms replace “intel” with “intelem”):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">config</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">intel</span> <span class="o">--</span><span class="n">fcompiler</span><span class="o">=</span><span class="n">intel</span> <span class="n">build_clib</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">intel</span> <span class="o">--</span><span class="n">fcompiler</span><span class="o">=</span><span class="n">intel</span> <span class="n">build_ext</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">intel</span> <span class="o">--</span><span class="n">fcompiler</span><span class="o">=</span><span class="n">intel</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>You’ll have to set LD_LIBRARY_PATH to Intel® MKL libraries (exact
+values will depend on your architecture, compiler, and library
+versions) and OpenMP library for NumPy to work. If you build NumPy
+for Intel® 64 platforms:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$export LD_LIBRARY_PATH=/opt/intel/composer_xe_2013/mkl/lib/intel64: /opt/intel/composer_xe_2013/compiler/lib/intel64:$LD_LIBRARY_PATH
+</pre></div>
+</div>
+<p>If you build NumPy for ia32 bit platforms:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$export LD_LIBRARY_PATH=/opt/intel/composer_xe_2013/mkl/lib/ia32: /opt/intel/composer_xe_2013/compiler/lib/ia32:$LD_LIBRARY_PATH
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="fortran-abi-mismatch">
+<h2>Fortran ABI mismatch<a class="headerlink" href="#fortran-abi-mismatch" title="Permalink to this headline">¶</a></h2>
+<p>Some linear algebra libraries are built with G77 ABI and others with
+GFortran ABI, and these two ABIs are incompatible. Therefore, if you
+build scipy with <cite>gfortran</cite> and link to a linear algebra library, like
+MKL, which is built with G77 ABI, then there’ll be an exception or a
+segfault. SciPy fixes this by using the CBLAS API for the few
+functions in the BLAS API that suffers from this issue.</p>
+<p>Note that SciPy needs to know at build time, what needs to be done and
+the build system will automatically check whether linear algebra
+library is MKL and if so, use the CBLAS API instead of the BLAS API.
+If autodetection fails or if the user wants to override this
+autodetection mechanism, setting the environment variable
+<cite>SCIPY_USE_G77_ABI_WRAPPER</cite> to 0 or 1 to disable or enable using CBLAS
+API.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, SDyPy Consortium
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

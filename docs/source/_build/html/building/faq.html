@@ -1,0 +1,248 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Build/Install FAQ &mdash; SDyPy - Structural Dynamics Scientific Python 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> SDyPy - Structural Dynamics Scientific Python
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SDyPy - Structural Dynamics Scientific Python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Build/Install FAQ</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/building/faq.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="build-install-faq">
+<span id="id1"></span><h1>Build/Install FAQ<a class="headerlink" href="#build-install-faq" title="Permalink to this headline">¶</a></h1>
+<p><em>How do I set up a development version of SciPy in parallel to a released
+version that I use to do my job/research?</em></p>
+<p>If you use the <code class="docutils literal notranslate"><span class="pre">conda</span></code> package manager, this is covered in the
+<span class="xref std std-ref">quickstart-mac</span>, specifically in <span class="xref std std-ref">quickstart-mac-install</span>.</p>
+<p>Another simple way to achieve this is to install the released version in
+site-packages, by using a binary installer or pip, for example, and set
+up the development version in a virtualenv. First, install
+<a class="reference external" href="https://virtualenv.pypa.io/">virtualenv</a> (optionally, use <a class="reference external" href="https://bitbucket.org/dhellmann/virtualenvwrapper/">virtualenvwrapper</a>), then create your
+virtualenv (named scipy-dev here) with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ virtualenv scipy-dev
+</pre></div>
+</div>
+<p>Now, whenever you want to switch to the virtual environment, you can use the
+command <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">scipy-dev/bin/activate</span></code>, and <code class="docutils literal notranslate"><span class="pre">deactivate</span></code> to exit from the
+virtual environment and back to your previous shell. With scipy-dev
+activated, first install Scipy’s dependencies:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install numpy pytest cython pybind11
+</pre></div>
+</div>
+<p>After that, you can install a development version of Scipy, for example, via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py install
+</pre></div>
+</div>
+<p>The installation goes to the virtual environment.</p>
+<p><em>How do I set up an in-place build for development?</em></p>
+<p>For development, you can set up an in-place build so that changes made to
+<code class="docutils literal notranslate"><span class="pre">.py</span></code> files have effect without rebuild. First, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py build_ext -i
+</pre></div>
+</div>
+<p>Then you need to point your PYTHONPATH environment variable to this directory.
+Some IDEs (<a class="reference external" href="https://www.spyder-ide.org/">Spyder</a>, for example) have utilities to manage PYTHONPATH. On Linux
+and OSX, you can run the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export PYTHONPATH=$PWD
+</pre></div>
+</div>
+<p>and on Windows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ set PYTHONPATH=/path/to/scipy
+</pre></div>
+</div>
+<p>Now, editing a Python source file in SciPy allows you to immediately
+test and use your changes (in <code class="docutils literal notranslate"><span class="pre">.py</span></code> files), by simply restarting the
+interpreter.</p>
+<p>If you use the macOS, please find more information in the
+<span class="xref std std-ref">quickstart-mac</span>.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, SDyPy Consortium
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

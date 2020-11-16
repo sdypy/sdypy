@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'SDyPy - Structural Dynamics Scientific Python'
-copyright = '2020, Open Structural Dynamics Consortium'
+copyright = '2020, SDyPy Consortium'
 author = 'Janko Slavič, Domen Gorjup, Klemen Zaletelj, Tomaž Bregar'
 
 # The short X.Y version
@@ -134,7 +134,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'sdypy.tex', 'sdypy project Documentation',
-     'Open Structural Dynamics Consortium', 'manual'),
+     'SDyPy Consortium', 'manual'),
 ]
 
 

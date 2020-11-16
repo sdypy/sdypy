@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>SDyPy - Structural Dynamics Python development notes &mdash; SDyPy - Structural Dynamics Scientific Python 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> SDyPy - Structural Dynamics Scientific Python
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SDyPy - Structural Dynamics Scientific Python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>SDyPy - Structural Dynamics Python development notes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/dev/readme.dev.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="sdypy-structural-dynamics-python-development-notes">
+<h1>SDyPy - Structural Dynamics Python development notes<a class="headerlink" href="#sdypy-structural-dynamics-python-development-notes" title="Permalink to this headline">¶</a></h1>
+<p>To download the source code:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone https://github.com/sdypy/sdypy
+</pre></div>
+</div>
+<p>To begin development, install the required packages with :</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> python -m pip install -r requirements.dev.txt
+</pre></div>
+</div>
+<p>Consider adding unit-tests in <code class="docutils literal notranslate"><span class="pre">tests/</span></code>. The provided test file structure is setup to work with <a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a>.</p>
+<p>To also use the sphinx documentation, modify files in <code class="docutils literal notranslate"><span class="pre">docs/source</span></code> (see <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/quickstart.html">Sphinx - Getting started</a> for more info).</p>
+</div>
+<div class="section" id="file-structure">
+<h1>File structure<a class="headerlink" href="#file-structure" title="Permalink to this headline">¶</a></h1>
+<p>The project code is structured as follows:</p>
+<dl class="simple">
+<dt>setup.py</dt><dd><p>the Python setup script, used to package the project</p>
+</dd>
+<dt>requirements.txt</dt><dd><p>a list of packages, required to use this project</p>
+</dd>
+<dt>requirements.dev.txt</dt><dd><p>a list of packages, required to develop this project</p>
+</dd>
+<dt>README.rst</dt><dd><p>the main projecdt description / documentation file</p>
+</dd>
+<dt>CONTRIBUTING.rst</dt><dd><p>a document containing information for potential contrubutors (developers) of the package</p>
+</dd>
+<dt>License</dt><dd><p>the project License</p>
+</dd>
+<dt>.travis.yml</dt><dd><p>contains the set of instructions to run wit the <a class="reference external" href="https://travis-ci.org/">TravisCI</a> continuous integration service after the file repository has been updated</p>
+</dd>
+<dt>.gitignore</dt><dd><p>defines the files in the project directory to be excluded from version control</p>
+</dd>
+<dt>tests/</dt><dd><p>contains project unit-tests</p>
+</dd>
+<dt>sdypy/</dt><dd><p>contains the core project source code, separated into meaningful sub-modules</p>
+</dd>
+<dt>examples/</dt><dd><p>scripts, notebooks with examples to showcase the project</p>
+</dd>
+<dt>docs/</dt><dd><p>the documentation source and built files</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="building-the-documentation">
+<h1>Building the documentation<a class="headerlink" href="#building-the-documentation" title="Permalink to this headline">¶</a></h1>
+<p>By setting up <a class="reference external" href="https://readthedocs.org/">ReadTheDocs</a>, your project documentation can automatically be built and puclished as a publicly available website.</p>
+<p>To test your documentation locally, run the following (starting from the main project directory) :</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> docs
+<span class="gp">$</span> make clean
+<span class="gp">$</span> make html
+</pre></div>
+</div>
+<p>Your documentation files will be built inside the <code class="docutils literal notranslate"><span class="pre">docs/build/html</span></code> folder.</p>
+</div>
+<div class="section" id="publishing-the-project">
+<h1>Publishing the project<a class="headerlink" href="#publishing-the-project" title="Permalink to this headline">¶</a></h1>
+<p>You can build your project and publish it to the <a class="reference external" href="https://pypi.org/">Python Package Index</a> with the following basic steps:</p>
+<ol class="arabic simple">
+<li><p>Build you project source code :</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> python setup.py sdist bdist_wheel
+</pre></div>
+</div>
+<p>The built project can be tested locally by installing the resulting <code class="docutils literal notranslate"><span class="pre">.whl</span></code> file, found in the <code class="docutils literal notranslate"><span class="pre">dist/</span></code> folder  in a new virtual environemtn:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> python -m virtualenv venv
+<span class="gp">$</span> venv/Scripts/activate
+<span class="gp">$</span> python -m pip install &lt;sdypy-#&gt;.whl
+</pre></div>
+</div>
+<p>(replace <code class="docutils literal notranslate"><span class="pre">&lt;sdypy-#&gt;</span></code> above with the actual <code class="docutils literal notranslate"><span class="pre">.whl</span></code> file name).</p>
+<ol class="arabic simple" start="2">
+<li><p>Upload the distribution files from <code class="docutils literal notranslate"><span class="pre">dist/</span></code> to PyPI :</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+</pre></div>
+</div>
+<p>(<code class="docutils literal notranslate"><span class="pre">--repository-url</span> <span class="pre">https://test.pypi.org/legacy/</span></code> uploads the package to the test PyPI for testing. To publish you package to the main PyPI repository, simply ommit this option from the above command.)</p>
+<p>For more information on the publishng process, see this simpel <a class="reference external" href="https://packaging.python.org/tutorials/packaging-projects/">Python packaging tutorial</a>.</p>
+<ol class="arabic simple" start="3">
+<li><p>After that,  the SDyPy will be available on PyPI and can be installed with <a class="reference external" href="https://pip.pypa.io">pip</a>.</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> pip install sdypy
+</pre></div>
+</div>
+<p>After installing SDyPy you can use it like any other Python module.</p>
+<p>Here is a simple example with the current example code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sdypy</span> <span class="k">as</span> <span class="nn">sd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also run this basic example by running the following command in the project base direcotry:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> python -m examples.basic_example
+</pre></div>
+</div>
+<p>The <a class="reference external" href="http://sdypy.readthedocs.io">Read the Docs page</a> provides the project documentation.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, SDyPy Consortium
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
