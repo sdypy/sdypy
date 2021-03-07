@@ -2,7 +2,7 @@
 SEP 1 — Integration of packages into SDyPy
 ==========================================
 
-:Author: Klemen Zaletelj <klemen.zaletelj@fs.uni-lj.si>
+:Authors: Janko Slavič <janko.slavic@fs.uni-lj.si>, Klemen Zaletelj <klemen.zaletelj@fs.uni-lj.si>
 :Status: Draft
 :Type: Process
 :Created: 2021-02-11
@@ -11,19 +11,19 @@ SEP 1 — Integration of packages into SDyPy
 Abstract
 --------
 A three level scale of integration of a package into SDyPy is proposed to enable
-the connectivity of the exisiting projects. The levels differ in consistency of
+the connectivity of the existing projects. The levels differ in consistency of
 nomenclature with SDyPy, developed documentation and testing. The levels 
 of integration enable quick association of a project with SDyPy, without
-extened efforts from the developers. Higher levels of integration can be achieved
+extended efforts from the developers. Higher levels of integration can be achieved
 by developing the project in agreement with SDyPy guidelines.
 
 Motivation
 ----------
-The SDyPy project was created to unify the efforst in structural dynamics and 
+The SDyPy project was created to unify the effort in structural dynamics and 
 associate the relevant projects; however, the existing packages were developed 
-independantly, with various degrees of compatibility. To minimize the efforts
-of the developers, the three levels of integration are proposed, enabeling
-the developers to choose the level of the desired independancy of their project
+independently, with various degrees of compatibility. To minimize the efforts
+of the developers, the three levels of integration are proposed, enabling
+the developers to choose the level of the desired independency of their project
 and level of integration into SDyPy.
 
 Detailed description
@@ -31,39 +31,20 @@ Detailed description
 The three levels of integration:
 
 - **1st level**:
-   - External package, imported into SDyPy namespace
-   - All of the SDyPy modules
-
+   - This packages are imported into SDyPy namespace, 
+   - Packages are still developed in a separate repository (preferably under the SDyPy organization)
+   - Tests of interoperability to other 1st level packages, 
+   - Corresponds to nomenclature guidelines of SDyPy,
+   - Testing and documentation corresponds to the SDyPy template,
+   - Package has an MIT or similar licence which enables free use of any purpose (incl. commercial).
+   
 - **2nd level**:
-   - External packages, dependencies of SDyPy
+   - Testing and documentation corresponds to the SDyPy template,
+   - Package has an MIT or similar licence which enables free use of any purpose (incl. commercial).
+   - Preferable PIP supported installation (wheels)
 
 - **3rd level**:
    - External packages, listed as related projects
-
-3rd level
-^^^^^^^^^
-The projects that are associated with structural dynamics and noise research are
-automatically a 3rd level project. The project does not necessarily have the
-documentation, testing or a common nomenclature.
-
-2nd level
-^^^^^^^^^
-The 3rd level project can become a 2nd level project if the following criteria are
-met:
-
-- Well written docstrings
-- SDyPy's docstring format
-- Sufficient documentation
-- Code testing
-- Possible PyPI installation (wheel)
-
-1st level
-^^^^^^^^^
-To advance to 1st level, the project must also use a common
-nomenclature, used in SDyPy. This ensures interoperability of the SDyPy.
-
-The 1st level pacakges can be further developed separately or are fully integrated
-into SDyPy as a module.
 
 
 Discussion
