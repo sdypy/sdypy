@@ -28,23 +28,27 @@ and level of integration into SDyPy.
 
 Detailed description
 --------------------
-The three levels of integration:
+The four levels of integration:
 
-- **1st level**:
-   - This packages are imported into SDyPy namespace, 
-   - Packages are still developed in a separate repository (preferably under the SDyPy organization)
-   - Tests of interoperability to other 1st level packages, 
-   - Corresponds to nomenclature guidelines of SDyPy,
-   - Testing and documentation corresponds to the SDyPy template,
-   - Package has an MIT or similar licence which enables free use of any purpose (incl. commercial).
-   
-- **2nd level**:
-   - Testing and documentation corresponds to the SDyPy template,
-   - Package has an MIT or similar licence which enables free use of any purpose (incl. commercial).
-   - Preferable PIP supported installation (wheels)
-
-- **3rd level**:
+- **4th level**:
    - External packages, listed as related projects
+   
+- **3rd level**:
+   - Testing and documentation corresponds to the SDyPy template,
+   - Package has an MIT or similar licence which enables free use for any purpose (incl. commercial),
+   - PIP supported installation (wheels),
+   - This packages are installed with SDyPy.
+   
+   
+- **2nd level**, all of 3rd level, but additionally:
+   - Automatic tests of interoperability to other 1st and 2nd level packages are prepared, 
+   - Corresponds to nomenclature guidelines of SDyPy,
+   - Package has the same licence as SDyPy.
+   - This packages are imported into SDyPy namespace, 
+   - Packages are still developed in a separate repository,
+
+- **1st level**, all of 2nd level, but additionally:
+   - These packages are developed in the SDyPy repository, 
 
 
 Discussion
