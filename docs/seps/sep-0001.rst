@@ -10,7 +10,7 @@ SEP 1 — Integration of packages into SDyPy
 
 Abstract
 --------
-A three level scale of integration of a package into SDyPy is proposed to enable
+A four level scale of integration of a package into SDyPy is proposed to enable
 the connectivity of the existing projects. The levels differ in consistency of
 nomenclature with SDyPy, developed documentation and testing. The levels 
 of integration enable quick association of a project with SDyPy, without
@@ -22,7 +22,7 @@ Motivation
 The SDyPy project was created to unify the effort in structural dynamics and 
 associate the relevant projects; however, the existing packages were developed 
 independently, with various degrees of compatibility. To minimize the efforts
-of the developers, the three levels of integration are proposed, enabling
+of the developers, the four levels of integration are proposed, enabling
 the developers to choose the level of the desired independency of their project
 and level of integration into SDyPy.
 
@@ -31,7 +31,8 @@ Detailed description
 The four levels of integration:
 
 - **4th level**:
-   - External packages, listed as related projects
+   - External packages dealing with structural dynamics, listed as related projects,
+   - These packages are developed completely independently but might be useful for 3rd, 2nd and 1st level packages.
    
 - **3rd level**:
    - Testing and documentation corresponds to the SDyPy template,
@@ -49,7 +50,6 @@ The four levels of integration:
 
 - **1st level**, all of 2nd level, but additionally:
    - These packages are developed in the SDyPy repository, 
-
 
 Discussion
 ----------
