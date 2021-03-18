@@ -54,13 +54,12 @@ General guidelines
      damping_viscous
      damping_hysteretic
 
-  It should be said, that the it is up to the user to determine what is the more broader term. In the
-  examples it is assumed that we would like to distinguish between the animals.
+  It should be said, that the it is up to the user to determine what is the more broader term.
 
 Common variables in structural dynamics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Despite the general guidelines written above, there variables which are broadly used in structural dynamics 
+Despite the general guidelines written above, the variables which are broadly used in structural dynamics 
 can be an exception to the general guidelines. To avoid different variable names (e.g. sampling_frequency, 
 freq_sampling), the conventions given below should be used.
 
