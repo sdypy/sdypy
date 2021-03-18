@@ -1,0 +1,105 @@
+===============================
+SEP 2 — Nomenclature guidelines
+===============================
+
+:Author: Klemen Zaletelj <klemen.zaletelj@fs.uni-lj.si>
+:Status: Draft
+:Type: Process
+:Created: 2021-03-15
+
+
+Abstract
+--------
+
+The nomenclature guidelines for SDyPy are presented for better interoperability
+of the packages/modules.
+
+Motivation
+----------
+
+The nomenclature is often not consistent for different packages which affects the
+user experience when combining the use of multiple packages.
+
+Detailed description
+--------------------
+
+SDyPy nomenclature follows the python guidelines, presented in 
+`PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_.
+
+General guidelines
+^^^^^^^^^^^^^^^^^^
+
+* As is stated in `PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_, the code is much more often
+  read than it is written. The names of the variables should therefore be as descriptive as possible.
+  Examples:
+
+  .. code:: python
+  
+     a = 4 # Not good
+
+     rectangle_height = 4 # Good
+
+  With most code editors enabling the use of autocomplete, the length of the variables does not present
+  a major issue for code writing.
+
+* When combining multiple words into a variable name, the term with a broader meaning should
+  be on the first place. The more defining term comes next. This improves the readability of the code,
+  enabling the reader to immediately understand what the main purpose of the variable is.  Examples:
+
+  .. code:: python
+
+     dog_good
+     dog_bad
+     cat_good
+     cat_bad
+
+  It should be said, that the it is up to the user to determine what is the more broader term. In the
+  examples it is assumed that we would like to distinguish between the animals; however, for an
+  arbitrary use-case, we might want to distinguish between ``good`` and ``bad`` and the animal is the
+  defining term.
+
+Common variables in structural dynamics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some of the common variables in structural dynamics are listed below along with the proposed naming
+convention.
+
+* Sampling frequency: ``fs``
+   * This name is not descriptive; however, it is commonly used in other packages 
+     (e.g. `scipy <https://www.scipy.org/scipylib/index.html>`_)
+   * Unit: [Hz]
+* Time step: ``dt``
+   * Unit: [s]
+* Natural frequency: ``natural_freq``
+   * Unit: [Hz]
+* Frequency vector: ``freq``
+   * Unit: [Hz] or [rad/s]
+* Frequency Response Function: ``frf``
+   * Different forms of the frequency response function are possible (receptance, mobility, accelerance) and
+     can be given other names. When the frequency response function is referenced in arbitrary form, this variable
+     name should be given.
+* Frequency limits: ``freq_upper``, ``freq_lower``
+
+
+Discussion
+----------
+
+This section may just be a bullet list including links to any discussions
+regarding the SEP:
+
+- This includes links to mailing list threads or relevant GitHub issues.
+
+
+References and Footnotes
+------------------------
+
+.. [1] Each SEP must either be explicitly labeled as placed in the public domain (see
+   this SEP as an example) or licensed under the `Open Publication License`_.
+
+.. _Open Publication License: https://www.opencontent.org/openpub/
+
+
+Copyright
+---------
+
+This document has been placed in the public domain. [1]_
