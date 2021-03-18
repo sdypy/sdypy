@@ -2,7 +2,7 @@
 SEP 2 — Nomenclature guidelines
 ===============================
 
-:Author: Klemen Zaletelj <klemen.zaletelj@fs.uni-lj.si>
+:Authors: Klemen Zaletelj <klemen.zaletelj@fs.uni-lj.si>, Janko Slavič <janko.slavic@fs.uni-lj.si>
 :Status: Draft
 :Type: Process
 :Created: 2021-03-15
@@ -29,8 +29,9 @@ SDyPy nomenclature follows the python guidelines, presented in
 General guidelines
 ^^^^^^^^^^^^^^^^^^
 
-* As is stated in `PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_, the code is much more often
-  read than it is written. The names of the variables should therefore be as descriptive as possible.
+* As is stated in `PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_, the code is read 
+  much more often than it is written. The names of the variables should therefore
+  be as descriptive as possible.
   Examples:
 
   .. code:: python
@@ -48,21 +49,20 @@ General guidelines
 
   .. code:: python
 
-     dog_good
-     dog_bad
-     cat_good
-     cat_bad
+     freq_upper
+     freq_lower
+     damping_viscous
+     damping_hysteretic
 
   It should be said, that the it is up to the user to determine what is the more broader term. In the
-  examples it is assumed that we would like to distinguish between the animals; however, for an
-  arbitrary use-case, we might want to distinguish between ``good`` and ``bad`` and the animal is the
-  defining term.
+  examples it is assumed that we would like to distinguish between the animals.
 
 Common variables in structural dynamics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Some of the common variables in structural dynamics are listed below along with the proposed naming
-convention.
+Despite the general guidelines written above, there variables which are broadly used in structural dynamics 
+can be an exception to the general guidelines. To avoid different variable names (e.g. sampling_frequency, 
+freq_sampling), the conventions given below should be used.
 
 * Sampling frequency: ``fs``
    * This name is not descriptive; however, it is commonly used in other packages 
@@ -73,7 +73,9 @@ convention.
 * Natural frequency: ``natural_freq``
    * Unit: [Hz]
 * Frequency vector: ``freq``
-   * Unit: [Hz] or [rad/s]
+   * Unit: [Hz]
+* Frequency vector in rad/s: ``freq_rad``
+   * Unit: [rad/s]
 * Frequency Response Function: ``frf``
    * Different forms of the frequency response function are possible (receptance, mobility, accelerance) and
      can be given other names. When the frequency response function is referenced in arbitrary form, this variable
