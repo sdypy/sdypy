@@ -1,0 +1,75 @@
+==========================================
+SEP 1 — Integration of packages into SDyPy
+==========================================
+
+:Authors: Janko Slavič <janko.slavic@fs.uni-lj.si>, Klemen Zaletelj <klemen.zaletelj@fs.uni-lj.si>
+:Status: Draft
+:Type: Process
+:Created: 2021-02-11
+
+
+Abstract
+--------
+A four level scale of integration of a package into SDyPy is proposed to enable
+the connectivity of the existing projects. The levels differ in consistency of
+nomenclature with SDyPy, developed documentation and testing. The levels 
+of integration enable quick association of a project with SDyPy, without
+extended efforts from the developers. Higher levels of integration can be achieved
+by developing the project in agreement with SDyPy guidelines.
+
+Motivation
+----------
+The SDyPy project was created to unify the effort in structural dynamics and 
+associate the relevant projects; however, the existing packages were developed 
+independently, with various degrees of compatibility. To minimize the efforts
+of the developers, the four levels of integration are proposed, enabling
+the developers to choose the level of the desired independency of their project
+and level of integration into SDyPy.
+
+Detailed description
+--------------------
+The four levels of integration:
+
+- **4th level**:
+   - External packages dealing with structural dynamics, listed as related projects,
+   - These packages are developed completely independently but might be useful for 3rd, 2nd and 1st level packages.
+   
+- **3rd level**:
+   - Testing and documentation corresponds to the SDyPy template,
+   - Package has an MIT or similar licence which enables free use for any purpose (incl. commercial),
+   - PIP supported installation (wheels),
+   - This packages are installed with SDyPy.
+   
+   
+- **2nd level**, all of 3rd level, but additionally:
+   - Automatic tests of interoperability to other 1st and 2nd level packages are prepared, 
+   - Corresponds to nomenclature guidelines of SDyPy,
+   - Package has the same licence as SDyPy.
+   - This packages are imported into SDyPy namespace, 
+   - Packages are still developed in a separate repository,
+
+- **1st level**, all of 2nd level, but additionally:
+   - These packages are developed in the SDyPy repository, 
+
+Discussion
+----------
+
+This section may just be a bullet list including links to any discussions
+regarding the SEP:
+
+- This includes links to mailing list threads or relevant GitHub issues.
+
+
+References and Footnotes
+------------------------
+
+.. [1] Each SEP must either be explicitly labeled as placed in the public domain (see
+   this SEP as an example) or licensed under the `Open Publication License`_.
+
+.. _Open Publication License: https://www.opencontent.org/openpub/
+
+
+Copyright
+---------
+
+This document has been placed in the public domain. [1]_
