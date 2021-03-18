@@ -4,3 +4,7 @@ scipy
 matplotlib
 
 pyEMA
+pyExSi
+FLife
+pyFBS
+pyidi
