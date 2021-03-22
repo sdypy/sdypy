@@ -31,25 +31,26 @@ Detailed description
 The four levels of integration:
 
 - **4th level**:
-   - External packages dealing with structural dynamics, listed as related projects,
+   - External packages dealing with structural dynamics, listed as related projects.
    - These packages are developed completely independently but might be useful for 3rd, 2nd and 1st level packages.
    
 - **3rd level**:
-   - Testing and documentation corresponds to the SDyPy template,
-   - Package has an MIT or similar licence which enables free use for any purpose (incl. commercial),
-   - PIP supported installation (wheels),
+   - Testing and documentation corresponds to the SDyPy template.
+   - Package has an MIT or similar licence which enables free use for any purpose (incl. commercial).
+   - PIP supported installation (wheels).
    - This packages are installed with SDyPy.
    
    
 - **2nd level**, all of 3rd level, but additionally:
-   - Automatic tests of interoperability to other 1st and 2nd level packages are prepared, 
-   - Corresponds to nomenclature guidelines of SDyPy,
+   - Automatic tests of interoperability to other 1st and 2nd level packages are prepared. 
+   - Corresponds to nomenclature guidelines of SDyPy.
    - Package has the same licence as SDyPy.
-   - This packages are imported into SDyPy namespace, 
-   - Packages are still developed in a separate repository,
+   - This packages are namespace packages under SDyPy namespace (see SEP3).
+   - Packages are still developed in a separate repository.
 
-- **1st level**, all of 2nd level, but additionally:
-   - These packages are developed in the SDyPy repository, 
+- **1st level**, all of 2nd level, but one of the following:
+   - These packages are developed in the SDyPy repository.
+   - Are namespace packages (see SEP3) in separate repositories under the SDyPy organization.
 
 Discussion
 ----------
