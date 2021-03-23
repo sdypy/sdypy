@@ -45,7 +45,7 @@ The four levels of integration:
    - Automatic tests of interoperability to other 1st and 2nd level packages are prepared. 
    - Corresponds to nomenclature guidelines of SDyPy.
    - Package has the same licence as SDyPy.
-   - This packages are namespace packages under SDyPy namespace (see SEP3).
+   - This packages are namespace packages under SDyPy namespace (see `SEP3 <./sep-0003.rst>`_).
    - Packages are still developed in a separate repository.
 
 - **1st level**, all of 2nd level, but one of the following:
