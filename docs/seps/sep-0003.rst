@@ -10,9 +10,9 @@ SEP 3 — Including packages into the SDyPy namespace
 
 Abstract
 --------
-SDyPy uses Python's namespace package mechanism to include packages whith a
-high level of integration into its namespace while alowing for an independently
-developement processes. The use of namespace packages in SDyPy is described in
+SDyPy uses Python's namespace package mechanism to include packages with a
+high level of integration into its namespace while allowing for an independently
+development processes. The use of namespace packages in SDyPy is described in
 this document.
 
 Motivation
@@ -21,8 +21,8 @@ As SDyPy aims to integrate multiple open-source Python packages in the
 structural dynamics field to provide a coherent workflow, it may be beneficial
 to include some packages into the SDyPy namespace. However, it is reasonable
 that some of these packages keep a high level of independence in their
-develpment and distribution (e.g. their repositories with a wealth of existing
-resources, issues and commit hitories...). To achieve this, Python's namespace
+development and distribution (e.g. their repositories with a wealth of existing
+resources, issues and commit histories...). To achieve this, Python's namespace
 package mechanism is used.
 
 Detailed description
@@ -31,8 +31,10 @@ The four levels of integration, described in `SEP1 <./sep-0001.rst>`_, define
 two types of packages that are included in the SDyPy namespace, but are
 developed in independent repositories:
 
-- **2nd level** packages are namespace packages with a high level of integration with SDyPy, that are developed by a separate organization.
-- **1st level** packages are hosted by the `SDyPy organization`_, but can be developed in a repository, separate from the `core SDyPy pacakge`_.
+- **2nd level** packages are namespace packages with a high level of integration 
+  with SDyPy, that are developed by a separate organization.
+- **1st level** packages are hosted by the `SDyPy organization`_, but can be 
+  developed in a repository, separate from the `core SDyPy package`_.
 
 To integrate these two types of packages into the SDyPy namespace, Python's
 `namespace package`_ mechanism is used.
@@ -52,9 +54,9 @@ that the namespace directory (`SDyPy/`) omits an `__init__.py` file.
 It is also necessary to alter an existing package's setup script to adhere to
 the changed file structure.
 
-When a package, developed by a separate organisation is defined to be part of
+When a package, developed by a separate organization is defined to be part of
 the SDyPy namespace, as shown in the above example, it becomes a Level 2
-SDyPy package. If it's ownership is also transfered to the
+SDyPy package. If it's ownership is also transferred to the
 SDyPy organization it becomes a Level 1 SDyPy package.
 
 Discussion
