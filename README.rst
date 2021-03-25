@@ -30,7 +30,7 @@ Package integration in SDyPy
 ----------------------------
 
 The existing efforts in the field of structural dynamics are included in SDyPy according to
-the level of integration (see SEP 1).
+the level of integration (see `SEP 1 <https://github.com/sdypy/sdypy/blob/main/docs/seps/sep-0001.rst>`_).
 
 - **1st level** (part of SDyPy repository):
     - *No packages are currently at 1st level*
