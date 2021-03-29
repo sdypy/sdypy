@@ -107,3 +107,7 @@ venv.bak/
 
 # VSCode
 .vscode/
+
+# distribution
+distribution.bat
+.pypirc
