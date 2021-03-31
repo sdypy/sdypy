@@ -32,10 +32,10 @@ Package integration in SDyPy
 The existing efforts in the field of structural dynamics are included in SDyPy according to
 the level of integration (see `SEP 1 <https://github.com/sdypy/sdypy/blob/main/docs/seps/sep-0001.rst>`_).
 
-- **1st level** (part of SDyPy repository):
+- **1st level** (part of SDyPy repository or organization):
     - *No packages are currently at 1st level*
 
-- **2nd level** (imported in namespace):
+- **2nd level** (namespace package in independent repository):
     - *No packages are currently at 2nd level*
    
 - **3rd level** (installed by SDyPy):
