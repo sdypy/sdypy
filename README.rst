@@ -12,7 +12,7 @@ methods. This an open and free initiative, we stand up for:
 - multi-institutional engagement.
 
 SDyPy depends on core SciPy stack packages, please use those packages where possible. If you 
-would like an extension to be implemented, if it is general and not related to structural dynamics.
+would like an extension to be implemented, if it is general and not related to structural dynamics,
 consider implementing it into the SciPy stack.
 
 
