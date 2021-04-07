@@ -3,7 +3,7 @@ numpy
 scipy
 matplotlib
 
-pyEMA
+sdypy-EMA
 pyExSi
 FLife
 pyFBS
