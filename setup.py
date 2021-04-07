@@ -7,7 +7,7 @@ base_path = os.path.dirname(__file__)
 # Read the project version from "__init__.py"
 regexp = re.compile(r'.*__version__ = [\'\"](.*?)[\'\"]', re.S)
 
-init_file = os.path.join(base_path, 'sdypy', '__init__.py')
+init_file = os.path.join(base_path, 'sdypy/core', '__init__.py')
 with open(init_file, 'r') as f:
     module_content = f.read()
 
@@ -49,7 +49,7 @@ if __name__ == '__main__':
         maintainer_email='janko.slavic@fs.uni-lj.si',
         install_requires=requirements,
         keywords=['sdypy'],
-        packages=['sdypy'],
+        packages=['sdypy.core'],
         classifiers=['Development Status :: 3 - Alpha',
                      'Intended Audience :: Developers',
                      'Programming Language :: Python :: 3.8']
