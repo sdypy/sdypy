@@ -11,6 +11,7 @@ Welcome to the SDyPy project's documentation!
    :caption: Contents:
 
    getting_started
+   pyEMA documentation <https://pyema.readthedocs.io/en/latest/index.html>
    code
 
 

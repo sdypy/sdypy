@@ -4,6 +4,6 @@ Code documentation
 ..
     Some module
     -----------
-    .. automodule:: sdypy.module_name
+    .. automodule:: sdypy.core
         :members:
 ..
