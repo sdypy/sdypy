@@ -3,8 +3,5 @@ numpy
 scipy
 matplotlib
 
-sdypy-EMA
-pyExSi
-FLife
-pyFBS
-pyidi
+
+sdypy-EMA==0.24
