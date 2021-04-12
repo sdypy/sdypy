@@ -38,8 +38,6 @@ The four levels of integration:
    - Testing and documentation corresponds to the SDyPy template.
    - Package has an MIT or similar licence which enables free use for any purpose (incl. commercial).
    - PIP supported installation (wheels).
-   - This packages are installed with SDyPy.
-   
    
 - **2nd level**, all of 3rd level, but additionally:
    - Automatic tests of interoperability to other 1st and 2nd level packages are prepared. 
