@@ -38,7 +38,7 @@ the level of integration (see `SEP 1 <https://github.com/sdypy/sdypy/blob/main/d
 - **2nd level** (namespace package in independent repository):
    - `pyEMA <https://github.com/ladisk/pyEMA>`_ (Experimental Modal Analysis in Python)
    
-- **3rd level** (namespace packages that correspond to the SDyPy template):
+- **3rd level** (packages that correspond to the SDyPy template):
    - `pyExSi <https://github.com/ladisk/pyExSi>`_ (Excitation signal generator)
    - `FLife <https://github.com/ladisk/FLife>`_ (Vibration fatigue life in the spectral domain)
    - `pyFBS <https://gitlab.com/pyFBS/pyFBS>`_ (Frequency Based Substructuring and Transfer Path Analysis)
