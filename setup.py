@@ -49,7 +49,7 @@ if __name__ == '__main__':
         maintainer_email='janko.slavic@fs.uni-lj.si',
         install_requires=requirements,
         keywords=['sdypy'],
-        packages=['sdypy.core'],
+        packages=['sdypy', 'sdypy.core'],
         classifiers=['Development Status :: 3 - Alpha',
                      'Intended Audience :: Developers',
                      'Programming Language :: Python :: 3.8']
