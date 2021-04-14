@@ -1,0 +1,69 @@
+=====================================
+SEP 4 — SDyPy package content roadmap
+=====================================
+
+:Author: Klemen Zaletelj <klemen.zaletelj@fs.uni-lj.si>
+:Status: Draft
+:Type: Process
+:Created: 2021-04-12
+
+
+Abstract
+--------
+
+The purpose of the SDyPy package is to defragment and combine the effort in the
+field of structural dynamics in general; however, some main functionalities must
+be a priority in the SDyPy development. The priority areas are proposed here.
+
+Motivation and Scope
+--------------------
+
+While the goal of the SDyPy package is to provide a wide array of useful functionality
+in the field of structural dynamics, implementation of particular functionalities should
+be prioritized as they can be considered the central parts of the field.
+
+In this SEP, the priority areas of structural dynamics are proposed. Other functionalities
+can also be included but are not prioritized.
+
+
+Detailed description
+--------------------
+
+The development effort should be primarily directed towards implementation of the 
+following areas in the field of structural dynamics:
+
+* Excitation signal generation
+   * currently ``pyExSi``
+
+* Frequency Response Function computation
+   * currently ``pyFRF``
+
+* Experimental Modal Analysis
+   * implemented as ``sdypy.EMA``
+
+* Operational Modal Analysis
+
+
+
+Discussion
+----------
+
+This section may just be a bullet list including links to any discussions
+regarding the SEP:
+
+- This includes links to mailing list threads or relevant GitHub issues.
+
+
+References and Footnotes
+------------------------
+
+.. [1] Each SEP must either be explicitly labeled as placed in the public domain (see
+   this SEP as an example) or licensed under the `Open Publication License`_.
+
+.. _Open Publication License: https://www.opencontent.org/openpub/
+
+
+Copyright
+---------
+
+This document has been placed in the public domain. [1]_
