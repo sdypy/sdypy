@@ -59,6 +59,10 @@ the SDyPy namespace, as shown in the above example, it becomes a Level 2
 SDyPy package. If it's ownership is also transferred to the
 SDyPy organization it becomes a Level 1 SDyPy package.
 
+SDyPy packages should follow the The Zen of Python, presented in 
+`PEP 20 <https://www.python.org/dev/peps/pep-0020/>`_.
+
+
 Discussion
 ----------
 
