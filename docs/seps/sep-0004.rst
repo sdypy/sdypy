@@ -2,7 +2,9 @@
 SEP 4 — SDyPy package content roadmap
 =====================================
 
-:Authors: Janko Slavič <janko.slavic@fs.uni-lj.si>, Klemen Zaletelj <klemen.zaletelj@fs.uni-lj.si>, 
+:Authors: Janko Slavič <janko.slavic@fs.uni-lj.si>, 
+          Klemen Zaletelj <klemen.zaletelj@fs.uni-lj.si>,
+          Domen Gorjup <domen.gorjup@fs.uni-lj.si> 
 :Status: Draft
 :Type: Process
 :Created: 2021-04-12
