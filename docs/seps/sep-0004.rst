@@ -19,13 +19,14 @@ Motivation and Scope
 --------------------
 
 SDyPy is supporting individual user(s) driven packages. However, for long-term stability of the effort it is
-better that the development and governance is transfered to an independent, multi-institution based 
-organisation with an open and transparent governance.
+better that the development and governance is transfered to an independent, multi-institution, open and transparent 
+organisation.
 SDyPy organisation was established to provide this long-term stability. If individual packages are based 
 on the SDyPy project template then they can easily transition from level 4 or 3 to level 2 or 1 namespace 
 packages. The integration to the SDyPy package/organisation is made if:
    * the authors propose such integration and
-   * the functionalities of the package extend the capabilities of the sdypy package as written in this SEP.
+   * the functionalities of the package extend the capabilities of the sdypy package as written in this SEP 
+     (this SEP is open always for discussion and extensions).
 
 The transition to SDyPy should preserve as much of development history as possible (git).
 
@@ -34,24 +35,43 @@ Detailed description
 
 The long-term functionalities the sdypy package should have are:
 
-* ``sdypy.es``: Excitation signal generation
-   * short term goal transition from ``pyExSi``
+* ``sdypy.excitation_generation``: Excitation signal generation
+   * short term goal inclusion of ``pyExSi`` as a namespace package
    * currently prefered package: ``pyExSi``
 
 * ``sdypy.FRF``: Frequency Response Function computation
-   * short/long term goal is to developp a new package (based on pyFRF or any other package) 
+   * short/long term goal is to developp a new package (based on pyFRF or any other package(s)) 
      with MIMO, windowing, units, delay handling, etc.
    * currently prefered package: ``pyFRF``
 
 * ``sdypy.EMA``: Experimental Modal Analysis
-   * implemented as ``sdypy.EMA``
+   * implemented as ``sdypy.EMA``, further development required (e.g. MIMO identification)
 
 * ``sdypy.OMA``: Operational Modal Analysis
-   * probably OMA will be integrated under EMA with specific parameters.
+   * probably OMA will be integrated under EMA with specific parameters. This issue is open.
 
-* ``sdypy.rd``: Random Data Analysis
-   *
+* ``sdypy.substructuring``: Substructuring
+   * looking for contributors
 
+* ``sdypy.model``: System modeling (FEM,...)
+   * lumped mass system generator
+   * looking for contributors
+
+* ``sdypy.random_data``: Random data 
+   * looking for contributors
+
+* ``sdypy.vibration_fatigue``: Vibration fatigue in frequency domain
+   * short term goal inclusion of ``FLife`` as a namespace package
+   * currently prefered package: ``FLife``
+
+* ``sdypy.optical_methods`: Optical methods for structural identification
+   * short term goal inclusion of ``pyIDI`` as a namespace package
+   * currently prefered package: ``pyIDI``
+
+* ``sdypy.view`: Visualisation of data (models, time/frequency domain)
+   * 2D/3D model support, probably based on ``pyVista``
+   * 2D ploting 
+   * looking for contributors
 
 
 Discussion
