@@ -34,6 +34,9 @@ The transition to SDyPy should preserve as much of development history as possib
 
 Detailed description
 --------------------
+The structure of SDyPy is defined with this SEP and should reflect the scientific topics typically researched. 
+It is prefered that general numerical methods, applicable to different fields of science, should be developed 
+elsewhere, e.g. in Scipy.
 
 The long-term functionalities the sdypy package should have are:
 
@@ -42,7 +45,7 @@ The long-term functionalities the sdypy package should have are:
    * currently prefered package: ``pyExSi``
 
 * ``sdypy.FRF``: Frequency Response Function computation
-   * short/long term goal is to developp a new package (based on pyFRF or any other package(s)) 
+   * short/long term goal is to develop a new package (based on pyFRF or any other package(s)) 
      with MIMO, windowing, units, delay handling, etc.
    * currently prefered package: ``pyFRF``
 
@@ -59,16 +62,9 @@ The long-term functionalities the sdypy package should have are:
    * lumped mass system generator
    * looking for contributors
 
-* ``sdypy.random_data``: Random data 
-   * looking for contributors
-
 * ``sdypy.vibration_fatigue``: Vibration fatigue in frequency domain
    * short term goal inclusion of ``FLife`` as a namespace package
    * currently prefered package: ``FLife``
-
-* ``sdypy.optical_methods`: Optical methods for structural identification
-   * short term goal inclusion of ``pyIDI`` as a namespace package
-   * currently prefered package: ``pyIDI``
 
 * ``sdypy.view`: Visualisation of data (models, time/frequency domain)
    * 2D/3D model support, probably based on ``pyVista``
