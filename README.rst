@@ -41,11 +41,11 @@ the level of integration (see `SEP 1 <https://github.com/sdypy/sdypy/blob/main/d
 - **3rd level** (packages that correspond to the SDyPy template):
    - `pyExSi <https://github.com/ladisk/pyExSi>`_ (Excitation signal generator)
    - `FLife <https://github.com/ladisk/FLife>`_ (Vibration fatigue life in the spectral domain)
-   - `pyFBS <https://gitlab.com/pyFBS/pyFBS>`_ (Frequency Based Substructuring and Transfer Path Analysis)
    - `pyIDI <https://github.com/ladisk/pyidi>`_ (Image-Based Displacement Identification)
    
 - **4th level** (these packages are developed completely independently but might be useful for 3rd, 2nd and 1st level packages):
    - `pyFRF <https://github.com/openmodal/pyFRF>`_ (Frequency Response Function estimation)
+   - `pyFBS <https://gitlab.com/pyFBS/pyFBS>`_ (Frequency Based Substructuring and Transfer Path Analysis)
    - `speckle_pattern <https://github.com/ladisk/speckle_pattern>`_ (Speckle pattern generation for DIC)
    - `pyUFF <https://github.com/ladisk/uff_widget>`_ (Universal File Format in Python)
    - `pyNNST <https://github.com/LolloCappo/pyNNST>`_ (Obtaining non-stationary index for time-series)
