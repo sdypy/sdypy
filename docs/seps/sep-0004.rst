@@ -40,9 +40,12 @@ elsewhere, e.g. in Scipy.
 
 The long-term functionalities the sdypy package should have are:
 
-* ``sdypy.excitation_generation``: Excitation signal generation
+* ``sdypy.excitation``: Excitation signal generation
    * short term goal inclusion of ``pyExSi`` as a namespace package
    * currently prefered package: ``pyExSi``
+
+* ``sdypy.control``: Control of dynamic systems
+   * looking for contributors
 
 * ``sdypy.FRF``: Frequency Response Function computation
    * short/long term goal is to develop a new package (based on pyFRF or any other package(s)) 
@@ -56,6 +59,11 @@ The long-term functionalities the sdypy package should have are:
    * probably OMA will be integrated under EMA with specific parameters. This issue is open.
 
 * ``sdypy.substructuring``: Substructuring
+   * looking for contributors
+
+* ``sdypy.response``: Different methods to identify vibrational response
+   * near field acoustic holography
+   * image based methods
    * looking for contributors
 
 * ``sdypy.model``: System modeling (FEM,...)
