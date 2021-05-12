@@ -44,13 +44,27 @@ The long-term functionalities the sdypy package should have are:
    * short term goal inclusion of ``pyExSi`` as a namespace package
    * currently prefered package: ``pyExSi``
 
+* ``sdypy.response``: Different methods to identify vibrational response
+   * near field acoustic holography
+   * image based methods
+   * looking for contributors
+
 * ``sdypy.control``: Control of dynamic systems
+   * looking for contributors
+
+* ``sdypy.model``: System modeling (FEM,...)
+   * lumped mass system generator
    * looking for contributors
 
 * ``sdypy.FRF``: Frequency Response Function computation
    * short/long term goal is to develop a new package (based on pyFRF or any other package(s)) 
      with MIMO, windowing, units, delay handling, etc.
    * currently prefered package: ``pyFRF``
+
+* ``sdypy.view``: Visualisation of data (models, time/frequency domain)
+   * 2D/3D model support, probably based on ``pyVista``
+   * 2D ploting 
+   * looking for contributors
 
 * ``sdypy.EMA``: Experimental Modal Analysis
    * implemented as ``sdypy.EMA``, further development required (e.g. MIMO identification)
@@ -61,23 +75,9 @@ The long-term functionalities the sdypy package should have are:
 * ``sdypy.substructuring``: Substructuring
    * looking for contributors
 
-* ``sdypy.response``: Different methods to identify vibrational response
-   * near field acoustic holography
-   * image based methods
-   * looking for contributors
-
-* ``sdypy.model``: System modeling (FEM,...)
-   * lumped mass system generator
-   * looking for contributors
-
-* ``sdypy.vibration_fatigue``: Vibration fatigue in frequency domain
+* ``sdypy.fatigue``: Vibration fatigue in frequency domain
    * short term goal inclusion of ``FLife`` as a namespace package
    * currently prefered package: ``FLife``
-
-* ``sdypy.view``: Visualisation of data (models, time/frequency domain)
-   * 2D/3D model support, probably based on ``pyVista``
-   * 2D ploting 
-   * looking for contributors
 
 
 Discussion
