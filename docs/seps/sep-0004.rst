@@ -44,16 +44,16 @@ The long-term functionalities the sdypy package should have are:
    * short term goal inclusion of ``pyExSi`` as a namespace package
    * currently prefered package: ``pyExSi``
 
-* ``sdypy.response``: Different methods to identify vibrational response
-   * near field acoustic holography
-   * image based methods
-   * looking for contributors
-
 * ``sdypy.control``: Control of dynamic systems
    * looking for contributors
 
 * ``sdypy.model``: System modeling (FEM,...)
    * lumped mass system generator
+   * looking for contributors
+
+* ``sdypy.system``: System identification methods
+   * methods for damping identification
+   * methods for joint identification
    * looking for contributors
 
 * ``sdypy.FRF``: Frequency Response Function computation
@@ -72,12 +72,19 @@ The long-term functionalities the sdypy package should have are:
 * ``sdypy.OMA``: Operational Modal Analysis
    * probably OMA will be integrated under EMA with specific parameters. This issue is open.
 
-* ``sdypy.substructuring``: Substructuring
+* ``sdypy.substructuring``: Substructuring and Transfer Path Analysis
    * looking for contributors
 
-* ``sdypy.fatigue``: Vibration fatigue in frequency domain
+* ``sdypy.fatigue``: Vibration fatigue in frequency-domain
    * short term goal inclusion of ``FLife`` as a namespace package
    * currently prefered package: ``FLife``
+
+* ``sdypy.holography``: Methods to identify vibrational response using acoustic holography
+   * looking for contributors
+   
+* ``sdypy.image``: Methods to identify vibrational response from image data
+   * image based methods, pyIDI a good candidate
+   * looking for contributors
 
 
 Discussion
