@@ -72,7 +72,7 @@ The long-term functionalities the sdypy package should have are:
 * ``sdypy.OMA``: Operational Modal Analysis
    * probably OMA will be integrated under EMA with specific parameters. This issue is open.
 
-* ``sdypy.substructuring``: Substructuring and Transfer Path Analysis
+* ``sdypy.reduction``: Model reduction and coupling
    * looking for contributors
 
 * ``sdypy.fatigue``: Vibration fatigue in frequency-domain
