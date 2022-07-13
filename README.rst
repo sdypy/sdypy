@@ -47,7 +47,7 @@ the level of integration (see `SEP 1 <https://github.com/sdypy/sdypy/blob/main/d
    - `pyFRF <https://github.com/openmodal/pyFRF>`_ (Frequency Response Function estimation)
    - `pyFBS <https://gitlab.com/pyFBS/pyFBS>`_ (Frequency Based Substructuring and Transfer Path Analysis)
    - `speckle_pattern <https://github.com/ladisk/speckle_pattern>`_ (Speckle pattern generation for DIC)
-   - `pyUFF <https://github.com/ladisk/uff_widget>`_ (Universal File Format in Python)
+   - `pyUFF <https://github.com/ladisk/pyuff>`_ (Universal File Format in Python)
    - `pyNNST <https://github.com/LolloCappo/pyNNST>`_ (Obtaining non-stationary index for time-series)
    - `python-acoustics <https://github.com/python-acoustics/python-acoustics>`_ (Useful tools for acousticians)
    - `pyTrigger <https://github.com/ladisk/pyTrigger>`_ (Software trigger for data acquisition)
