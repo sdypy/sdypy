@@ -3,5 +3,4 @@ numpy
 scipy
 matplotlib
 
-
-sdypy-EMA==0.24
+sdypy-EMA

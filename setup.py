@@ -43,7 +43,7 @@ if __name__ == '__main__':
         license='MIT license',
         url='https://github.com/sdypy/sdypy',
         version=version,
-        author='Janko Slavič, Domen Gorjup, Klemen Zaletelj, Tomaž Bregar, Gregor Čepon',
+        author='Janko Slavič, Domen Gorjup, Klemen Zaletelj',
         author_email='janko.slavic@fs.uni-lj.si',
         maintainer='Janko Slavič, Domen Gorjup, Klemen Zaletelj',
         maintainer_email='janko.slavic@fs.uni-lj.si',
