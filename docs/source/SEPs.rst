@@ -16,3 +16,7 @@ SDyPy Enhancement Proposals
 .. include:: ../seps/sep-0003.rst
 
 ----------
+
+.. include:: ../seps/sep-0004.rst
+
+----------
