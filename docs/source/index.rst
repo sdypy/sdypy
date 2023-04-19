@@ -11,7 +11,7 @@ Welcome to the SDyPy project's documentation!
    :caption: Contents:
 
    getting_started
-   sdypy.EMA (pyEMA) <https://pyema.readthedocs.io/en/latest/index.html>
+   sdypy-EMA <https://sdypy-ema.readthedocs.io/en/latest/>
    SEPs
    code
 
