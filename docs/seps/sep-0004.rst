@@ -86,6 +86,11 @@ The long-term functionalities the sdypy package should have are:
    * image based methods, pyIDI a good candidate
    * looking for contributors
 
+* ``sdypy.io``: Input/Output methods
+   * short term goal is importing ``pyUFF`` and ``lvm_read`` into the ``sdypy.io`` package.
+   * long term goal is the implementation of various input/output methods into the ``sdypy.io`` package.
+   * currently prefered package: ``pyUFF``
+
 
 Discussion
 ----------
