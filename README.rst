@@ -34,6 +34,7 @@ the level of integration (see `SEP 1 <https://github.com/sdypy/sdypy/blob/main/d
 
 - **1st level** (part of SDyPy repository or organization):
     - `sdypy-EMA <https://github.com/sdypy/sdypy-EMA>`_ (Experimental Modal Analysis in Python)
+    - `sdypy-io <https://github.com/sdypy/sdypy-io>`_ (Input/Output for Structural Dynamics)
 
 - **2nd level** (namespace package in independent repository):
    - `pyEMA <https://github.com/ladisk/pyEMA>`_ (Experimental Modal Analysis in Python) - **No longer developed.**

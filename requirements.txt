@@ -1,6 +1,3 @@
 # Package requirements for users
-numpy
-scipy
-matplotlib
-
-sdypy-EMA
+sdypy-EMA>=0.27
+sdypy-io>=0.1.0
