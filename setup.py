@@ -40,6 +40,7 @@ if __name__ == '__main__':
         name='sdypy',
         description='Structural Dynamics Python.',
         long_description=readme,
+        long_description_content_type='text/x-rst',
         license='MIT license',
         url='https://github.com/sdypy/sdypy',
         version=version,
