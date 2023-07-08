@@ -16,10 +16,10 @@ To simplify the interface across packages a unified way to represent timeseries 
 Motivation and Scope
 --------------------
 
-SDyPy is supporting individual user(s) driven packages. However, for ease of integration, reduce the risk of errors and long-term stability a unified way to represent timeseries data is enforced.
+SDyPy is supporting individual user(s) driven packages. However, for ease of integration, to reduce the risk of errors, and long-term stability a unified way to represent timeseries data is enforced.
 
 The current proposal targets timeseries data in particular, whether it is for input and or output. A simple but generalistic structure is put forward to allow sufficient flexibility
-for various applications, yet guaranteeing a consistent handling of the data. 
+for various applications, yet guaranteeing consistent handling of the data. 
 
 Future packages that provide import/export functionality for data from and to SDyPy will have to comply with this format. A package to test compliance with the standard is to be developed. 
 
@@ -47,10 +47,10 @@ The current proposed structure is that of a list of dictionaries. In which each 
 Compulsory fields
 .................
 
-* ``data`` (np.Array): 1D or 2D array of data, 1D arrays are prefered but not enforced to allow for e.g. image based 
+* ``data`` (np.Array): 1D or 2D array of data, 1D arrays are prefered but not enforced to allow for e.g. image-based 
 * ``name`` (str) : Unique name of the channel (uniqueness within the list is compulsory)
 * ``unit_str`` (str) : Physical measurement unit, can be left empty or None
-* Either ``fs`` (int or float) or ``time`` (np.Array): For channels for with a equidistant sampling a sampling frequency in _Hz_  is required, alternatively or a timevector ``time`` of equal length of the ``data`` is required.
+* Either ``fs`` (int or float) or ``time`` (np.Array): For channels with an equidistant sampling a sampling frequency in _Hz_  is required, alternatively or a timevector ``time`` of equal length of the ``data`` is required.
 
 
 Optional fields
@@ -61,7 +61,7 @@ Optional fields
 Prohibited fields
 .................
 
-The proposed timeseries format allows for any arbitrary field to be added to the channel information to serve the needs of any particular applications. However, variations to the compulsory or optional fields listed above in case and/or the incorrect use of underscores (`_`) is prohibited to avoid confusion. Examples of prohibited field names such as ``Fs`` (erroneous case), ``starttimestamp`` (erroneous use of the underscore), are prohibited to avoid confusion. 
+The proposed timeseries format allows for any arbitrary field to be added to the channel information to serve the needs of any particular application. However, variations to the compulsory or optional fields listed above in case and/or the incorrect use of underscores (`_`) is prohibited to avoid confusion. Examples of prohibited field names such as ``Fs`` (erroneous case), ``starttimestamp`` (erroneous use of the underscore), are prohibited to avoid confusion. 
 Following field names with names similar to the existing compulsory and/or optional fields are also prohibited, again to avoid confusion:
 
 * ``unit``
@@ -72,7 +72,7 @@ Following field names with names similar to the existing compulsory and/or optio
 Other requirements
 ..................
 
-Aside from the suggestions above following properties are need to be verified
+Aside from the suggestions above following properties need to be verified
 
 * When ``time`` is defined the vector should be of equal length as `data`
 * ``name`` is unique within a single list
