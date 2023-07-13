@@ -37,9 +37,8 @@ The current proposed structure is that of a list of dictionaries. In which each 
          "fs": 125,                                        # Sampling frequency in Hz
          "time": np.Array([1,3,4,7]),                      # Sampling freq is required for equally spaced data, while `time` for non-equally
          "name": "channel_id_1",                           # channel name
-         "start_timestamp" : "2023-06-29T15:00:00.000",    # Optional: Timestamp in absolute time default format is: 
-                                                           #           [year]-[month]-[day]T[hour]:[minutes]:[seconds].[milliseconds]
-         "start_timestamp_format`: "%d/%m/%y %H:%M:%S.%f"  # Optional: if custom format is used in `start_timestamp`, specify it here
+         "start_timestamp": "2023-06-29T15:00:00.000000",  # Optional: Timestamp in absolute time default format is ISO 8601 ()
+         "start_timestamp_format": "%d/%m/%y %H:%M:%S.%f"  # Optional: if custom format is used in `start_timestamp`, specify it here
          "unit_str": "m/s²",                               # Optional: Unit string
          "unit_tex": "m/s$^2$",                            # Optional: Unit latex string
          "whatever": whatever                              # Optional
@@ -58,18 +57,13 @@ Compulsory fields
 Optional fields
 ...............
 * ``unit_tex`` (str): LaTeX interpretation of `unit_str`
-* ``start_timestamp`` (str): Starting timestamp in absolute time and including timezone info
+* ``start_timestamp`` (str): Starting timestamp in absolute time and including timezone info, the default format is ISO8601 which enables to use: ``datetime.isoformat()`` and ``datetime.fromisoformat()``.
 
 Prohibited fields
 .................
 
 The proposed timeseries format allows for any arbitrary field to be added to the channel information to serve the needs of any particular application. However, variations to the compulsory or optional fields listed above in case and/or the incorrect use of underscores (`_`) is prohibited to avoid confusion. Examples of prohibited field names such as ``Fs`` (erroneous case), ``starttimestamp`` (erroneous use of the underscore), are prohibited to avoid confusion. 
-Following field names with names similar to the existing compulsory and/or optional fields are also prohibited, again to avoid confusion:
-
-* ``unit``
-* ``timestamp`` 
-* ``signal``
-* ``sample_frequency``
+Following field names with names similar to the existing compulsory and/or optional fields are also **prohibited**, again to avoid confusion: ``unit``, ``timestamp``, ``signal``, ``sample_frequency``.
 
 Other requirements
 ..................
