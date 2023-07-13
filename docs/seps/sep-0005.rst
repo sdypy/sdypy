@@ -2,7 +2,7 @@
 SEP 5 — SDyPy Unified timeseries
 ================================
 
-:Authors: Wout Weijtjens <wout.weijtjens@vub.be>, 
+:Authors: Wout Weijtjens <wout.weijtjens@vub.be>, Janko Slavič <janko.slavic@fs.uni-lj.si>
 :Status: Draft
 :Type: Process
 :Created: 2023-07-07
