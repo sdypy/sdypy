@@ -4,7 +4,7 @@ SEP 5 — SDyPy Unified timeseries
 
 :Authors: Wout Weijtjens <wout.weijtjens@vub.be>, Janko Slavič <janko.slavic@fs.uni-lj.si>
 :Status: Draft
-:Type: Process
+:Type: Standards
 :Created: 2023-07-07
 
 
@@ -77,6 +77,9 @@ Discussion
 ----------
 
 This proposal is open for discussion and suggestions.
+
+The discussion is here:
+ - `Issue #15 <https://github.com/sdypy/sdypy/issues/15>`_
 
 Copyright
 ---------
