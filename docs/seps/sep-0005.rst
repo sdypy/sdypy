@@ -2,7 +2,7 @@
 SEP 5 — SDyPy Unified timeseries
 ================================
 
-:Authors: Wout Weijtjens <wout.weijtjens@vub.be>, Janko Slavič <janko.slavic@fs.uni-lj.si>
+:Authors: Wout Weijtjens <wout.weijtjens@vub.be>, Janko Slavič <janko.slavic@fs.uni-lj.si>, Domen Gorjup <domen.gorjup@fs.uni-lj.si>
 :Status: Draft
 :Type: Standards
 :Created: 2023-07-07
@@ -11,67 +11,94 @@ SEP 5 — SDyPy Unified timeseries
 Abstract
 --------
 
-To simplify the interface across packages a unified way to represent timeseries data is proposed. This proposal targets future input-output packages to return the data in this common style.
+To simplify the interface across packages a unified way to represent timeseries data is proposed. This proposal targets future input-output
+packages to return the data in this common style.
 
 Motivation and Scope
 --------------------
 
-SDyPy is supporting individual user(s) driven packages. However, for ease of integration, to reduce the risk of errors, and long-term stability a unified way to represent timeseries data is enforced.
+SDyPy is supporting individual user(s) driven packages. However, for ease of integration, to reduce the risk of errors, and long-term stability
+a unified way to represent timeseries data is enforced.
 
-The current proposal targets timeseries data in particular, whether it is for input and or output. A simple but generalistic structure is put forward to allow sufficient flexibility
-for various applications, yet guaranteeing consistent handling of the data. 
+The current proposal targets timeseries data in particular, whether it is for input and or output. A simple but generalistic structure is put forward
+to allow sufficient flexibility for various applications, yet guaranteeing consistent handling of the data. 
 
-Future packages that provide import/export functionality for data from and to SDyPy will have to comply with this format. A package to test compliance with the standard is to be developed. 
+Future packages that provide import/export functionality for data from and to SDyPy will have to comply with this format. A package to test compliance
+with the standard is to be developed. 
 
 
 Detailed description
 --------------------
-The current proposed structure is that of a list of dictionaries. In which each item in the list represents a single channel. 
+The current proposed structure of a timeseries is that of Python `dictionary`, representing a single channel (or multiple channels with common time-sampling parameters). 
+
+
+.. code-block::
+
+  {
+        "data": np.array([1,2,3,4]),                      # Array of data shaped (n,) (or (m, n) for `m` channels) and `n` time-samples.
+        "time": np.array([1,3,4,7]),                      # Time-vector in seconds. Optional for equally spaced data.
+        "fs": 125,                                        # Sampling frequency in Hz. Optional if `time` specified.
+        "name": "channel_id_1",                           # Channel name (or list of `m` channel names if `data` is of shape (m, n)).
+        "start_timestamp": "2023-06-29T15:00:00.000000",  # Optional: timestamp in absolute time. Default format is ISO 8601.
+        "start_timestamp_format": "%d/%m/%y %H:%M:%S.%f"  # Optional: if custom format is used in `start_timestamp`, specify it here.
+        "unit_str": "m/s²",                               # Optional: unit string (or list of `m` unit strings if `data` is of shape (m, n)).
+        "unit_tex": "m/s$^2$",                            # Optional: LaTeX interpretation of `unit_str`.
+        "...": '...'                                      # Optional: additional data.
+  }
+
+
+To represent multiple timeseries with potentially different time-sampling parameters, a `list` of timeseries-object dictionaries is perferred:
 
 
 .. code-block::
 
   [
-    {
-         "data": np.Array([1,2,3,4]) ,                     # 1D array of data
-         "fs": 125,                                        # Sampling frequency in Hz
-         "time": np.Array([1,3,4,7]),                      # Sampling freq is required for equally spaced data, while `time` for non-equally
-         "name": "channel_id_1",                           # channel name
-         "start_timestamp": "2023-06-29T15:00:00.000000",  # Optional: Timestamp in absolute time default format is ISO 8601 ()
-         "start_timestamp_format": "%d/%m/%y %H:%M:%S.%f"  # Optional: if custom format is used in `start_timestamp`, specify it here
-         "unit_str": "m/s²",                               # Optional: Unit string
-         "unit_tex": "m/s$^2$",                            # Optional: Unit latex string
-         "whatever": whatever                              # Optional
-    },{...}
+    { # timeseries 1
+          "data": ...,
+          "time": ...,
+          "fs": ..,                                       
+          "name": ..., 
+    },
+    
+    { # timeseries 2
+    ... 
+    },
   ]
+
 
 Compulsory fields
 .................
 
-* ``data`` (np.Array): 1D or 2D array of data, 1D arrays are prefered but not enforced to allow for e.g. image-based 
-* ``name`` (str): Unique name of the channel (uniqueness within the list is compulsory)
+* ``data`` (np.array): 1D (single channel) or 2D (multiple channels with equal time sampling) array of timeseries data. 
+* ``name`` (str): Unique name of the channel (uniqueness within the list multiple timeseries is compulsory).
 * ``unit_str`` (str): Physical measurement unit, can be left empty or None
-* Either ``fs`` (int or float) or ``time`` (np.Array): For channels with an equidistant sampling a sampling frequency in _Hz_  is required, alternatively or a timevector ``time`` of equal length of the ``data`` is required.
+* Either ``fs`` (int or float) or ``time`` (np.array): For channels with an equidistant sampling, a sampling frequency in _Hz_  is required. Alternatively or a timevector ``time`` of equal length of the ``data`` is required.
 
 
 Optional fields
 ...............
-* ``unit_tex`` (str): LaTeX interpretation of `unit_str`
-* ``start_timestamp`` (str): Starting timestamp in absolute time and including timezone info, the default format is ISO8601 which enables to use: ``datetime.isoformat()`` and ``datetime.fromisoformat()``.
+* ``unit_tex`` (str): LaTeX interpretation of `unit_str`.
+* ``start_timestamp`` (str): Starting timestamp in absolute time and including timezone inf. The default format is ISO8601 which enables to use: ``datetime.isoformat()`` and ``datetime.fromisoformat()``.
+
 
 Prohibited fields
 .................
 
-The proposed timeseries format allows for any arbitrary field to be added to the channel information to serve the needs of any particular application. However, variations to the compulsory or optional fields listed above in case and/or the incorrect use of underscores (`_`) is prohibited to avoid confusion. Examples of prohibited field names such as ``Fs`` (erroneous case), ``starttimestamp`` (erroneous use of the underscore), are prohibited to avoid confusion. 
+The proposed timeseries format allows for any arbitrary field to be added to the channel information to serve the needs of any particular application. 
+However, variations to the compulsory or optional fields listed above in case and/or the incorrect use of underscores (`_`) is prohibited to avoid confusion. 
+
+Examples of prohibited field names such as ``Fs`` (erroneous case), ``starttimestamp`` (erroneous use of the underscore), are prohibited to avoid confusion. 
 Following field names with names similar to the existing compulsory and/or optional fields are also **prohibited**, again to avoid confusion: ``unit``, ``timestamp``, ``signal``, ``sample_frequency``.
+
 
 Other requirements
 ..................
 
 Aside from the suggestions above following properties need to be verified
 
-* When ``time`` is defined the vector should be of equal length as `data`
-* ``name`` is unique within a single list
+* When ``time`` is defined, the vector should be of equal length as `data`.
+* ``name`` is unique within a single list.
+
 
 Discussion
 ----------
@@ -81,8 +108,8 @@ This proposal is open for discussion and suggestions.
 The discussion is here:
  - `Issue #15 <https://github.com/sdypy/sdypy/issues/15>`_
 
+
 Copyright
 ---------
 
 This document has been placed in the public domain.
-
