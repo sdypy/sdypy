@@ -42,7 +42,7 @@ The current proposed structure is that of a list of dictionaries. In which each 
          "unit_str": "m/s²",                               # Optional: Unit string
          "unit_tex": "m/s$^2$",                            # Optional: Unit latex string
          "whatever": whatever                              # Optional
-    }{...}
+    },{...}
   ]
 
 Compulsory fields
