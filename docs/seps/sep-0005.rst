@@ -29,16 +29,17 @@ with the standard is to be developed.
 
 Detailed description
 --------------------
-The current proposed structure of a timeseries is that of Python `dictionary`, representing a single channel (or multiple channels with common time-sampling parameters). 
+The current proposed structure of a timeseries is that of Python `dictionary`, representing a single timeseries, with possibly multiple rows of data ("channels") with common time-sampling parameters. 
 
 
 .. code-block::
 
   {
-        "data": np.array([1,2,3,4]),                      # Array of data shaped (n,) (or (m, n) for `m` channels) and `n` time-samples.
+        "data": np.array([[1,2,3,4], [5,6,7,8]]),         # Array of data shaped (n,) (or (m, n) for `m` channels) and `n` time-samples.
         "time": np.array([1,3,4,7]),                      # Time-vector in seconds. Optional for equally spaced data.
         "fs": 125,                                        # Sampling frequency in Hz. Optional if `time` specified.
-        "name": "channel_id_1",                           # Channel name (or list of `m` channel names if `data` is of shape (m, n)).
+        "name": "timeseries_id",                          # Timeseries name 
+        "channel_name",                                   # Optional: Name of the measured physical channel (or list of `m` channel names if `data` is of shape (m, n)).
         "start_timestamp": "2023-06-29T15:00:00.000000",  # Optional: timestamp in absolute time. Default format is ISO 8601.
         "start_timestamp_format": "%d/%m/%y %H:%M:%S.%f"  # Optional: if custom format is used in `start_timestamp`, specify it here.
         "unit_str": "m/s²",                               # Optional: unit string (or list of `m` unit strings if `data` is of shape (m, n)).
@@ -77,6 +78,7 @@ Compulsory fields
 
 Optional fields
 ...............
+* ``channel_name`` (str or list of str): Physichal measurement channel names. If ``data`` is of shape ``(m, n)``, representing ``m`` measured channels, ``channel_names`` must be of length ``m``.
 * ``unit_tex`` (str): LaTeX interpretation of `unit_str`.
 * ``start_timestamp`` (str): Starting timestamp in absolute time and including timezone inf. The default format is ISO8601 which enables to use: ``datetime.isoformat()`` and ``datetime.fromisoformat()``.
 
