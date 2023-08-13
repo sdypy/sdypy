@@ -38,9 +38,9 @@ The current proposed structure of a timeseries is that of Python `dictionary`, r
         "data": np.array([[1,2,3,4], [5,6,7,8]]),         # Array of data shaped (n,) (or (m, n) for `m` channels) and `n` time-samples.
         "fs": float(125),                                 # Sampling frequency in Hz. Optional if `time` specified.
         "name": "structure xyz",                          # Timeseries name 
-        "time": np.array([1,3,4,7]),                      # Optional for equally spaced data: time-vector in seconds (shaped (n,)).
+        "time": np.array([1,3,4,7]),                      # Optional: for equally spaced data: time-vector in seconds (shaped (n,)).
         "channel_name": ["1_x", "1_y"],                   # Optional: Name of the measured physical channel (or list of `m` channel names if `data` is of shape (m, n)).
-        "quantity": "a",                                  # Optional: "f", "a", "v", "d", "e", "s" for force, acceleration, velocity, displacement, strain, stress.
+        "quantity": "a",                                  # Optional: "f", "a", "v", "d", "e", "s" for force, acceleration, velocity, displacement, strain, stress, respectively.
         "start_timestamp": "2023-06-29T15:00:00.000000",  # Optional: timestamp in absolute time. Default format is ISO 8601.
         "start_timestamp_format": "%d/%m/%y %H:%M:%S.%f"  # Optional: if custom format is used in `start_timestamp`, specify it here.
         "unit_str": "m/s²",                               # Optional: unit string (or list of `m` unit strings if `data` is of shape (m, n)).
@@ -50,7 +50,7 @@ The current proposed structure of a timeseries is that of Python `dictionary`, r
 
 
 To represent multiple timeseries with potentially different time-sampling parameters or different quantities,
-a `list` of timeseries-object dictionaries is perferred:
+a `list` of timeseries-object dictionaries should be used:
 
 
 .. code-block::
@@ -101,7 +101,6 @@ Other requirements
 Aside from the suggestions above following properties need to be verified
 
 * When ``time`` is defined, the vector should be of equal length as `data`.
-* ``name`` is unique within a single list.
 
 
 Discussion
