@@ -33,11 +33,11 @@ The existing efforts in the field of structural dynamics are included in SDyPy a
 the level of integration (see `SEP 1 <https://github.com/sdypy/sdypy/blob/main/docs/seps/sep-0001.rst>`_).
 
 - **1st level** (part of SDyPy repository or organization):
-    - `sdypy-EMA <https://github.com/sdypy/sdypy-EMA>`_ (Experimental Modal Analysis in Python)
-    - `sdypy-io <https://github.com/sdypy/sdypy-io>`_ (Input/Output for Structural Dynamics)
+   - `sdypy-EMA <https://github.com/sdypy/sdypy-EMA>`_ (Experimental Modal Analysis in Python)
+   - `sdypy-io <https://github.com/sdypy/sdypy-io>`_ (Input/Output for Structural Dynamics)
+   - `sdypy-FRF <https://github.com/sdypy/sdypy-FRF>`_ (Frequency Response Function estimation)
 
 - **2nd level** (namespace package in independent repository):
-   - `pyEMA <https://github.com/ladisk/pyEMA>`_ (Experimental Modal Analysis in Python) - **No longer developed.**
    
 - **3rd level** (packages that correspond to the SDyPy template):
    - `pyExSi <https://github.com/ladisk/pyExSi>`_ (Excitation signal generator)

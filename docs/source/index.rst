@@ -13,6 +13,7 @@ Welcome to the SDyPy project's documentation!
    getting_started
    sdypy-EMA <https://sdypy-ema.readthedocs.io/en/latest/>
    sdypy-io <https://sdypy-io.readthedocs.io/en/latest/>
+   sdypy-FRF <https://pyfrf.readthedocs.io/en/latest/index.html>
    SEPs
    code
 
