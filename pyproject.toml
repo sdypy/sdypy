@@ -1,6 +1,46 @@
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sdypy"
+version = "0.3.0"
+authors = [{name = "Janko Slavič et al.", email = "janko.slavic@fs.uni-lj.si"}]
+maintainers = [{name = "Janko Slavič et al.", email = "janko.slavic@fs.uni-lj.si"}]
+license = "MIT"
+description = "SDyPy - Structural Dynamics Python"
+readme = "README.rst"
+keywords = ["Python", "Structural Dynamics"]
+requires-python = ">=3.8"
+dependencies = [
+	"sdypy-EMA>=0.27",
+    "sdypy-io>=0.1.0",
+    "sdypy-FRF>=1.0",
 ]
-build-backend = "setuptools.build_meta"
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'Topic :: Scientific/Engineering',
+    'Programming Language :: Python :: 3.10',
+    "License :: OSI Approved :: MIT License",
+]
+
+# For namespace packages (sdypy is the namespace)
+[tool.hatch.build.targets.wheel]
+include = ["sdypy"]
+
+[project.optional-dependencies]
+dev = [
+    "sphinx",
+    "twine",
+    "wheel",
+    "pytest",
+    "build",
+    "sphinx-rtd-theme",
+    "sphinx-copybutton>=0.5.2",
+]
+
+[project.urls]
+homepage = "https://github.com/sdypy/sdypy"
+documentation = "https://sdypy.readthedocs.io/en/latest/"
+source = "https://github.com/sdypy/sdypy"
