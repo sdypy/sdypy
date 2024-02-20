@@ -1,4 +1,3 @@
-
 import sdypy as sd
 import numpy as np
 
