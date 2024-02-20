@@ -16,7 +16,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install setuptools wheel twine build
+        run: pip install -U build
 
       - name: Build package
         run: python -m build
