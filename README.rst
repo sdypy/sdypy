@@ -16,14 +16,40 @@ would like an extension to be implemented, if it is general and not related to s
 consider implementing it into the SciPy stack.
 
 
-Installation
-------------
+Installation and basic usage
+----------------------------
 
 Install this package by:
 
 .. code-block:: console
 
     pip install sdypy
+
+The `sdypy` offers a convenient way to access the functionality of the namespace packages.
+
+First import the `sdypy` package:
+
+.. code-block:: python
+
+    import sdypy as sd
+
+Access the `EMA` module:
+
+.. code-block:: python
+
+    model = sd.EMA.Model(FRF_matrix, freq_array)
+
+or the `io` module:
+
+.. code-block:: python
+
+	uff_obj = sd.io.uff.UFF('file.uff')
+
+or the `FRF` module:
+
+.. code-block:: python
+
+	frf_obj = sd.FRF.FRF(sampling_freq, excitation, response)
 
 
 Package integration in SDyPy
