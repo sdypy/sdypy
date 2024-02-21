@@ -1,3 +1,5 @@
+|pytest| |documentation|
+
 SDyPy - Structural Dynamics Python
 ----------------------------------
 
@@ -81,5 +83,9 @@ the level of integration (see `SEP 1 <https://github.com/sdypy/sdypy/blob/main/d
    - `AMfe <https://github.com/AppliedMechanics/AMfe>`_ (Finite Element Research Code)
 
 
+..  |documentation| image:: https://readthedocs.org/projects/sdypy/badge/?version=latest
+    :target: https://sdypy.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
-
+.. |pytest| image:: https://github.com/sdypy/sdypy/actions/workflows/python-package.yml/badge.svg
+    :target: https://github.com/sdypy/sdypy/actions
