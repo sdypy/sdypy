@@ -53,6 +53,12 @@ or the `FRF` module:
 
 	frf_obj = sd.FRF.FRF(sampling_freq, excitation, response)
 
+or the `excitation` module:
+
+.. code-block:: python
+
+    gausian_signal = sd.excitation.random_gaussian((N, PSD, fs))
+
 
 Package integration in SDyPy
 ----------------------------
@@ -64,6 +70,7 @@ the level of integration (see `SEP 1 <https://github.com/sdypy/sdypy/blob/main/d
    - `sdypy-EMA <https://github.com/sdypy/sdypy-EMA>`_ (Experimental Modal Analysis in Python)
    - `sdypy-io <https://github.com/sdypy/sdypy-io>`_ (Input/Output for Structural Dynamics)
    - `sdypy-FRF <https://github.com/sdypy/sdypy-FRF>`_ (Frequency Response Function estimation)
+   - `sdypy-excitation <https://github.com/sdypy/sdypy-excitation>`_ (Excitation signals as used in structural dynamics and vibration fatigue)
 
 - **2nd level** (namespace package in independent repository):
    
