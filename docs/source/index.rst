@@ -14,6 +14,7 @@ Welcome to the SDyPy project's documentation!
    sdypy-EMA <https://sdypy-ema.readthedocs.io/en/latest/>
    sdypy-io <https://sdypy-io.readthedocs.io/en/latest/>
    sdypy_frf
+   sdypy_excitation
    SEPs
    code
 
