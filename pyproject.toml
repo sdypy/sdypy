@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sdypy"
-version = "0.3.1"
+version = "0.4.0"
 authors = [{name = "Janko Slavič et al.", email = "janko.slavic@fs.uni-lj.si"}]
 maintainers = [{name = "Janko Slavič et al.", email = "janko.slavic@fs.uni-lj.si"}]
 license = "MIT"
@@ -16,6 +16,7 @@ dependencies = [
 	"sdypy-EMA",
     "sdypy-io",
     "sdypy-FRF",
+    "sdypy-excitation",
 ]
 classifiers = [
     'Development Status :: 5 - Production/Stable',

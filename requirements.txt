@@ -2,3 +2,4 @@
 sdypy-EMA
 sdypy-io
 sdypy-FRF
+sdypy-excitation
