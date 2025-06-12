@@ -19,6 +19,7 @@ dependencies = [
     "sdypy-excitation",
     "sdypy-view",
     "sdypy-model",
+    "sdypy-sep005",
 ]
 classifiers = [
     'Development Status :: 5 - Production/Stable',
