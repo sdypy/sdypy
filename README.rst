@@ -59,6 +59,8 @@ or the `excitation` module:
 
     gausian_signal = sd.excitation.random_gaussian((N, PSD, fs))
 
+or the `view` and `model` modules.
+
 
 Package integration in SDyPy
 ----------------------------
@@ -71,6 +73,8 @@ the level of integration (see `SEP 1 <https://github.com/sdypy/sdypy/blob/main/d
    - `sdypy-io <https://github.com/sdypy/sdypy-io>`_ (Input/Output for Structural Dynamics)
    - `sdypy-FRF <https://github.com/sdypy/sdypy-FRF>`_ (Frequency Response Function estimation)
    - `sdypy-excitation <https://github.com/sdypy/sdypy-excitation>`_ (Excitation signals as used in structural dynamics and vibration fatigue)
+   - `sdypy-view <https://github.com/sdypy/sdypy-view>`_ (Visualization of structural dynamics data)
+   - `sdypy-model <https://github.com/sdypy/sdypy-model>`_ (Modeling of structural dynamics data)
 
 - **2nd level** (namespace package in independent repository):
    

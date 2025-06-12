@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sdypy"
-version = "0.4.1"
+version = "0.5.0"
 authors = [{name = "Janko Slavič et al.", email = "janko.slavic@fs.uni-lj.si"}]
 maintainers = [{name = "Janko Slavič et al.", email = "janko.slavic@fs.uni-lj.si"}]
 license = "MIT"
@@ -13,10 +13,12 @@ readme = "README.rst"
 keywords = ["Python", "Structural Dynamics"]
 requires-python = ">=3.10"
 dependencies = [
-	"sdypy-EMA",
+    "sdypy-EMA",
     "sdypy-io",
     "sdypy-FRF",
     "sdypy-excitation",
+    "sdypy-view",
+    "sdypy-model",
 ]
 classifiers = [
     'Development Status :: 5 - Production/Stable',

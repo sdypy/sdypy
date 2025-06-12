@@ -25,9 +25,9 @@ copyright = '2020, SDyPy Consortium'
 author = 'Janko Slavič, Domen Gorjup, Klemen Zaletelj, Tomaž Bregar'
 
 # The short X.Y version
-version = ''
+version = '0.5'
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = '0.5.0'
 
 
 # -- General configuration ---------------------------------------------------
