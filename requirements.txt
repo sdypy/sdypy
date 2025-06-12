@@ -3,3 +3,6 @@ sdypy-EMA
 sdypy-io
 sdypy-FRF
 sdypy-excitation
+sdypy-view
+sdypy-model
+sdypy-sep005
