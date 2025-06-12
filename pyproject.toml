@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sdypy"
-version = "0.5.0"
+version = "0.5.1"
 authors = [{name = "Janko Slavič et al.", email = "janko.slavic@fs.uni-lj.si"}]
 maintainers = [{name = "Janko Slavič et al.", email = "janko.slavic@fs.uni-lj.si"}]
 license = "MIT"
