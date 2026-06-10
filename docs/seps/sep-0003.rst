@@ -62,6 +62,24 @@ SDyPy organization it becomes a Level 1 SDyPy package.
 SDyPy packages should follow the The Zen of Python, presented in 
 `PEP 20 <https://www.python.org/dev/peps/pep-0020/>`_.
 
+The umbrella package and the lazy facade
+----------------------------------------
+
+The core ``sdypy`` distribution provides the only ``sdypy/__init__.py`` in the
+namespace and acts as a lightweight *lazy facade*. It exposes each first-level
+sub-package (``EMA``, ``io``, ``FRF``, ``excitation``, ``model``, ``view``) as an
+attribute via PEP 562 module ``__getattr__`` - importing the sub-package only on
+first access - and provides ``__version__`` from the installed distribution
+metadata. It keeps the package a namespace-compatible portion (via
+``pkgutil.extend_path``) so the sibling portions still contribute.
+
+All other packages contributing to the ``sdypy`` namespace MUST be native
+`PEP 420`_ portions and MUST NOT ship a top-level ``sdypy/__init__.py``. This
+keeps the umbrella's ``__init__.py`` the single owner of the namespace root, so
+sub-package discovery and lazy attribute resolution are deterministic regardless
+of ``sys.path`` order, and it reconciles the README's documented ``sd.EMA`` usage
+with the native-namespace requirement described above.
+
 
 Discussion
 ----------

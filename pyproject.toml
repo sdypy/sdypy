@@ -48,3 +48,25 @@ dev = [
 homepage = "https://github.com/sdypy/sdypy"
 documentation = "https://sdypy.readthedocs.io/en/latest/"
 source = "https://github.com/sdypy/sdypy"
+
+# Source-only sdist: an explicit allow-list so development-only directories
+# (openspec/, .claude/) and built docs are never published in the sdist.
+# (Broader packaging-hygiene cleanup is tracked as a separate change.)
+[tool.hatch.build.targets.sdist]
+include = [
+    "sdypy/",
+    "tests/",
+    "docs/",
+    "examples/",
+    "README.rst",
+    "LICENSE",
+    "CONTRIBUTING.rst",
+    "pyproject.toml",
+    "requirements.txt",
+    "requirements.dev.txt",
+]
+exclude = [
+    "docs/_build",
+    "docs/**/_build",
+    "docs/**/_build/**",
+]
