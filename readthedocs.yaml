@@ -27,9 +27,11 @@ sphinx:
 #    - pdf
 #    - epub
 
-# Optional but recommended, declare the Python requirements required
-# to build your documentation
+# Install sdypy itself plus the docs toolchain from pyproject.toml
 # See https://docs.readthedocs.io/en/stable/guides/reproducible-builds.html
 python:
   install:
-  - requirements: docs/requirements.txt
+  - method: pip
+    path: .
+    extra_requirements:
+      - docs

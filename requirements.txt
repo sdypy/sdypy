@@ -1,8 +1,0 @@
-# Package requirements for users
-sdypy-EMA
-sdypy-io
-sdypy-FRF
-sdypy-excitation
-sdypy-view
-sdypy-model
-sdypy-sep005

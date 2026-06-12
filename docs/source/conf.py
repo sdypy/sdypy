@@ -14,6 +14,7 @@
 #
 import os
 import sys
+from importlib.metadata import version as _pkg_version
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../..'))
 
@@ -24,10 +25,10 @@ project = 'SDyPy - Structural Dynamics Scientific Python'
 copyright = '2020, SDyPy Consortium'
 author = 'Janko Slavič, Domen Gorjup, Klemen Zaletelj, Tomaž Bregar'
 
+# The full version, including alpha/beta/rc tags, from installed metadata
+release = _pkg_version("sdypy")
 # The short X.Y version
-version = '0.5'
-# The full version, including alpha/beta/rc tags
-release = '0.5.1'
+version = ".".join(release.split(".")[:2])
 
 
 # -- General configuration ---------------------------------------------------
