@@ -8,8 +8,16 @@ Enforces the contract from SEP 3 / the unify-namespace-mechanism change:
 """
 import importlib
 import importlib.metadata as importlib_metadata
+import io
+import json
+import re
 import subprocess
 import sys
+import tarfile
+import urllib.error
+import urllib.request
+import zipfile
+from functools import lru_cache
 
 import pytest
 
@@ -122,3 +130,95 @@ def test_sibling_ships_no_namespace_init(dist_name):
         "%s ships a namespace __init__.py (%s); first-level siblings must be "
         "native PEP 420 portions" % (dist_name, offenders)
     )
+
+
+# ---------------------------------------------------------------------------
+# Distribution-layer checks for the sibling-package-template contract.
+#
+# These inspect the *latest published PyPI artifacts* of each sibling, so they
+# stay red until a package's conformant release ships and flip green per
+# publish (accepted in the standardize-package-template design).
+# ---------------------------------------------------------------------------
+
+# Stale packaging artefacts that must not appear at the root of a sdist.
+_FORBIDDEN_SDIST_ENTRY = re.compile(
+    r"^[^/]+/(setup\.py|setup\.cfg|requirements[^/]*\.txt|sync_version\.py|\.travis\.yml)$"
+)
+
+
+@lru_cache(maxsize=None)
+def _published_artifacts(dist_name):
+    """Fetch the latest release's sdist and wheel name lists from PyPI."""
+    url = "https://pypi.org/pypi/%s/json" % dist_name
+    with urllib.request.urlopen(url, timeout=30) as resp:
+        meta = json.load(resp)
+    sdist_names, wheel_names = None, None
+    for f in meta["urls"]:
+        with urllib.request.urlopen(f["url"], timeout=60) as resp:
+            payload = io.BytesIO(resp.read())
+        if f["packagetype"] == "sdist":
+            with tarfile.open(fileobj=payload, mode="r:gz") as tar:
+                sdist_names = tar.getnames()
+        elif f["packagetype"] == "bdist_wheel":
+            with zipfile.ZipFile(payload) as whl:
+                wheel_names = whl.namelist()
+    return meta["info"]["version"], sdist_names, wheel_names
+
+
+def _artifacts_or_skip(dist_name):
+    try:
+        return _published_artifacts(dist_name)
+    except (urllib.error.URLError, OSError) as exc:
+        pytest.skip("PyPI unreachable for %s: %s" % (dist_name, exc))
+
+
+@pytest.mark.parametrize("dist_name", _SIBLING_DISTRIBUTIONS)
+def test_published_sdist_has_no_stale_packaging(dist_name):
+    """The latest PyPI sdist must not contain deleted packaging artefacts."""
+    version, sdist_names, _ = _artifacts_or_skip(dist_name)
+    if sdist_names is None:
+        pytest.fail("%s %s publishes no sdist" % (dist_name, version))
+    offenders = [
+        n for n in sdist_names
+        if _FORBIDDEN_SDIST_ENTRY.match(n.replace(chr(92), "/"))
+    ]
+    assert not offenders, (
+        "%s %s sdist contains stale packaging artefacts: %s"
+        % (dist_name, version, offenders)
+    )
+
+
+@pytest.mark.parametrize("name", _SUBPACKAGES)
+def test_published_wheel_ships_only_own_portion(name):
+    """The latest PyPI wheel may only ship sdypy/<pkg>/, never sdypy/__init__.py."""
+    dist_name = "sdypy-%s" % name
+    version, _, wheel_names = _artifacts_or_skip(dist_name)
+    if wheel_names is None:
+        pytest.fail("%s %s publishes no wheel" % (dist_name, version))
+    portion_prefix = "sdypy/%s/" % name
+    normalized = [n.replace(chr(92), "/") for n in wheel_names]
+    # Positive assertion first: a wheel whose portion landed outside sdypy/
+    # (e.g. hatchling stripping the namespace prefix) must fail loudly here,
+    # not pass vacuously because no sdypy/* entry exists at all.
+    assert any(n.startswith(portion_prefix) for n in normalized), (
+        "%s %s wheel ships no files under %s - the portion is missing or "
+        "landed outside the namespace: %s" % (dist_name, version, portion_prefix, normalized)
+    )
+    offenders = [
+        n for n in normalized
+        if n.startswith("sdypy/") and not n.startswith(portion_prefix)
+    ]
+    assert not offenders, (
+        "%s %s wheel ships files outside its own portion %s: %s"
+        % (dist_name, version, portion_prefix, offenders)
+    )
+
+
+@pytest.mark.parametrize("dist_name", _SIBLING_DISTRIBUTIONS)
+def test_sibling_version_resolvable_from_metadata(dist_name):
+    """importlib.metadata must resolve a non-empty version for installed siblings."""
+    try:
+        version = importlib_metadata.version(dist_name)
+    except importlib_metadata.PackageNotFoundError:
+        pytest.skip("%s not installed in this environment" % dist_name)
+    assert isinstance(version, str) and version

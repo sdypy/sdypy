@@ -50,7 +50,7 @@ Every first-level sdypy namespace package SHALL declare the authoritative versio
 - **THEN** no step references `sync_version.py` or any other version-synchronisation command
 
 ### Requirement: Native namespace portion and wheel contents
-Every first-level sdypy namespace package SHALL ship a wheel that contains only the `sdypy/<pkg>/` namespace portion and SHALL NOT include a top-level `sdypy/__init__.py`. Namespace packaging layout requirements are governed by the `namespace-packaging` spec; this requirement applies only to wheel contents and build configuration. The `[tool.hatch.build.targets.wheel]` table SHALL list only `"sdypy/<pkg>"` as the packages entry.
+Every first-level sdypy namespace package SHALL ship a wheel that contains only the `sdypy/<pkg>/` namespace portion and SHALL NOT include a top-level `sdypy/__init__.py`. Namespace packaging layout requirements are governed by the `namespace-packaging` spec; this requirement applies only to wheel contents and build configuration. The `[tool.hatch.build.targets.wheel]` table SHALL list only `"sdypy"` (the namespace root) as the packages entry — listing `"sdypy/<pkg>"` makes hatchling strip the namespace prefix and ship `<pkg>/` at the wheel top level, breaking `import sdypy.<pkg>`.
 
 #### Scenario: Wheel does not contain sdypy/__init__.py
 - **WHEN** `python -m build --wheel` is run and the resulting `.whl` is inspected
@@ -60,9 +60,13 @@ Every first-level sdypy namespace package SHALL ship a wheel that contains only 
 - **WHEN** the wheel is inspected
 - **THEN** all `sdypy/` entries are under `sdypy/<pkg>/` and no other top-level `sdypy/` file is present
 
-#### Scenario: pyproject wheel target declares only the namespace portion
+#### Scenario: pyproject wheel target declares the namespace root
 - **WHEN** `pyproject.toml` is inspected
-- **THEN** `[tool.hatch.build.targets.wheel]` contains `packages = ["sdypy/<pkg>"]` and no other package entry
+- **THEN** `[tool.hatch.build.targets.wheel]` contains `packages = ["sdypy"]` and no other package entry
+
+#### Scenario: Wheel ships the portion under the namespace prefix
+- **WHEN** the built wheel is inspected
+- **THEN** it contains entries under `sdypy/<pkg>/` (not `<pkg>/` at the archive top level), so `import sdypy.<pkg>` resolves after installation
 
 ### Requirement: sdist contains only an explicit allow-list
 Every first-level sdypy namespace package SHALL publish an sdist that includes source code, tests, documentation source, README, LICENSE, and `pyproject.toml` only. The `[tool.hatch.build.targets.sdist]` table SHALL declare an explicit `include` allow-list. The sdist SHALL NOT contain `_build/` output, deleted packaging artefacts (`setup.py`, `requirements*.txt`, `.travis.yml`, `sync_version.py`), or large binary test data directories (e.g. EMA's `data/`).
