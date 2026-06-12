@@ -112,6 +112,7 @@ def test_version_is_non_empty_string():
 
 
 @pytest.mark.parametrize("dist_name", _SIBLING_DISTRIBUTIONS)
+@pytest.mark.pypi_artifacts
 def test_sibling_ships_no_namespace_init(dist_name):
     """No first-level sibling distribution may install sdypy/__init__.py.
 
@@ -173,6 +174,7 @@ def _artifacts_or_skip(dist_name):
 
 
 @pytest.mark.parametrize("dist_name", _SIBLING_DISTRIBUTIONS)
+@pytest.mark.pypi_artifacts
 def test_published_sdist_has_no_stale_packaging(dist_name):
     """The latest PyPI sdist must not contain deleted packaging artefacts."""
     version, sdist_names, _ = _artifacts_or_skip(dist_name)
@@ -189,6 +191,7 @@ def test_published_sdist_has_no_stale_packaging(dist_name):
 
 
 @pytest.mark.parametrize("name", _SUBPACKAGES)
+@pytest.mark.pypi_artifacts
 def test_published_wheel_ships_only_own_portion(name):
     """The latest PyPI wheel may only ship sdypy/<pkg>/, never sdypy/__init__.py."""
     dist_name = "sdypy-%s" % name

@@ -49,6 +49,12 @@ dev = [
     "build",
 ]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "pypi_artifacts: tests that fetch or assert PyPI-published artifact conformance; run locally as the pre-release gate, deselected on GitHub CI",
+]
+
 [project.urls]
 homepage = "https://github.com/sdypy/sdypy"
 documentation = "https://sdypy.readthedocs.io/en/latest/"

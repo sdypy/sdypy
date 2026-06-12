@@ -48,6 +48,7 @@ def _import_or_skip(name):
 
 
 @pytest.mark.parametrize("name", _SUBPACKAGES)
+@pytest.mark.pypi_artifacts
 def test_subpackage_declares_nonempty_all(name):
     module = _import_or_skip(name)
     declared = getattr(module, "__all__", None)
@@ -57,6 +58,7 @@ def test_subpackage_declares_nonempty_all(name):
 
 
 @pytest.mark.parametrize("name", _SUBPACKAGES)
+@pytest.mark.pypi_artifacts
 def test_every_all_entry_resolves(name):
     module = _import_or_skip(name)
     declared = getattr(module, "__all__", None) or []
@@ -72,6 +74,7 @@ def test_every_all_entry_resolves(name):
 
 
 @pytest.mark.parametrize("name", _SUBPACKAGES)
+@pytest.mark.pypi_artifacts
 def test_no_banned_leak_names_in_all(name):
     """The banned list applies to the six first-level packages only - the
     umbrella's __all__ legitimately contains 'io' (the sub-package name)."""
@@ -82,6 +85,7 @@ def test_no_banned_leak_names_in_all(name):
 
 
 @pytest.mark.parametrize("name", _SUBPACKAGES)
+@pytest.mark.pypi_artifacts
 def test_module_entries_only_where_sanctioned(name):
     module = _import_or_skip(name)
     declared = getattr(module, "__all__", None) or []
@@ -96,6 +100,7 @@ def test_module_entries_only_where_sanctioned(name):
 
 
 @pytest.mark.parametrize("name", _SUBPACKAGES)
+@pytest.mark.pypi_artifacts
 def test_curated_surface_matches_spec(name):
     module = _import_or_skip(name)
     declared = sorted(getattr(module, "__all__", None) or [])
