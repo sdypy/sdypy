@@ -80,6 +80,51 @@ freq_sampling), the conventions given below should be used.
 +-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Time step                   | ``dt``                         | second |                                                                                                                                                                                                                                             |
 +-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| FRF form                    | ``frf_form``                   |        | Form of the frequency response function: ``'receptance'``, ``'mobility'`` or ``'accelerance'``. Canonical name at the sdypy level; backend parameter names are out of scope.                                                                |
++-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Young's modulus             | ``young_modulus``              | Pa     | Fixed compound term; the broader-term-first rule does not reorder it.                                                                                                                                                                       |
++-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Poisson's ratio             | ``poisson_ratio``              |        | Fixed compound term.                                                                                                                                                                                                                        |
++-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Density                     | ``density``                    | kg/m^3 |                                                                                                                                                                                                                                             |
++-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Naming of public objects
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The guidelines above cover variables. For all other public names in SDyPy
+first-level packages the following conventions apply (PEP 8, made explicit):
+
+* **Modules and packages**: ``snake_case`` words. Established acronym
+  sub-package names fixed by SEP 3 / SEP 4 (``EMA``, ``FRF``, ``OMA``) stay
+  uppercase.
+* **Classes**: ``CapWords``; acronyms keep their uppercase form inside
+  ``CapWords`` names (``FRF``, not ``Frf``).
+* **Functions, methods and parameters**: ``snake_case``; acronyms are written
+  in lowercase inside ``snake_case`` names (``add_frf``, ``frf_form``).
+  Exception: established criterion functions may be the bare uppercase
+  acronym (``MAC``, ``MSF``, ``MCF``).
+* **Constants**: ``ALL_CAPS``.
+* **Framework exemption**: names mandated by an external framework keep that
+  framework's casing (e.g. the Qt ``closeEvent`` override).
+
+Public API surface
+^^^^^^^^^^^^^^^^^^
+
+Every first-level package declares its public API with an explicit
+``__all__`` in its ``sdypy/<name>/__init__.py``. Only the names curated in
+``__all__`` are supported API; any other module attribute is an
+implementation detail. Packages that wrap a backend re-export the curated
+names explicitly instead of star-importing the backend, so third-party and
+standard-library names never enter the public surface.
+
+Deprecation policy
+^^^^^^^^^^^^^^^^^^
+
+When a public name is renamed to conform to these guidelines, the old name is
+kept as an alias that emits ``DeprecationWarning`` for all of v1.x. Removal of
+a deprecated alias happens no earlier than v2.0. New code uses the canonical
+names only.
 
 Discussion
 ----------

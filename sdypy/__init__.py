@@ -27,6 +27,11 @@ except PackageNotFoundError:  # source checkout without installed dist metadata
 
 _SUBPACKAGES = ("EMA", "io", "FRF", "excitation", "model", "view")
 
+# The umbrella's public API is exactly the first-level sub-package names.
+# `from sdypy import *` resolves each through __getattr__, i.e. it eagerly
+# imports all six - accepted behavior for an explicit "give me everything".
+__all__ = list(_SUBPACKAGES)
+
 
 def __getattr__(name):
     """Import a first-level sub-package lazily on first access (PEP 562)."""
