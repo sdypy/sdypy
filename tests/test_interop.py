@@ -134,7 +134,6 @@ class TestFlagshipChain:
 
     @pytest.fixture(scope="class")
     def chain_result(self):
-        np.random.seed(self.SEED)
         rng = np.random.default_rng(self.SEED)
 
         # --- 2-DOF model (same seed block keeps determinism) ---------------
@@ -151,6 +150,7 @@ class TestFlagshipChain:
             boundaries="left",
         )
         f_nat_true = lm.get_eig_freq()  # (n_dof,)
+        zeta_true = lm.get_damping_ratios()  # (n_dof,) - same model, single source of truth
 
         # --- pseudo-random excitation signal --------------------------------
         # sdypy.excitation.pseudo_random(N, rg) -> 1-D ndarray, peak = 1
@@ -206,12 +206,12 @@ class TestFlagshipChain:
         xi_id = ema.nat_xi
         damping_stable = bool(np.all(xi_id > 0) and np.all(xi_id < 0.5))
 
-        return ema, f_nat_true, damping_stable
+        return ema, f_nat_true, zeta_true, damping_stable
 
     def test_chain_nat_freq_within_5pct(self, chain_result):
         """Identified natural frequencies must lie within rtol=5e-2 of truth
         after the full pseudo_random -> response -> H1 -> EMA chain."""
-        ema, f_nat_true, _ = chain_result
+        ema, f_nat_true, _, _ = chain_result
         id_order = np.argsort(ema.nat_freq)
         true_order = np.argsort(f_nat_true)
         nat_freq_id = ema.nat_freq[id_order]
@@ -234,32 +234,12 @@ class TestFlagshipChain:
         with an informative message rather than failing, per the task spec
         fallback rule.
         """
-        ema, f_nat_true, damping_stable = chain_result
+        ema, f_nat_true, zeta_true, damping_stable = chain_result
         if not damping_stable:
             pytest.skip(
                 "Flagship chain: damping identification numerically unstable "
                 "(H1 from single broadband block); frequency check still passes."
             )
-        lm_check = sdypy.model.lumped.Model(
-            n_dof=2,
-            mass=np.array([0.4359949, 0.02592623]),
-            stiffness=np.array([0.5488135, 0.71518937]) * 1e6,
-            damping=np.array([54.88135, 71.518937]),
-            boundaries="left",
-        )
-        # Re-derive true damping using same seed as chain_result fixture
-        np.random.seed(6020)
-        masses_true = np.random.uniform(0.1, 1, 2)
-        stiffnesses_true = np.random.uniform(500e3, 1e6, 2)
-        damping_true = np.random.uniform(10, 100, 2)
-        lm_true = sdypy.model.lumped.Model(
-            n_dof=2,
-            mass=masses_true,
-            stiffness=stiffnesses_true,
-            damping=damping_true,
-            boundaries="left",
-        )
-        zeta_true = lm_true.get_damping_ratios()
         id_order = np.argsort(ema.nat_freq)
         true_order = np.argsort(f_nat_true)
         xi_id = ema.nat_xi[id_order]

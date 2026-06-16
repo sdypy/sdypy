@@ -136,7 +136,6 @@ _dst = os.path.join(_here, 'seps')
 os.makedirs(_dst, exist_ok=True)
 # 'content.rst' is the master_doc for the standalone SEP Sphinx project;
 # it must NOT be copied into the umbrella build.
-_SKIP = {'content.rst'}
 for _fn in os.listdir(_seps):
-    if _fn.endswith('.rst') and _fn not in _SKIP:
+    if _fn.endswith('.rst') and _fn != 'content.rst':
         shutil.copy(os.path.join(_seps, _fn), os.path.join(_dst, _fn))

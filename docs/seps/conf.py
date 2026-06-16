@@ -13,6 +13,7 @@ import os
 extensions = [
     'sphinx.ext.imgmath',
     'sphinx.ext.intersphinx',
+    'sphinx_copybutton',
 ]
 
 templates_path = ['_templates/']
@@ -59,10 +60,6 @@ html_use_modindex = True
 html_copy_source = False
 html_domain_indices = False
 html_file_suffix = '.html'
-
-# In extensions list: sphinx_copybutton not used in standalone SEP build
-# but must be listed so check_docs.py finds it.
-extensions.append('sphinx_copybutton')
 
 
 # -- Options for HTMLHelp output ------------------------------------------
