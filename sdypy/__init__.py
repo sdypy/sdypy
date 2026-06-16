@@ -27,20 +27,33 @@ except PackageNotFoundError:  # source checkout without installed dist metadata
 
 _SUBPACKAGES = ("EMA", "io", "FRF", "excitation", "model", "view")
 
-# The umbrella's public API is exactly the first-level sub-package names.
-# `from sdypy import *` resolves each through __getattr__, i.e. it eagerly
-# imports all six - accepted behavior for an explicit "give me everything".
-__all__ = list(_SUBPACKAGES)
+# Aliases exposed on the umbrella that are NOT sdypy.* namespace portions.
+# sep005 ships as the standalone distribution `sdypy_sep005` (the SEP 5
+# unified-timeseries standard + compliance validator); the backends depend on
+# it directly, so it stays a leaf package and is surfaced here only for
+# discoverability as `sd.sep005`. The package __init__ holds only __version__;
+# the validator API (assert_sep005, ...) lives in the `sdypy_sep005.sep005`
+# module, so the alias targets that module (matching pyFRF's import). See SEP 5.
+_ALIASES = {"sep005": "sdypy_sep005.sep005"}
+
+# The umbrella's public API is the six first-level sub-package names plus the
+# sep005 alias. `from sdypy import *` resolves each through __getattr__, i.e. it
+# eagerly imports them - accepted behavior for an explicit "give me everything".
+__all__ = list(_SUBPACKAGES) + list(_ALIASES)
 
 
 def __getattr__(name):
-    """Import a first-level sub-package lazily on first access (PEP 562)."""
+    """Import a first-level sub-package or alias lazily on first access (PEP 562)."""
     if name in _SUBPACKAGES:
         module = import_module(f"{__name__}.{name}")
         globals()[name] = module  # cache: subsequent access is a plain attribute
+        return module
+    if name in _ALIASES:
+        module = import_module(_ALIASES[name])  # standalone leaf, e.g. sdypy_sep005
+        globals()[name] = module
         return module
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def __dir__():
-    return sorted(set(globals()) | set(_SUBPACKAGES))
+    return sorted(set(globals()) | set(_SUBPACKAGES) | set(_ALIASES))

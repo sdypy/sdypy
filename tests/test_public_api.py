@@ -19,8 +19,10 @@ from pathlib import Path
 
 import pytest
 
+import importlib
+
 import sdypy
-from sdypy import _SUBPACKAGES
+from sdypy import _SUBPACKAGES, _ALIASES
 
 # Single source of truth for curated lists + drift logic lives in the checker.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
@@ -109,15 +111,25 @@ def test_curated_surface_matches_spec(name):
     )
 
 
-def test_umbrella_all_is_exactly_the_six_names():
-    assert sorted(sdypy.__all__) == sorted(_SUBPACKAGES)
-    assert set(_SUBPACKAGES) <= set(dir(sdypy))  # __dir__ consistency
+def test_umbrella_all_is_the_six_subpackages_plus_sep005():
+    expected = sorted(list(_SUBPACKAGES) + list(_ALIASES))
+    assert sorted(sdypy.__all__) == expected
+    assert (set(_SUBPACKAGES) | set(_ALIASES)) <= set(dir(sdypy))  # __dir__ consistency
+    assert "sep005" in _ALIASES  # the sep005 standard is exposed as an alias
 
 
-def test_star_import_of_umbrella_yields_six_subpackages():
-    """`from sdypy import *` is an explicit ask for everything: the six names
-    (and nothing unexpected) land in the importing namespace. Fresh interpreter
-    so the eager import cannot contaminate other tests."""
+def test_sep005_alias_resolves_to_standalone_distribution():
+    """sd.sep005 is a facade alias to the standalone sdypy_sep005 leaf (SEP 5),
+    NOT a sdypy.sep005 namespace portion."""
+    assert sdypy.sep005 is importlib.import_module("sdypy_sep005.sep005")
+    assert callable(sdypy.sep005.assert_sep005)
+    assert "sep005" not in _SUBPACKAGES  # deliberately not a first-level portion
+
+
+def test_star_import_of_umbrella_yields_subpackages_and_sep005():
+    """`from sdypy import *` is an explicit ask for everything: the six
+    sub-package names plus the sep005 alias land in the importing namespace.
+    Fresh interpreter so the eager import cannot contaminate other tests."""
     code = (
         "ns = {}; exec('from sdypy import *', ns); "
         "got = sorted(k for k in ns if not k.startswith('_')); "
@@ -128,7 +140,7 @@ def test_star_import_of_umbrella_yields_six_subpackages():
     )
     assert result.returncode == 0, result.stderr
     got = result.stdout.strip().splitlines()[-1].split(",")
-    assert sorted(got) == sorted(_SUBPACKAGES), got
+    assert sorted(got) == sorted(list(_SUBPACKAGES) + list(_ALIASES)), got
 
 
 @pytest.mark.parametrize("name", sorted(SHIM_BACKENDS))
