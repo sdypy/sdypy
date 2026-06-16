@@ -214,6 +214,7 @@ In unusual cases, the `SDyPy Steering Council`_ may be asked to decide
 whether a controversial SEP is ``Accepted``.
 
 
+
 Maintenance
 ^^^^^^^^^^^
 
@@ -277,7 +278,7 @@ a separate line.
 Discussion
 ----------
 
-- https://mail.python.org/pipermail/numpy-discussion/2017-December/077481.html
+- https://github.com/sdypy/sdypy/issues
 
 
 References and Footnotes
@@ -285,23 +286,23 @@ References and Footnotes
 
 .. [1] This historical record is available by the normal git commands
    for retrieving older revisions, and can also be browsed on
-   `GitHub <https://github.com/numpy/numpy/tree/master/doc/neps>`_.
+   `GitHub <https://github.com/sdypy/sdypy/tree/master/docs/seps>`_.
 
-.. [2] The URL for viewing NEPs on the web is
-   https://www.numpy.org/neps/.
+.. [2] The URL for viewing SEPs on the web is
+   https://sdypy.readthedocs.io/en/latest/seps/index.html.
 
 .. _repo: https://github.com/sdypy/sdypy
 
 .. _sep: https://github.com/sdypy/sdypy/issues?q=is%3Aopen+is%3Aissue+label%3A%2223+-+SEP%22>
 
-.. _mailing list: https://mail.python.org/mailman/listinfo/numpy-discussion
+.. _mailing list: https://github.com/sdypy/sdypy/discussions
 
-.. _issue tracker: https://github.com/numpy/numpy/issues
+.. _issue tracker: https://github.com/sdypy/sdypy/issues
 
-.. _NumPy Steering Council:
-   https://docs.scipy.org/doc/numpy/dev/governance/governance.html
+.. _`SDyPy Steering Council`:
+   https://sdypy.readthedocs.io/en/latest/dev/governance.html
 
-.. _`GitHub pull request`: https://github.com/numpy/numpy/pulls
+.. _`GitHub pull request`: https://github.com/sdypy/sdypy/pulls
 
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
 

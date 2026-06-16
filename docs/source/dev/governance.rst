@@ -304,10 +304,10 @@ for-profit company building proprietary products and services that
 leverage Project Software and Services. Funding acquired by
 Institutional Partners to work on The Project is called Institutional
 Funding. However, no funding obtained by an Institutional Partner can
-override the Steering Council. If a Partner has funding to do SciPy work
+override the Steering Council. If a Partner has funding to do SDyPy work
 and the Council decides to not pursue that work as a project, the
 Partner is free to pursue it on their own. However, in this situation,
-that part of the Partner’s work will not be under the SciPy umbrella and
+that part of the Partner’s work will not be under the SDyPy umbrella and
 cannot use the Project trademarks in any way that suggests a formal
 relationship.
 

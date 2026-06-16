@@ -38,7 +38,7 @@ include = ["sdypy"]
 [project.optional-dependencies]
 docs = [
     "sphinx",
-    "sphinx-rtd-theme",
+    "pydata-sphinx-theme",
     "sphinx-copybutton>=0.5.2",
 ]
 dev = [

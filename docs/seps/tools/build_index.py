@@ -12,6 +12,12 @@ import jinja2
 import glob
 import re
 
+# Anchor all paths to the SEP directory (this script's parent's parent), so the
+# generator works regardless of the current working directory: the conf.py
+# build hook, the Read the Docs pre_build step (run from the repo root), the
+# docs CI job, and a manual invocation all produce the same result.
+_SEPS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 def render(tpl_path, context):
     path, filename = os.path.split(tpl_path)
@@ -21,8 +27,8 @@ def render(tpl_path, context):
 
 def sep_metadata():
     ignore = ('sep-template.rst')
-    sources = sorted(glob.glob(r'sep-*.rst'))
-    sources = [s for s in sources if not s in ignore]
+    sources = sorted(glob.glob(os.path.join(_SEPS_DIR, 'sep-*.rst')))
+    sources = [s for s in sources if os.path.basename(s) not in ignore]
 
     meta_re = r':([a-zA-Z\-]*): (.*)'
 
@@ -30,10 +36,11 @@ def sep_metadata():
     seps = {}
     print('Loading metadata for:')
     for source in sources:
-        print(f' - {source}')
-        nr = int(re.match(r'sep-([0-9]{4}).*\.rst', source).group(1))
+        name = os.path.basename(source)
+        print(f' - {name}')
+        nr = int(re.match(r'sep-([0-9]{4}).*\.rst', name).group(1))
 
-        with open(source) as f:
+        with open(source, encoding='utf-8') as f:
             lines = f.readlines()
             tags = [re.match(meta_re, line) for line in lines]
             tags = [match.groups() for match in tags if match is not None]
@@ -49,7 +56,7 @@ def sep_metadata():
                 raise RuntimeError("Unable to find SEP title.")
 
             tags['Title'] = lines[i+1].strip()
-            tags['Filename'] = source
+            tags['Filename'] = name
 
         if not tags['Title'].startswith(f'SEP {nr} — '):
             raise RuntimeError(
@@ -105,13 +112,13 @@ def sep_metadata():
     return {'seps': seps, 'has_provisional': has_provisional}
 
 
-infile = 'index.rst.tmpl'
-outfile = 'index.rst'
+infile = os.path.join(_SEPS_DIR, 'index.rst.tmpl')
+outfile = os.path.join(_SEPS_DIR, 'index.rst')
 
 meta = sep_metadata()
 
 print(f'Compiling {infile} -> {outfile}')
 index = render(infile, meta)
 
-with open(outfile, 'w') as f:
+with open(outfile, 'w', encoding='utf-8') as f:
     f.write(index)

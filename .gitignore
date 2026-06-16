@@ -67,6 +67,8 @@ instance/
 _build/
 docs/build/
 docs/source/api/
+# Build-time-generated SEP copies (produced by conf.py hook and pre_build step)
+docs/source/seps/
 
 # PyBuilder
 target/
