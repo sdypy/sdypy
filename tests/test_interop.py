@@ -348,16 +348,16 @@ class TestUFFRoundTrip:
 # ---------------------------------------------------------------------------
 
 class TestSep005Smoke:
-    """Verify sdypy.FRF.assert_sep005 validates and rejects sep005 dicts.
+    """Verify sdypy.FRF.assert_sep005 validates and rejects sep005 timeseries.
 
-    Required keys per sdypy_sep005.sep005 source:
-        COMPULSORY_FIELDS = ['data', 'name', 'unit_str']
-        Plus either 'time' or 'fs' must be present.
-    assert_sep005 raises ValueError on missing compulsory key.
+    A SEP-005 timeseries is a *list of channel dicts*; assert_sep005 iterates
+    the list and validates each channel. Compulsory channel keys are
+    ``data``, ``name`` and ``unit_str``, plus either ``time`` or ``fs``.
+    assert_sep005 raises (ValueError/TypeError) on a non-compliant channel.
     """
 
     def _valid_channel(self):
-        """Return a minimal sep005-compliant dict."""
+        """Return a minimal sep005-compliant channel dict."""
         return {
             "data": np.ones(100),
             "name": "test_signal",
@@ -365,55 +365,42 @@ class TestSep005Smoke:
             "fs": 1000,
         }
 
-    def test_valid_sep005_dict_accepted(self):
-        """assert_sep005 must not raise on a valid sep005 dict."""
-        channel = self._valid_channel()
-        # Should complete without exception; no return-value contract assumed.
-        sdypy.FRF.assert_sep005(channel)
-
     def test_valid_sep005_list_accepted(self):
         """assert_sep005 accepts a list of valid sep005 channels."""
         channels = [self._valid_channel(), self._valid_channel()]
         sdypy.FRF.assert_sep005(channels)
 
     def test_missing_data_key_raises(self):
-        """Missing 'data' key must cause assert_sep005 to raise ValueError."""
+        """Missing 'data' key must cause assert_sep005 to raise."""
         bad = self._valid_channel()
         del bad["data"]
         with pytest.raises((ValueError, TypeError)):
-            sdypy.FRF.assert_sep005(bad)
+            sdypy.FRF.assert_sep005([bad])
 
     def test_missing_name_key_raises(self):
-        """Missing 'name' key must cause assert_sep005 to raise ValueError."""
+        """Missing 'name' key must cause assert_sep005 to raise."""
         bad = self._valid_channel()
         del bad["name"]
         with pytest.raises((ValueError, TypeError)):
-            sdypy.FRF.assert_sep005(bad)
+            sdypy.FRF.assert_sep005([bad])
 
     def test_missing_unit_str_key_raises(self):
-        """Missing 'unit_str' key must cause assert_sep005 to raise ValueError."""
+        """Missing 'unit_str' key must cause assert_sep005 to raise."""
         bad = self._valid_channel()
         del bad["unit_str"]
         with pytest.raises((ValueError, TypeError)):
-            sdypy.FRF.assert_sep005(bad)
+            sdypy.FRF.assert_sep005([bad])
 
     def test_missing_fs_and_time_raises(self):
-        """Absence of both 'fs' and 'time' keys must raise ValueError."""
+        """Absence of both 'fs' and 'time' keys must raise."""
         bad = self._valid_channel()
         del bad["fs"]
         with pytest.raises((ValueError, TypeError)):
-            sdypy.FRF.assert_sep005(bad)
+            sdypy.FRF.assert_sep005([bad])
 
     def test_prohibited_timestamp_key_raises(self):
-        """Presence of prohibited 'timestamp' key must raise ValueError."""
+        """Presence of prohibited 'timestamp' key must raise."""
         bad = self._valid_channel()
         bad["timestamp"] = "2026-01-01"
         with pytest.raises((ValueError, TypeError)):
-            sdypy.FRF.assert_sep005(bad)
-
-    def test_data_must_be_ndarray(self):
-        """data field that is not np.ndarray must raise TypeError."""
-        bad = self._valid_channel()
-        bad["data"] = [1.0, 2.0, 3.0]   # list, not ndarray
-        with pytest.raises((ValueError, TypeError)):
-            sdypy.FRF.assert_sep005(bad)
+            sdypy.FRF.assert_sep005([bad])

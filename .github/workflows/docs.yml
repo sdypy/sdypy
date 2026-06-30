@@ -19,7 +19,7 @@ jobs:
         run: pip install ".[docs]"
 
       - name: Generate SEP index
-        run: python docs/seps/tools/build_index.py
+        run: python tools/build_index.py
         working-directory: docs/seps
 
       - name: Build HTML docs
