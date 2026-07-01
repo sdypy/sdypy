@@ -1,6 +1,8 @@
 ## Purpose
 The contract governing how sub-packages integrate into the `sdypy` namespace and how the umbrella package exposes them: lazy attribute access for first-level names, version sourced from installed metadata, the prohibition on sibling `sdypy/__init__.py` files, and the conformance checks that enforce it. Established by the `unify-namespace-mechanism` change (SEP 3, Option C).
 
+**Scope:** Umbrella-local for the facade, lightweight import, and metadata-sourced version — **except** the *Sub-packages are native namespace portions* requirement, which is **org-wide**: it binds all six first-level sibling packages.
+
 ## Requirements
 
 ### Requirement: Umbrella exposes first-level sub-packages by attribute access

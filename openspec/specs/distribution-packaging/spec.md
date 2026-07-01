@@ -1,6 +1,8 @@
 ## Purpose
 The contract that the `sdypy` core repository maintains exactly one authoritative build and dependency definition (`pyproject.toml`), carries no stale packaging scripts or dead CI configurations, tracks no generated build artefacts in git, single-sources the package version in all locations it appears (package facade and documentation build), and publishes metadata classifiers that accurately reflect the tested Python support matrix. Established by the `packaging-hygiene-sweep` change.
 
+**Scope:** Umbrella-local — the `sdypy` core distribution's own build, packaging, and metadata. The parallel contract for the six first-level sibling packages is `sibling-package-template`.
+
 ## Requirements
 
 ### Requirement: Single build definition
