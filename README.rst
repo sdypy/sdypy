@@ -61,6 +61,17 @@ or the `excitation` module:
 
 or the `view` and `model` modules.
 
+The umbrella also surfaces the SEP 5 unified-timeseries standard and its
+compliance validator as `sd.sep005` (the standalone `sdypy-sep005` package):
+
+.. code-block:: python
+
+    sd.sep005.assert_sep005(timeseries)   # raises on non-compliance
+
+Unlike the six namespace sub-packages, `sep005` is a cross-cutting data-format
+standard (see `SEP 5 <https://github.com/sdypy/sdypy/blob/main/docs/seps/sep-0005.rst>`_),
+not a `sdypy.*` namespace package; it is exposed here for discoverability.
+
 
 Package integration in SDyPy
 ----------------------------

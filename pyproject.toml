@@ -22,10 +22,12 @@ dependencies = [
     "sdypy-sep005",
 ]
 classifiers = [
-    'Development Status :: 5 - Production/Stable',
+    'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
     'Topic :: Scientific/Engineering',
     'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
     "License :: OSI Approved :: MIT License",
 ]
 
@@ -34,17 +36,45 @@ classifiers = [
 include = ["sdypy"]
 
 [project.optional-dependencies]
-dev = [
+docs = [
     "sphinx",
+    "pydata-sphinx-theme",
+    "sphinx-copybutton>=0.5.2",
+]
+dev = [
+    "sdypy[docs]",
     "twine",
     "wheel",
     "pytest",
     "build",
-    "sphinx-rtd-theme",
-    "sphinx-copybutton>=0.5.2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "pypi_artifacts: tests that fetch or assert PyPI-published artifact conformance; run locally as the pre-release gate, deselected on GitHub CI",
 ]
 
 [project.urls]
 homepage = "https://github.com/sdypy/sdypy"
 documentation = "https://sdypy.readthedocs.io/en/latest/"
 source = "https://github.com/sdypy/sdypy"
+
+# Source-only sdist: an explicit allow-list so development-only directories
+# (openspec/, .claude/) and built docs are never published in the sdist.
+[tool.hatch.build.targets.sdist]
+include = [
+    "sdypy/",
+    "tests/",
+    "docs/",
+    "examples/",
+    "README.rst",
+    "LICENSE",
+    "CONTRIBUTING.rst",
+    "pyproject.toml",
+]
+exclude = [
+    "docs/_build",
+    "docs/**/_build",
+    "docs/**/_build/**",
+]

@@ -23,8 +23,25 @@ a unified way to represent timeseries data is enforced.
 The current proposal targets timeseries data in particular, whether it is for input and or output. A simple but generalistic structure is put forward
 to allow sufficient flexibility for various applications, yet guaranteeing consistent handling of the data. 
 
-Future packages that provide import/export functionality for data from and to SDyPy will have to comply with this format. A package to test compliance
-with the standard is to be developed. 
+Future packages that provide import/export functionality for data from and to SDyPy will have to comply with this format.
+
+
+Reference implementation and access
+...................................
+
+The compliance checker called for by this SEP now exists: the
+`sdypy-sep005 <https://pypi.org/project/sdypy-sep005/>`_ package provides
+``assert_sep005`` (and per-channel/field validators) that raise on a
+non-compliant timeseries object. It is surfaced on the SDyPy umbrella as
+``sd.sep005`` for discoverability — note that ``sep005`` is a cross-cutting
+data-format standard, not a ``sdypy.*`` namespace sub-package, so it remains
+the standalone ``sdypy_sep005`` distribution that the backends themselves
+depend on. The same validator is re-exported by ``sdypy.FRF.assert_sep005``.
+
+.. code-block:: python
+
+    import sdypy as sd
+    sd.sep005.assert_sep005(timeseries)   # raises ValueError/TypeError if non-compliant
 
 
 Detailed description

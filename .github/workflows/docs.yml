@@ -1,0 +1,26 @@
+name: Docs
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install ".[docs]"
+
+      - name: Generate SEP index
+        run: python tools/build_index.py
+        working-directory: docs/seps
+
+      - name: Build HTML docs
+        run: python -m sphinx -b html docs/source docs/_build/html
