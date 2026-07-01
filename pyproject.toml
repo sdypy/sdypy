@@ -11,7 +11,7 @@ license = "MIT"
 description = "SDyPy - Structural Dynamics Python"
 readme = "README.rst"
 keywords = ["Python", "Structural Dynamics"]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "sdypy-EMA",
     "sdypy-io",
@@ -25,7 +25,6 @@ classifiers = [
     'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
     'Topic :: Scientific/Engineering',
-    'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
     'Programming Language :: Python :: 3.14',
