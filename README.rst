@@ -105,6 +105,20 @@ the level of integration (see `SEP 1 <https://github.com/sdypy/sdypy/blob/main/d
    - `AMfe <https://github.com/AppliedMechanics/AMfe>`_ (Finite Element Research Code)
 
 
+Contributing and development
+----------------------------
+
+Contributions are welcome — see `CONTRIBUTING.rst <https://github.com/sdypy/sdypy/blob/main/CONTRIBUTING.rst>`_.
+
+Development of the core umbrella is spec-driven (OpenSpec) and governed by the
+`SEPs <https://github.com/sdypy/sdypy/tree/main/docs/seps>`_. Contributors and AI
+coding agents should start from ``AGENTS.md`` in the repository root: it is the
+canonical, tool-agnostic guide to the package layout, environment, commands, and
+required workflow. (Claude Code loads it automatically via ``CLAUDE.md``.) The
+measurable requirements and how each is verified are catalogued in
+``REQUIREMENTS.md``.
+
+
 ..  |documentation| image:: https://readthedocs.org/projects/sdypy/badge/?version=latest
     :target: https://sdypy.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
