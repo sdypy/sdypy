@@ -63,6 +63,7 @@ frequency-response-function estimation and experimental modal analysis, to
 
    dev/contributing
    dev/governance
+   dev/nomenclature
    dev/code_of_conduct
    dev/pep8
    dev/governance_people

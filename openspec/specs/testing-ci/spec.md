@@ -6,6 +6,7 @@ The contract for the SDyPy testing and CI baseline: a registered `pypi_artifacts
 **Scope:** Mixed — umbrella-local for the core test suite, marker, and workflow shape; **org-wide** for the *Every first-level package has a real functional test baseline* and *All seven fork CIs are green* requirements, which bind the six siblings.
 
 ## Requirements
+
 ### Requirement: pypi_artifacts marker registered and applied to all PyPI-dependent tests
 The core `pyproject.toml` SHALL register a pytest marker named `pypi_artifacts` under `[tool.pytest.ini_options]`, and `testpaths` SHALL be set to `["tests"]`. Every core test that fetches published artifacts from PyPI over HTTP (`test_published_sdist_has_no_stale_packaging`, `test_published_wheel_ships_only_own_portion`) or that asserts conformance of installed distributions that come from PyPI in CI (`test_sibling_ships_no_namespace_init` in `test_namespace_conformance.py`; the per-sibling `__all__` tests in `test_public_api.py`: `test_subpackage_declares_nonempty_all`, `test_every_all_entry_resolves`, `test_no_banned_leak_names_in_all`, `test_module_entries_only_where_sanctioned`, `test_curated_surface_matches_spec`) MUST be decorated with `@pytest.mark.pypi_artifacts`. Umbrella-level tests (`test_umbrella_all_is_exactly_the_six_names`, the star-import test, and the drift advisory test) MUST remain unmarked.
 
@@ -36,10 +37,10 @@ The core GitHub CI test workflow SHALL run pytest with `-m "not pypi_artifacts"`
 
 #### Scenario: CI matrix is green
 - **WHEN** the core `python-package.yml` workflow runs on a push or pull request
-- **THEN** all matrix jobs (Python 3.10, 3.11, 3.12) complete with success status
+- **THEN** all matrix jobs (Python 3.12, 3.13, 3.14) complete with success status
 
 ### Requirement: Core test workflow has the required shape
-The core `python-package.yml` MUST be triggered on `push`, `pull_request`, and `workflow_dispatch` events. The matrix SHALL cover Python versions `["3.10", "3.11", "3.12"]` with `fail-fast: false`. The workflow MUST use `actions/checkout@v4` and `actions/setup-python@v5`. The install step SHALL run `pip install .` followed by `pip install pytest flake8 build`. The workflow MUST include the existing two-pass flake8 check, the `pytest -m "not pypi_artifacts"` step, and a final `python -m build` validation step.
+The core `python-package.yml` MUST be triggered on `push`, `pull_request`, and `workflow_dispatch` events. The matrix SHALL cover Python versions `["3.12", "3.13", "3.14"]` with `fail-fast: false`. The workflow MUST use `actions/checkout@v7` and `actions/setup-python@v7`, which run on the Node 24 runtime; the `@v4` / `@v5` majors used previously run on the deprecated Node 20 and MUST NOT be reintroduced. The install step SHALL run `pip install .` followed by `pip install pytest flake8 build`. The workflow MUST include the existing two-pass flake8 check, the `pytest -m "not pypi_artifacts"` step, and a final `python -m build` validation step.
 
 #### Scenario: Workflow triggers are correct
 - **WHEN** `python-package.yml` is inspected
@@ -47,21 +48,21 @@ The core `python-package.yml` MUST be triggered on `push`, `pull_request`, and `
 
 #### Scenario: Matrix and action versions are correct
 - **WHEN** `python-package.yml` is inspected
-- **THEN** the matrix is `["3.10", "3.11", "3.12"]` with `fail-fast: false`
-- **AND** `actions/checkout@v4` and `actions/setup-python@v5` are used (no `@v3`, `@v4` for setup-python, or older versions)
+- **THEN** the matrix is `["3.12", "3.13", "3.14"]` with `fail-fast: false`
+- **AND** `actions/checkout@v7` and `actions/setup-python@v7` are used (Node 24; no Node 20 majors such as `actions/checkout@v4` or `actions/setup-python@v5`, and nothing older)
 
 #### Scenario: Workflow includes build validation step
 - **WHEN** `python-package.yml` is inspected
 - **THEN** a step running `python -m build` is present after the pytest step
 
 ### Requirement: Core release workflow has the required shape
-The core `release-and-publish-to-pypi.yml` MUST use `actions/checkout@v4`, `actions/setup-python@v5`, build via `pip install --upgrade pip build` then `python -m build`, and publish via `pypa/gh-action-pypi-publish@release/v1` with `password: ${{ secrets.PYPI_API_TOKEN }}` (token auth; trusted publishing is deferred).
+The core `release-and-publish-to-pypi.yml` MUST use `actions/checkout@v7`, `actions/setup-python@v7`, build via `pip install --upgrade pip build` then `python -m build`, and publish via `pypa/gh-action-pypi-publish@release/v1` with `password: ${{ secrets.PYPI_API_TOKEN }}` (token auth; trusted publishing is deferred).
 
 #### Scenario: Release workflow uses current action versions and token auth
 - **WHEN** `release-and-publish-to-pypi.yml` is inspected
-- **THEN** `actions/checkout@v4` and `actions/setup-python@v5` are used
+- **THEN** `actions/checkout@v7` and `actions/setup-python@v7` are used
 - **AND** the publish step uses `pypa/gh-action-pypi-publish@release/v1` with `password: ${{ secrets.PYPI_API_TOKEN }}`
-- **AND** no deprecated `@v2`, `@v1.4.2`, or `@v3`/`@v4` action versions remain
+- **AND** no Node 20 or older action majors remain (`@v1.4.2`, `@v2`, `@v3`, `actions/checkout@v4`, `actions/setup-python@v5`)
 
 ### Requirement: Every first-level package has a real functional test baseline
 Every first-level package (`sdypy-FRF`, `sdypy-excitation`, `sdypy-io`, `sdypy-view`, `sdypy-model`, `sdypy-EMA`) MUST have at least one real functional test (i.e., a test that exercises the package's own code and asserts a non-trivial behavioral property, not a bare `assert True`). Tests MUST be seeded, require no network access, and require no display. The minimum per-package baselines are: FRF — H1 estimation peak, axis length, and `assert_sep005` valid/invalid paths; excitation — shape/dtype and statistical properties for the eleven curated functions; io — `uff` write→read round-trip, `lvm` parse of a generated file, `sfmov` if hand-constructable (else document-and-skip); view — pure helper shapes and `Plotter3D` `ImportError` path (Qt-free); model — `Beam.solve()` vs analytical frequencies (rtol ≤ 5%), `solve_eigenvalue` on analytic 2-DOF, `lumped` 1-DOF eigenfrequency, `Shell`/`Tetrahedron` matrix properties; EMA — existing accuracy assertions pass unchanged after `pol_order_high` reduction.
@@ -136,3 +137,20 @@ After the test-suite commits are pushed to all sibling forks and the core workfl
 - **THEN** the latest workflow run on each of the seven ladisk fork repositories shows a success conclusion
 - **AND** the four previously-silent forks (sdypy-EMA, sdypy-io, sdypy-FRF, sdypy-excitation) show their first-ever successful run
 
+### Requirement: Every umbrella-runnable checker executes in core CI
+Every `tools/check_*.py` conformance checker that is capable of running against the umbrella repository root SHALL be executed as a step in the core GitHub Actions workflows. Checkers that require a single-portion sibling clone and therefore cannot run at the umbrella root SHALL NOT be claimed as CI-covered; the documentation that lists them MUST record where they do run and show an invocation that succeeds.
+
+At the time of this requirement, `tools/check_seps.py` and `tools/check_docs.py` run at the umbrella root and SHALL both execute in `docs.yml`; `tools/check_public_api.py` and `tools/check_sibling_template.py` require a sibling clone, because they resolve exactly one portion directory under `sdypy/` and the umbrella provides none.
+
+#### Scenario: The documentation checker runs in CI
+- **WHEN** the `docs.yml` workflow runs
+- **THEN** it executes `python tools/check_docs.py --path .` and fails the job if the checker exits non-zero
+
+#### Scenario: A sibling-clone checker is not claimed as CI-covered
+- **WHEN** `REQUIREMENTS.md` § Canonical sources is inspected
+- **THEN** it does not state that `check_public_api.py` or `check_sibling_template.py` runs in this repository's CI
+- **AND** it records that they audit a sibling clone
+
+#### Scenario: Documented invocations succeed as written
+- **WHEN** a reader runs any checker invocation shown in `AGENTS.md` § Common commands, in the directory that entry specifies
+- **THEN** the command runs to a verdict — it does not fail with "expected exactly one portion under .../sdypy"

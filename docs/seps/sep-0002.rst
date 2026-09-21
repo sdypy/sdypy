@@ -11,27 +11,27 @@ SEP 2 — Nomenclature guidelines
 Abstract
 --------
 
-The nomenclature guidelines for SDyPy are presented for better interoperability
-of the packages/modules.
+This SEP gives the nomenclature guidelines for SDyPy. Consistent names let the
+packages and modules work together.
 
 Motivation
 ----------
 
-The nomenclature is often not consistent for different packages which affects the
-user experience when combining the use of multiple packages.
+Different packages often use different names for the same quantity. This makes
+the packages difficult to use together.
 
 Detailed description
 --------------------
 
-SDyPy nomenclature follows the python guidelines, presented in 
+SDyPy nomenclature follows the Python guidelines, given in 
 `PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_.
 
 General guidelines
 ^^^^^^^^^^^^^^^^^^
 
-* As is stated in `PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_, the code is read 
-  much more often than it is written. The names of the variables should therefore
-  be as descriptive as possible.
+* `PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_ states that code is read
+  much more often than it is written. The names of the variables are therefore
+  as descriptive as possible.
   Examples:
 
   .. code:: python
@@ -40,12 +40,12 @@ General guidelines
 
      rectangle_height = 4 # Good
 
-  With most code editors enabling the use of autocomplete, the length of the variables does not present
-  a major issue for code writing.
+  Most code editors have autocomplete. Long variable names therefore do not make
+  the code difficult to write.
 
-* When combining multiple words into a variable name, the term with a broader meaning should
-  be on the first place. The more defining term comes next. This improves the readability of the code,
-  enabling the reader to immediately understand what the main purpose of the variable is.  Examples:
+* If a variable name contains more than one word, the term with a broader meaning
+  comes first. The more specific term comes next. This makes the code easier
+  to read, because the reader immediately sees the purpose of the variable. Examples:
 
   .. code:: python
 
@@ -54,40 +54,207 @@ General guidelines
      damping_viscous
      damping_hysteretic
 
-  It should be said, that the it is up to the user to determine what is the more broader term.
+  The user determines which term is broader.
+  This guideline is a **heuristic for new names, not a rule that overrides the
+  canonical table below**. Where the table has an entry for a quantity, that entry
+  is normative. A name that conforms to the table is never a word-order violation.
+  For example, ``natural_freq`` and ``frf_form`` place the broader term second and
+  are canonical nonetheless. The heuristic applies only to a new compound name for
+  a quantity that the table does not cover. It yields to an established term of
+  art: ``mass_matrix``, not ``matrix_mass``. A name settled that way is then added
+  to the table, so the decision is recorded and not argued again.
 
 Common variables in structural dynamics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Despite the general guidelines written above, the variables which are broadly used in structural dynamics 
-can be an exception. To avoid different variable names (e.g. sampling_frequency, 
-freq_sampling), the conventions given below should be used.
+The variables that are widely used in structural dynamics are an exception to the
+general guidelines above. The conventions below prevent different names for the
+same quantity, for example sampling_frequency and freq_sampling. These conventions
+are normative.
 
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Parameter                   | Symbol                         | Unit   | Description                                                                                                                                                                                                                                 |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Frequency limits            | ``freq_upper``, ``freq_lower`` |        |                                                                                                                                                                                                                                             |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Frequency Response Function | ``frf``                        |        | Different forms of the frequency response function are possible (receptance, mobility, accelerance) and can be given other names. When the frequency response function is referenced in arbitrary form, this variable name should be given. |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Frequency vector            | ``freq``                       | Hz     |                                                                                                                                                                                                                                             |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Frequency vector in rad/s   | ``freq_rad``                   | rad/s  |                                                                                                                                                                                                                                             |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Natural frequency           | ``natural_freq``               | Hz     |                                                                                                                                                                                                                                             |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Sampling frequency          | ``fs``                         | Hz     | This name is not descriptive; however, it is commonly used in other packages (e.g. `scipy <https://www.scipy.org/scipylib/index.html>`_)                                                                                                    |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Time step                   | ``dt``                         | second |                                                                                                                                                                                                                                             |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| FRF form                    | ``frf_form``                   |        | Form of the frequency response function: ``'receptance'``, ``'mobility'`` or ``'accelerance'``. Canonical name at the sdypy level; backend parameter names are out of scope.                                                                |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Young's modulus             | ``young_modulus``              | Pa     | Fixed compound term; the broader-term-first rule does not reorder it.                                                                                                                                                                       |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Poisson's ratio             | ``poisson_ratio``              |        | Fixed compound term.                                                                                                                                                                                                                        |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Density                     | ``density``                    | kg/m^3 |                                                                                                                                                                                                                                             |
-+-----------------------------+--------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+.. canonical-table-start
+
+The **Symbol** column gives the canonical name. The **Instead of** column gives
+the divergent spellings that the canonical name replaces. This column is
+normative. The table is the single source of truth for the migration map. A
+checker, roster or other document must not require a rename that this column does
+not record. Where a canonical name replaces no evidenced divergent spelling, the cell
+stays empty. Do not invent a spelling to fill it. A new spelling in the column is
+an amendment to this SEP, and follows the same review path as any other
+amendment.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 18 20 20 7 35
+
+   * - Parameter
+     - Symbol
+     - Instead of
+     - Unit
+     - Description
+   * - Frequency limits
+     - ``freq_upper``, ``freq_lower``
+     - ``lower``, ``upper``, ``f_lower``, ``f_upper``
+     -
+     -
+   * - Frequency Response Function
+     - ``frf``
+     -
+     -
+     - Different forms of the frequency response function are possible (receptance, mobility, accelerance) and can be given other names. When the frequency response function is referenced in arbitrary form, use this variable name.
+   * - Frequency vector
+     - ``freq``
+     - ``frequency``
+     - Hz
+     -
+   * - Frequency vector in rad/s
+     - ``freq_rad``
+     -
+     - rad/s
+     -
+   * - Natural frequency
+     - ``natural_freq``
+     - ``nat_freq``
+     - Hz
+     -
+   * - Sampling frequency
+     - ``fs``
+     - ``sampling_frequency``, ``freq_sampling``
+     - Hz
+     - This name is not descriptive. It is however commonly used in other packages, for example `scipy <https://www.scipy.org/scipylib/index.html>`_.
+   * - Time step
+     - ``dt``
+     -
+     - second
+     -
+   * - FRF form
+     - ``frf_form``
+     - ``frf_type``
+     -
+     - Form of the frequency response function: ``'receptance'``, ``'mobility'`` or ``'accelerance'``. Canonical name at the sdypy level. Backend parameter names are out of scope.
+   * - Young's modulus
+     - ``young_modulus``
+     - ``E``, ``Young``
+     - Pa
+     - Fixed compound term. The broader-term-first rule does not reorder it.
+   * - Poisson's ratio
+     - ``poisson_ratio``
+     - ``nu``, ``Poisson``
+     -
+     - Fixed compound term.
+   * - Density
+     - ``density``
+     - ``rho``, ``ro``, ``Density``
+     - kg/m^3
+     -
+   * - Mode shape
+     - ``mode_shape``
+     - ``phi_X``, ``phi_A``
+     -
+     - Mode shape vector or matrix. Exception: the criterion functions ``MAC``, ``MSF`` and ``MCF`` keep the modal-literature symbols ``phi_X`` (experimental) and ``phi_A`` (analytical) for their arguments. ``phi`` elsewhere is not canonical.
+   * - Damping ratio
+     - ``damping_ratio``
+     - ``nat_xi``, ``pole_xi``
+     -
+     - Viscous damping ratio. Follows the ``damping_*`` word order of the general guidelines.
+   * - Number of modes
+     - ``n_modes``
+     -
+     -
+     - Count of modes. Instance of the ``n_<plural>`` count convention (see below).
+   * - Mass matrix
+     - ``mass_matrix``
+     - ``M``
+     - kg
+     - Global mass matrix. Replaces the single-letter ``M`` in public signatures. Local variables inside a numerical routine are unaffected.
+   * - Stiffness matrix
+     - ``stiffness_matrix``
+     - ``K``
+     - N/m
+     - Global stiffness matrix. Replaces ``K`` in public signatures. ``EI`` is **not** a divergent spelling of this name -- see the note below the table.
+   * - Damping matrix
+     - ``damping_matrix``
+     - ``C``
+     - Ns/m
+     - Global viscous damping matrix. Replaces ``C`` in public signatures.
+   * - Node coordinates
+     - ``nodes``
+     - ``org``
+     -
+     - Node coordinate array of a finite-element mesh.
+   * - Element connectivity
+     - ``elements``
+     - ``conec``
+     -
+     - Element connectivity array of a finite-element mesh.
+   * - Element natural coordinates
+     - ``xi``, ``eta``, ``zeta``
+     -
+     -
+     - Natural (isoparametric) coordinates of a finite element. An established term of art in finite-element analysis, and canonical as written: these are **not** divergent spellings of ``damping_ratio``.
+
+Two entries need a word of explanation.
+
+``EI`` is a scalar bending rigidity, the product of Young's modulus and the
+second moment of area. It is not a stiffness matrix. ``stiffness_matrix`` is
+therefore the wrong name for it, and this table records no canonical spelling for
+it. ``EI`` remains a violation of the snake_case rule for public parameters. The
+package that exposes it replaces it with a descriptive snake_case name of the
+maintainer's choosing.
+
+``xi`` is canonical for an element natural coordinate and divergent for a
+damping ratio. Its meaning therefore depends on the context. A name that exposes
+a damping ratio uses ``damping_ratio`` wherever it appears. A finite-element
+routine keeps ``xi``, ``eta`` and ``zeta``. Only the unambiguous damping
+spellings (``nat_xi``, ``pole_xi``) are in the **Instead of** column. A bare
+``xi`` cannot be classified without knowledge of what the routine computes.
+
+.. canonical-table-end
+
+Relation to ISO 7626
+^^^^^^^^^^^^^^^^^^^^
+
+For the quantities it defines, SDyPy nomenclature follows `ISO 7626`_,
+*Mechanical vibration and shock — Experimental determination of mechanical
+mobility* [2]_ [3]_ [4]_. The FRF forms agree with the standard: ``'mobility'``
+and ``'accelerance'`` are the ISO-preferred terms, and ISO prefers *accelerance*
+over the synonym *inertance*.
+
+There is one deliberate divergence. For the ratio of displacement to force ISO
+prefers *dynamic compliance*, and SDyPy uses ``'receptance'``. ISO recognises
+*receptance* as a synonym; SDyPy keeps it because it is the entrenched term in
+the modal-testing literature and the existing API string in ``sdypy-EMA`` and
+the pyFRF backend. The audit behind this decision is recorded in `issue #2`_.
+
+A divergence from the ISO-preferred term is permitted, but it is recorded in
+this section by the same amendment that adopts the name. An undocumented
+divergence is a defect in this SEP, not in the package that follows the table.
+
+Proposing a new term
+^^^^^^^^^^^^^^^^^^^^
+
+A name coined for a quantity the canonical table does not cover satisfies both
+the general guidelines above and the ISO 7626 terminology, where ISO defines
+that quantity. Where ISO defines no term for it, the general guidelines and the
+precedence rule govern alone, and the absence of an ISO term is not a violation.
+
+The author of the pull request that introduces the name declares it there, and
+the reviewer assesses it. Conformance to this SEP is the author's
+responsibility: no tool detects an undeclared new name. The discussion happens
+in that pull request, and a separate amendment to this SEP is not required
+before it can merge.
+
+Declared names are collected and added to the canonical table by a later
+amendment. Recording never gates a feature.
+
+A name is escalated only when the pull request cannot settle it — the guidelines
+and ISO conflict, ISO is silent where a term was expected, or the reviewers
+disagree. Escalation is an issue on ``sdypy`` followed by a pull request
+amending this SEP, and it blocks the contested name alone.
+
+The operational detail — how to run the conformance checker, what it does and
+does not decide, and the ordered steps for adding a row to the canonical table —
+is in the `nomenclature page`_ of the developer documentation, not here.
 
 Naming of public objects
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -98,33 +265,41 @@ first-level packages the following conventions apply (PEP 8, made explicit):
 * **Modules and packages**: ``snake_case`` words. Established acronym
   sub-package names fixed by SEP 3 / SEP 4 (``EMA``, ``FRF``, ``OMA``) stay
   uppercase.
-* **Classes**: ``CapWords``; acronyms keep their uppercase form inside
+* **Classes**: ``CapWords``. Acronyms keep their uppercase form inside
   ``CapWords`` names (``FRF``, not ``Frf``).
-* **Functions, methods and parameters**: ``snake_case``; acronyms are written
+* **Functions, methods and parameters**: ``snake_case``. Acronyms are written
   in lowercase inside ``snake_case`` names (``add_frf``, ``frf_form``).
-  Exception: established criterion functions may be the bare uppercase
-  acronym (``MAC``, ``MSF``, ``MCF``).
+  Exception: established criterion functions can be the bare uppercase
+  acronym (``MAC``, ``MSF``, ``MCF``). Those three functions also keep the
+  modal-literature symbols ``phi_X`` (experimental mode shape), ``phi_A``
+  (analytical mode shape) and ``phi`` as their arguments. This exception covers
+  those three names only: ``phi`` as a parameter of any other public function is a
+  violation of the canonical ``mode_shape``.
+* **Counts**: a public name that denotes a number of items is spelled ``n_<plural>``
+  (``n_modes``, ``n_nodes``, ``n_elements``, ``n_frames``). A bare ``n`` is not a
+  count in a public signature.
+* **Indices**: a public name that denotes an index into a collection is spelled
+  ``<name>_idx`` (``node_idx``, ``elem_idx``). The ``_ind`` suffix is not used.
 * **Constants**: ``ALL_CAPS``.
 * **Framework exemption**: names mandated by an external framework keep that
-  framework's casing (e.g. the Qt ``closeEvent`` override).
+  framework's casing (for example, the Qt ``closeEvent`` override).
 
 Public API surface
 ^^^^^^^^^^^^^^^^^^
 
 Every first-level package declares its public API with an explicit
 ``__all__`` in its ``sdypy/<name>/__init__.py``. Only the names curated in
-``__all__`` are supported API; any other module attribute is an
+``__all__`` are supported API. Any other module attribute is an
 implementation detail. Packages that wrap a backend re-export the curated
-names explicitly instead of star-importing the backend, so third-party and
+names explicitly. They do not star-import the backend, so third-party and
 standard-library names never enter the public surface.
 
 Deprecation policy
 ^^^^^^^^^^^^^^^^^^
 
 When a public name is renamed to conform to these guidelines, the old name is
-kept as an alias that emits ``DeprecationWarning`` for all of v1.x. Removal of
-a deprecated alias happens no earlier than v2.0. New code uses the canonical
-names only.
+kept as an alias. The alias emits ``DeprecationWarning`` for all of v1.x. Do not
+remove a deprecated alias before v2.0. New code uses the canonical names only.
 
 Discussion
 ----------
@@ -141,7 +316,20 @@ References and Footnotes
 .. [1] Each SEP must either be explicitly labeled as placed in the public domain (see
    this SEP as an example) or licensed under the `Open Publication License`_.
 
+.. [2] ISO 7626-1:2011, *Mechanical vibration and shock — Experimental
+   determination of mechanical mobility — Part 1: Basic terms and definitions,
+   and transducer specifications*.
+
+.. [3] ISO 7626-2:2015, *… Part 2: Measurements using single-point translation
+   excitation with an attached vibration exciter*.
+
+.. [4] ISO 7626-5:2019, *… Part 5: Measurements using impact excitation with an
+   exciter which is not attached to the structure*.
+
 .. _Open Publication License: https://www.opencontent.org/openpub/
+.. _ISO 7626: https://www.iso.org/standard/50426.html
+.. _issue #2: https://github.com/ladisk/sdypy/issues/2
+.. _nomenclature page: https://sdypy.readthedocs.io/en/latest/dev/nomenclature.html
 
 
 Copyright

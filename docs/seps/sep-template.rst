@@ -2,9 +2,9 @@
 SEP X — Template and Instructions
 =================================
 
-:Author: <list of authors' real names and optionally, email addresses>
-:Status: <Draft | Active | Accepted | Deferred | Rejected | Withdrawn | Final | Superseded>
-:Type: <Standards Track | Process>
+:Authors: <list of authors' real names and optionally, email addresses>
+:Status: <Draft | Active | Provisional | Accepted | Deferred | Rejected | Withdrawn | Final | Superseded>
+:Type: <Standards Track | Informational | Process>
 :Created: <date created on, in yyyy-mm-dd format>
 :Resolution: <url> (required for Accepted | Rejected | Withdrawn)
 

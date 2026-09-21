@@ -25,10 +25,10 @@ the facade, packaging, docs, tests, and governance. See
 |---|---|
 | `sdypy/__init__.py` | The umbrella lazy facade (the only real source) |
 | `REQUIREMENTS.md` | Single-source roster: every requirement → its verifying test/checker |
-| `openspec/specs/` | Canonical capability specs (7) — the normative contracts |
+| `openspec/specs/` | Canonical capability specs (8) — the normative contracts |
 | `openspec/changes/` | In-flight OpenSpec changes; `archive/` holds completed ones |
 | `docs/seps/` | SEP governance docs (SEP 1 levels, 2 API, 3 namespace, 5 sep005) |
-| `tools/check_*.py` | Executable conformance checkers (public-api, docs, template) |
+| `tools/check_*.py` | Executable conformance checkers (docs, seps, public-api, nomenclature, template) |
 | `tests/` | Functional, interop, and conformance test suites |
 | `.github/workflows/` | CI: `python-package.yml`, `docs.yml`, `release-and-publish-to-pypi.yml` |
 
@@ -44,10 +44,20 @@ the facade, packaging, docs, tests, and governance. See
 uv pip install -e ".[dev]"            # dev install (docs + test + build tools)
 pytest -m "not pypi_artifacts"        # the CI test set (skips the PyPI gate)
 pytest                                # full local run incl. pypi_artifacts gate
-python tools/check_public_api.py --path .   # public-api conformance
-python tools/check_docs.py --path .         # documentation conformance
+python tools/check_docs.py --path .         # documentation conformance (umbrella)
+python tools/check_seps.py --path .         # SEP metadata conformance (umbrella)
 python -m build                       # build sdist + wheel
 sphinx-build -b html docs/source docs/_build/html   # build docs
+```
+
+Three checkers audit a **sibling clone**, not this repo — each resolves exactly
+one portion under `sdypy/`, and the umbrella provides none. Run them with a
+sibling path:
+
+```console
+python tools/check_public_api.py --path ../sdypy-EMA        # curated __all__
+python tools/check_nomenclature.py --path ../sdypy-EMA      # SEP 2 canonical names
+python tools/check_sibling_template.py --path ../sdypy-EMA  # packaging template
 ```
 
 `pypi_artifacts`-marked tests assert against *published* PyPI wheels; they are
@@ -63,8 +73,16 @@ spec — propose the change, get the delta specs right, then implement.
 2. **Validate**: `openspec validate <name> --strict` (every change needs at
    least one delta with a `#### Scenario:` block).
 3. **Implement** the tasks; keep `tasks.md` checkboxes current.
-4. **Archive**: `openspec archive <name>` folds the delta into
-   `openspec/specs/` and moves the change to `archive/`.
+4. **Open one PR** on a branch here, carrying the artifacts and the
+   implementation.
+5. **Review** the delta there — the human audit of the contract, with the
+   artifacts in the first commit so they read apart from the code.
+6. **Archive**: `openspec archive <name>` as the final commit once review
+   converges, carrying the `REQUIREMENTS.md` roster update with it.
+7. **Merge.**
+
+Steps 1–3 and 6 engage only for non-trivial work; a typo or a version bump skips
+OpenSpec entirely and is just steps 4, 5 and 7.
 
 The OpenSpec skills/commands live in `.claude/` (`opsx:*` / `openspec-*`). If
 `openspec/` or those commands are missing, run `openspec init` / `openspec
@@ -82,6 +100,8 @@ track it in `REQUIREMENTS.md` § Pending instead.
 - **SEP governance** decides cross-cutting design (`docs/seps/`, per SEP 0/1).
 - **Public API is explicit** — every first-level package curates `__all__`
   (SEP 2). The umbrella exposes exactly the six sub-package names plus `sep005`.
+- **Changes land through PRs.** Review weight scales with the change: a typo
+  merges once CI is green, a contract change gets a real look.
 - **NumPy-style docstrings** unless a file clearly uses another style.
 - Dev-only files (`openspec/`, `.claude/`, `REQUIREMENTS.md`, this file) are
   **not** shipped in the sdist — the `[tool.hatch.build.targets.sdist]`
@@ -93,3 +113,5 @@ track it in `REQUIREMENTS.md` § Pending instead.
 - Normative contracts → `openspec/specs/<capability>/spec.md`
 - Governance & design rationale → `docs/seps/sep-000*.rst`
 - Contribution process, style, CoC → `CONTRIBUTING.rst`, `docs/source/dev/`
+- Naming a new public term → `docs/source/dev/nomenclature.rst` (SEP 2 states
+  the rule; that page carries the procedure and the checker's limits)

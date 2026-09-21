@@ -4,10 +4,10 @@
 SEP 0 — Purpose and Process
 ===========================
 
-:Author: Janko Slavič <janko.slavic@fs.uni-lj.si>
+:Authors: Janko Slavič <janko.slavic@fs.uni-lj.si>
 :Status: Active
 :Type: Process
-:Created: 2-Nov-2020
+:Created: 2020-11-02
 
 
 What is a SEP?

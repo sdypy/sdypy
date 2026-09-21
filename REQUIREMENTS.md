@@ -14,7 +14,9 @@ the spec (via an OpenSpec change) — then update the corresponding row here.
 **Legend — "Verified by"**
 - `pytest::<name>` — a test in `tests/` (run `pytest -m "not pypi_artifacts"` in
   CI; `pytest` locally to include the PyPI-artifact gate).
-- `tools/check_*.py` — a repo-layer conformance checker (also run in CI).
+- `tools/check_*.py` — a repo-layer conformance checker. Those that can run at
+  the umbrella root (`check_seps.py`, `check_docs.py`) run in `docs.yml`; the
+  others audit a **sibling clone** and cannot run here — see § Canonical sources.
 - `manual` — a human/governance act with no automated gate (tracked in
   [§ Pending requirements](#pending-requirements)).
 
@@ -24,12 +26,19 @@ the spec (via an OpenSpec change) — then update the corresponding row here.
 
 | Source | What it governs |
 |---|---|
-| `openspec/specs/*/spec.md` | Normative requirements (7 capabilities, below) |
+| `openspec/specs/*/spec.md` | Normative requirements (8 capabilities, below) |
 | `docs/seps/sep-000*.rst` | SEP governance (SEP 1 levels, 2 API, 3 namespace, 5 sep005) |
-| `tools/check_public_api.py` | Executable `public-api` conformance |
-| `tools/check_docs.py` | Executable `documentation` conformance |
-| `tools/check_sibling_template.py` | Executable `sibling-package-template` conformance |
+| `tools/check_seps.py` | Executable `sep-governance` (SEP metadata) conformance — **runs in `docs.yml`** |
+| `tools/check_docs.py` | Executable `documentation` conformance — **runs in `docs.yml`** |
+| `tools/check_public_api.py` | Executable `public-api` (`__all__`) conformance — **audits a sibling clone**, `--path ../sdypy-EMA` |
+| `tools/check_nomenclature.py` | Executable SEP 2 nomenclature conformance — **audits a sibling clone**; its own logic is covered by `tests/test_nomenclature.py` in CI |
+| `tools/check_sibling_template.py` | Executable `sibling-package-template` conformance — **audits a sibling clone** |
 | `tests/` | Functional + interop + conformance test suite |
+
+The three clone-auditing checkers cannot run against this repository: each
+resolves exactly one portion under `sdypy/`, and the umbrella provides none (it
+ships the facade plus the `sdypy/core` and `sdypy/testing` stubs). They are run
+by hand against a sibling checkout, or by that sibling's own CI.
 
 ---
 
@@ -62,6 +71,26 @@ Spec: `openspec/specs/public-api/spec.md` (SEP 2) · Checker: `tools/check_publi
 | Curated surface matches the SEP 2 table | `pytest::test_curated_surface_matches_spec` |
 | Umbrella `__all__` = the six names (+ `sep005` alias) **(umbrella-local)** | `pytest::test_umbrella_all_is_the_six_subpackages_plus_sep005` |
 | Renamed names keep deprecated aliases through v1.x | `pytest::test_shim_drift_check_is_advisory` (advisory) |
+| Canonical table wins over the word-order heuristic | `manual` (SEP 2 prose) — checker planned, see `enforce-sep2-nomenclature` |
+| Canonical names for modal quantities (`mode_shape`, `damping_ratio`, `n_modes`) | sibling repos' suites; checker planned |
+| Canonical names for system matrices (`mass_matrix`, `stiffness_matrix`, `damping_matrix`) | sibling repos' suites; checker planned |
+| Canonical names for mesh geometry (`nodes`, `elements`) | sibling repos' suites; checker planned |
+| Counts are `n_<plural>`, indices are `<name>_idx` | sibling repos' suites; checker planned |
+| SEP 2 declares the extended table + precedence rule | `manual` (docs) — verified by review of `docs/seps/sep-0002.rst` |
+| SEP 2 declares the divergent spellings each canonical name replaces ("Instead of" column) | `pytest::test_sep2_instead_of_column_parses`; the two-way mirror tests below |
+| Canonical names for element natural coordinates (`xi`, `eta`, `zeta`) | `pytest::test_bare_xi_is_not_enforced_as_a_damping_spelling`, `test_element_coordinates_are_not_reported` |
+| `EI` is not a divergent spelling of `stiffness_matrix` | `pytest::test_ei_is_reported_without_a_canonical_name` |
+| The checker mirrors SEP 2 in **both** directions | `pytest::test_every_enforced_spelling_appears_in_sep2`, `test_every_sep2_spelling_is_enforced` |
+| Evidenced divergences carry deprecated aliases (Bucket C) | sibling repos' suites — see [§ Pending](#c-align-sibling-nomenclature-with-sep-2-org-wide) |
+| Nomenclature conformance is mechanically enforced | `tools/check_nomenclature.py`; `pytest::test_conforming_clone_passes` and the rule tests in `tests/test_nomenclature.py` |
+| The checker declares its coverage boundary | review of the `check_nomenclature.py` docstring; `pytest::test_every_canonical_name_appears_in_sep2` |
+| A bare `xi` is not statically decidable (damping vs element coordinate) | `manual` — declared in the `check_nomenclature.py` docstring; sibling suites own it |
+| Sibling nomenclature conformance is a pre-release gate | `pytest::test_installed_package_uses_canonical_names` (`pypi_artifacts`) |
+| SEP 2 records its relation to ISO 7626 and every divergence from it | `manual` (docs) — review of the "Relation to ISO 7626" section in `docs/seps/sep-0002.rst` |
+| A name for an uncovered quantity satisfies the guidelines and ISO 7626 | `manual` (SEP 2 prose) — human judgement; not mechanically checkable |
+| The pull-request author declares new public names | `manual` (process) — no tool detects an undeclared name; see [§ Pending D](#d-pr-template-and-checker-invocation-deferred) |
+| Declared names reach the table via a ledger and a triggered amendment | `manual` (process) — a *SEP 2 pending terms* issue, opened on first declaration and closed by the amendment PR; the mirror tests gate the resulting edit |
+| The narrative docs carry the worked procedure | `manual` (docs) — review of `docs/source/dev/nomenclature.rst`; `check_docs.py` |
 
 ### sep005-standard
 Spec: `openspec/specs/sep005-standard/spec.md` (SEP 5) · Scope: **umbrella-local**
@@ -96,7 +125,19 @@ Spec: `openspec/specs/documentation/spec.md` · Checker: `tools/check_docs.py` �
 | README standardised as reStructuredText | `check_docs.py` |
 | Umbrella landing page + unified toctree; autodoc for own-code | docs build (`docs.yml`) |
 | Unified SEP rendering via `build_index.py` | `python tools/build_index.py` (in `docs.yml`) |
+| Canonical variable table surfaced in the narrative docs by transclusion (single definition) | `manual` — `docs/source/dev/nomenclature.rst` includes the marker-delimited region of `sep-0002.rst`; verified by docs build |
 | Standardised `readthedocs.yaml`; docs conformance CI job | `check_docs.py` in CI |
+
+### sep-governance
+Spec: `openspec/specs/sep-governance/spec.md` (SEP 0) · Checker: `tools/check_seps.py` · Scope: **umbrella-local**
+
+| Requirement | Verified by |
+|---|---|
+| Every SEP declares `:Authors:`, `:Status:`, `:Type:`, `:Created:` (and `:Resolution:` once ratified) | `pytest::test_missing_field_is_reported`, `test_deprecated_author_spelling_is_reported`, `test_accepted_without_resolution_is_reported`, `test_multi_line_authors_is_read_in_full`; `check_seps.py` |
+| `:Status:` is one of the nine values `index.rst.tmpl` renders (case-sensitive) | `pytest::test_unknown_status_is_reported`, `test_miscased_status_is_reported`, `test_template_declares_vocabularies`; `check_seps.py` |
+| `:Type:` is one of SEP 0's three kinds (`Standards Track`, `Informational`, `Process`) | `pytest::test_out_of_vocabulary_type_is_reported`, `test_template_declares_vocabularies`; `check_seps.py` |
+| `:Created:` is an ISO 8601 `yyyy-mm-dd` date | `pytest::test_non_iso_date_is_reported`, `test_other_non_iso_dates_are_reported`; `check_seps.py` |
+| SEP metadata conformance is mechanically enforced, ahead of the index generator | `pytest::test_all_seps_conform`; `check_seps.py` in `.github/workflows/docs.yml` |
 
 ### sibling-package-template
 Spec: `openspec/specs/sibling-package-template/spec.md` · Checker: `tools/check_sibling_template.py` · Scope: **org-wide**
@@ -118,6 +159,7 @@ Spec: `openspec/specs/testing-ci/spec.md` · Scope: **mixed** (see rows)
 | Core test + release workflows have the required shape | review of `python-package.yml`, `release-and-publish-to-pypi.yml` |
 | Every first-level package has a functional test baseline **(org-wide)** | sibling repos' suites |
 | Core interop suite exercises cross-package composition | `pytest tests/test_interop.py` (EMA/FRF/io/excitation/model chains, ±2–5 % tolerances) |
+| Every umbrella-runnable checker executes in core CI | `check_seps.py` + `check_docs.py` steps in `.github/workflows/docs.yml`; review of § Canonical sources |
 | All seven fork CIs green after pushes **(org-wide)** | `manual` — see Pending |
 
 ---
@@ -150,6 +192,12 @@ Acceptance: the `pypi_artifacts`-marked tests flip from red to green from a fres
 Acceptance: SEP 2/3/5 show `:Status: Accepted` with a `:Resolution:` line, after
 recorded team sign-off.
 
+These flips are now gated by `tools/check_seps.py` (see § sep-governance): a
+`Draft → Accepted` flip that omits `:Resolution:` fails CI, and the checker runs
+before the index generator so the error is a named violation rather than a
+traceback. The gate makes the flips safe to perform; it does not perform them —
+they stay team-gated.
+
 - [ ] Team sign-off on the curated `__all__` lists and the project-lead
       decisions of 2026-06-12 (view helpers public; FEM material parameters
       unified on `young_modulus`/`poisson_ratio`/`density`; SEP 2 table extended
@@ -159,3 +207,106 @@ recorded team sign-off.
 - [ ] Flip `docs/seps/sep-0003.rst` (SEP 3, namespace) `Draft` → `Accepted` + `:Resolution:`.
 - [ ] Flip `docs/seps/sep-0005.rst` (SEP 5, sep005) `Draft` → `Accepted` + `:Resolution:`.
 - [ ] Rebuild the SEP index (`python tools/build_index.py` in `docs/seps/`).
+
+### C. Align sibling nomenclature with SEP 2 (org-wide)
+Acceptance: every name below is available under its canonical spelling, the
+divergent name still works and emits `DeprecationWarning`, and positional
+callers are unaffected. Established by the `extend-sep2-nomenclature` change;
+the contract is `openspec/specs/public-api/spec.md`, not this list.
+
+This inventory is **derived from `tools/check_nomenclature.py` output**, not
+asserted independently of it — per the `public-api` spec, a name the checker no
+longer reports is dropped from the list. Baseline at the
+`canonicalize-sep2-migration-map` change, audited against the **installed**
+(published) packages: EMA 0.29.1 → 27 findings, model 0.1.5 → 82, view 0.
+
+**Audit the installed package, not a local clone.** The local `../sdypy-model`
+checkout is at 0.1.2 and its `acoustic_external` sources are untracked and
+absent, so auditing it reports 68 findings and silently misses 16 — including
+every `frequency` site. `../sdypy-EMA` is faithful (identical output either
+way), but the model discrepancy is why the counts above are taken from the
+installed distributions.
+
+All six first-level packages are checked: EMA 0.29.1 → 27, io 0.4.0 → 0,
+FRF 0.1.0 → 0, excitation 0.1.1 → 0, view 0.1.6 → 0, model 0.1.5 → 82.
+
+**A zero for a shim package is vacuous.** `sdypy-FRF` and `sdypy-excitation`
+contain no code of their own — each is a single `__init__.py` that does
+`from pyFRF import *` / `from pyExSi import *`. `sdypy-io` re-exports `pyuff`,
+`lvm_read` and `pyMRAW` as module aliases beside its own `sfmov`. The names a
+caller actually touches therefore come from the backend distributions, which the
+checker cannot reach: it resolves one portion under `sdypy/`, and the backend is
+not there.
+
+SEP 2 places backend parameter names out of scope (see the `frf_form` row), so
+the backends are not audited here and their names are not pending work. Note
+only that a star-import shim republishes whatever the backend exposes. Whether
+that is acceptable is a shim-curation question for the `public-api` spec, not a
+nomenclature one.
+
+- [ ] `sdypy-EMA` (27 findings): `nat_freq` → `natural_freq` (public attribute of `Model` —
+      needs a class-level `__getattr__` shim, not a plain assignment); `nat_xi` and
+      `pole_xi` → `damping_ratio` (`Model.select_closest_poles`, `Model.get_poles`);
+      `phi` → `mode_shape` (`Model.get_constants` — a genuine mode shape, but the
+      checker no longer reports a bare `phi`, so this one is `manual`; `MAC`/`MSF`/`MCF`
+      keep `phi_X`/`phi_A`/`phi` as a recorded SEP 2 exception);
+      `lower`/`upper`/`f_lower`/`f_upper` → `freq_lower`/`freq_upper` (`Model.__init__`,
+      `Model.get_constants`); `frf_type` → `frf_form` (`Model.__init__`,
+      `Model.read_uff`, `LSFD`, `LSFD_old`, `LSFD_proportional`);
+      `FRF_ind`/`lower_ind`/`upper_ind`/`pole_ind` → the `_idx` spellings.
+- [ ] `sdypy-model` (82 findings): `nat_freq` → `natural_freq` (`Beam.solve`,
+      `Tetrahedron.solve`); `K`/`M` → `stiffness_matrix`/`mass_matrix` (`Beam.assemble`,
+      `Shell.construct_global_matrices`, `solve_eigenvalue`, `lump_mass_matrix`);
+      `org`/`conec` → `nodes`/`elements` (`Beam`, `Tetrahedron`, `construct_loce`);
+      `n` → `n_modes` (`Beam.solve`); `E`/`Young` → `young_modulus`, `nu`/`Poisson` →
+      `poisson_ratio`, `rho`/`ro`/`Density` → `density` (`Shell`, `Tetrahedron`,
+      `MITC4_element`, `MITC4_global`, `H_matrix`, `get_constitutive_tensor`,
+      `matrices_k_e_timoshenko`); `derivative_E_ind`/`derivative_ro_ind`/`eig_ind` →
+      the `_idx` spellings (`Tetrahedron.matrix_derivative`, `Tetrahedron.S_matrix`).
+      The bare uppercase parameters `I`, `A`, `J` and `EI` each need a descriptive
+      snake_case name of the maintainer's choosing: SEP 2 has no canonical entry for
+      them, so the checker reports the snake_case violation without proposing a
+      replacement. In particular `EI` (`matrices_k_e`, `Beam`) is a scalar bending
+      rigidity (E·I), **not** a stiffness matrix — SEP 2's `stiffness_matrix` row
+      explicitly disclaims it.
+- [ ] `sdypy-model`, `acoustic_external` and `mesh` (16 further findings, present in the
+      published 0.1.5 but absent from the local 0.1.2 checkout): `frequency` → `freq`
+      (`AcousticExternalProblem.__init__`, `Body.__init__`, and three more sites);
+      `rho` → `density`; `n` → `n_<plural>`; and the bare
+      uppercase parameters `N`, `R`, `G`, which need maintainer-chosen descriptive
+      names as `I`/`A`/`J` above do.
+- [ ] `sdypy-view`: nothing to do — already conformant (`nodes`, `elements`, `mode_shape`,
+      `n_frames`). No release needed for this bucket.
+- [ ] `sdypy-io`, `sdypy-FRF`, `sdypy-excitation`: nothing to do — all three
+      report zero.
+- [ ] Core repo follow-up, after EMA and model ship the rename: move
+      `tests/test_interop.py` (six reads of `model.nat_freq` / `ema.nat_freq`) to
+      `natural_freq`. Not a blocker — the deprecated alias keeps the suite green meanwhile.
+- [ ] Every rename keeps its alias through all of v1.x; removal is gated at v2.0 by the
+      SEP 2 deprecation policy.
+
+### D. PR template and checker invocation (deferred)
+Acceptance: the declaration line exists in a PR template that contributors
+actually see, and a decision is recorded on whether `check_nomenclature.py`
+runs automatically.
+
+Established by the `add-sep2-term-governance` change, which deliberately left
+these out of scope.
+
+- [ ] No PR or issue template exists in the umbrella, in any of the six
+      siblings, or in `sdypy_template_project`. The "new public names introduced
+      by this PR" declaration line belongs in one. Creating it touches the
+      `sibling-package-template` capability (§ *Repository scaffolding*) and all
+      six sibling repos.
+- [ ] `tools/check_nomenclature.py` is never run automatically: the umbrella
+      `docs.yml` excludes it by design, and no sibling CI invokes it. It is run
+      by hand against a clone. Decide whether that stays true.
+- [ ] The *SEP 2 pending terms* issue convention is documented but untested in
+      practice: the first one is opened when a name is actually declared. Watch
+      that it is opened rather than skipped.
+- [ ] Generating the author's declaration from a public-name diff would automate
+      the one step that is currently pure discipline. Revisit once the human
+      path has been used a few times.
+
+**Out of scope, tracked elsewhere.** How the rules defined here propagate to the
+sibling namespace packages is being solved centrally, not in this repo.

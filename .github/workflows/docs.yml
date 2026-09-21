@@ -9,14 +9,25 @@ jobs:
   build-docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
       - name: Install dependencies
         run: pip install ".[docs]"
+
+      - name: Check SEP metadata
+        run: python tools/check_seps.py --path .
+
+      # check_public_api.py, check_sibling_template.py and check_nomenclature.py
+      # are deliberately absent: each resolves exactly one portion under sdypy/
+      # and the umbrella provides none, so they audit a sibling clone instead.
+      # check_nomenclature.py's own logic is covered by tests/test_nomenclature.py
+      # in python-package.yml.
+      - name: Check documentation conformance
+        run: python tools/check_docs.py --path .
 
       - name: Generate SEP index
         run: python tools/build_index.py

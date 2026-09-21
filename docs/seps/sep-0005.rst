@@ -4,7 +4,7 @@ SEP 5 — SDyPy Unified timeseries
 
 :Authors: Wout Weijtjens <wout.weijtjens@vub.be>, Janko Slavič <janko.slavic@fs.uni-lj.si>, Domen Gorjup <domen.gorjup@fs.uni-lj.si>
 :Status: Draft
-:Type: Standards
+:Type: Standards Track
 :Created: 2023-07-07
 
 
