@@ -12,6 +12,7 @@ test their own checkers.
 Nothing here touches an installed distribution or a network resource, so no
 test carries the `pypi_artifacts` marker - these run on every CI push.
 """
+import re
 import sys
 from pathlib import Path
 
@@ -32,8 +33,10 @@ from check_sibling_template import (  # noqa: E402
     check_claude_md,
     check_openspec_config,
     check_pyproject,
+    check_readthedocs_python,
     check_test_workflow,
     extract_marker_block,
+    main,
 )
 
 HUB_AGENTS_BLOCK = (
@@ -365,3 +368,104 @@ def test_classifiers_not_matching_the_supported_set_are_reported(tmp_path):
     violations = []
     check_pyproject(tmp_path, "EMA", violations)
     assert any("do not match the supported set" in v for v in violations)
+
+
+# --------------------------------------------------------------------------
+# Standardised readthedocs.yaml on the oldest supported Python
+# --------------------------------------------------------------------------
+
+READTHEDOCS = """\
+version: 2
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "%s"
+sphinx:
+  configuration: docs/source/conf.py
+python:
+  install:
+  - method: pip
+    path: .
+    extra_requirements:
+      - docs
+"""
+
+
+def test_docs_python_at_the_oldest_supported_version_passes(tmp_path):
+    write(tmp_path, "readthedocs.yaml", READTHEDOCS % PYTHON_FLOOR)
+    violations = []
+    check_readthedocs_python(tmp_path, violations)
+    assert violations == []
+
+
+def test_a_docs_python_other_than_the_oldest_supported_version_is_reported(tmp_path):
+    write(tmp_path, ".readthedocs.yaml", READTHEDOCS % "3.12")
+    violations = []
+    check_readthedocs_python(tmp_path, violations)
+    assert any("build.tools.python is '3.12'" in v for v in violations)
+
+
+def test_a_repository_without_readthedocs_yaml_is_not_reported(tmp_path):
+    violations = []
+    check_readthedocs_python(tmp_path, violations)
+    assert violations == []
+
+
+# --------------------------------------------------------------------------
+# Backend libraries support the supported Python set (--python-only)
+# --------------------------------------------------------------------------
+
+BACKEND_PYPROJECT = """\
+[project]
+name = "pyBackend"
+requires-python = "%(floor)s"
+classifiers = [
+%(classifiers)s
+]
+"""
+
+
+def write_backend(tmp_path, floor=None, matrix=None):
+    """Write a backend clone: no sdypy/ portion, AGENTS.md or release workflow."""
+    versions = sorted(SUPPORTED_PYTHON)
+    write(tmp_path, "pyproject.toml", BACKEND_PYPROJECT % {
+        "floor": floor or (">=%s" % PYTHON_FLOOR),
+        "classifiers": "\n".join('    "Programming Language :: Python :: %s",' % v for v in versions),
+    })
+    tested = matrix if matrix is not None else versions
+    write(tmp_path, ".github/workflows/tests.yml",
+          "jobs:\n  test:\n    strategy:\n      matrix:\n        python-version: [%s]\n"
+          % ", ".join('"%s"' % v for v in tested))
+    write(tmp_path, "readthedocs.yaml", READTHEDOCS % PYTHON_FLOOR)
+
+
+def test_a_conforming_backend_passes_the_python_only_check(tmp_path):
+    write_backend(tmp_path)
+    assert main(["--python-only", "--path", str(tmp_path)]) == 0
+
+
+def test_an_old_floor_is_reported_by_the_python_only_check(tmp_path, capsys):
+    write_backend(tmp_path, floor=">=3.10")
+    assert main(["--python-only", "--path", str(tmp_path)]) == 1
+    assert "requires-python is '>=3.10'" in capsys.readouterr().out
+
+
+def test_a_matrix_missing_a_supported_version_is_reported_by_the_python_only_check(tmp_path, capsys):
+    write_backend(tmp_path, matrix=sorted(SUPPORTED_PYTHON)[:-1])
+    assert main(["--python-only", "--path", str(tmp_path)]) == 1
+    assert "do not cover the supported set" in capsys.readouterr().out
+
+
+def test_only_the_python_points_are_checked(tmp_path, capsys):
+    write_backend(tmp_path)
+    assert main(["--python-only", "--path", str(tmp_path)]) == 0
+    out = capsys.readouterr().out
+    for unchecked in ("portion", "AGENTS.md", "release"):
+        assert unchecked not in out
+
+
+def test_the_hub_follows_the_supported_set(capsys):
+    assert main(["--python-only", "--path", str(REPO_ROOT)]) == 0, capsys.readouterr().out
+    workflow = (REPO_ROOT / ".github" / "workflows" / "python-package.yml").read_text(encoding="utf-8")
+    matrix = re.search(r"python-version:\s*\[([^\]]*)\]", workflow).group(1)
+    assert set(re.findall(r"3\.\d+", matrix)) == SUPPORTED_PYTHON
