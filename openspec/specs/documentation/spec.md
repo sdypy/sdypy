@@ -4,7 +4,9 @@
 The contract for the `sdypy` umbrella documentation: a unified pydata-Sphinx site free of foreign-project residue, a reStructuredText README, a landing page and unified toctree, autodoc for own-code packages, unified SEP rendering via `build_index.py`, a standardised `readthedocs.yaml`, and a docs conformance checker with a CI job. Established by the `establish-docs-website` change.
 
 **Scope:** Umbrella-local — the `sdypy` umbrella documentation site and its build.
+
 ## Requirements
+
 ### Requirement: No foreign-project residue
 
 The core repository SHALL contain no SciPy or NumPy artefacts that were never adapted for SDyPy. Specifically: the `docs/source/building/` subtree (files `index.rst`, `linux.rst`, `windows.rst`, `macosx.rst`, `faq.rst`) MUST be deleted; `docs/seps/conf.py` MUST NOT reference NumPy-branded assets (`numpylogo.svg`, NumPy GitHub/Twitter URLs, `htmlhelp_basename`, LaTeX/man/texinfo titles reading "NumPy Enhancement Proposals", or intersphinx mappings to `numpy`/`scipy`); `sep-0000.rst` footnotes and links MUST point at SDyPy resources rather than the NumPy mailing list or NEPs; the dead `www.sdypy.org/devdocs` link in `roadmap.rst` MUST be removed; the `ttps://` clone-URL typo in `dev/contributing.rst` MUST be corrected; and the `__init__.py` module docstring "A project template for the SDyPy effort…" MUST be removed from `sdypy-io`, `sdypy-FRF`, and `sdypy-excitation`. Governance and CoC prose that intentionally acknowledges SciPy origin SHALL be preserved; an allowlist MUST cover these acknowledgements and example code such as `import numpy as np` so the conformance checker does not flag them as residue.
@@ -141,26 +143,6 @@ The `code.rst` autodoc page in the core umbrella, `sdypy-view`, and `sdypy-model
 - **WHEN** `docs/source/code.rst` in the `sdypy-model` clone is read
 - **THEN** it contains at least one uncommented `.. automodule::` or `.. autoclass::` directive
 
-### Requirement: Standardised readthedocs.yaml
-
-All seven `readthedocs.yaml` files (core + six siblings) SHALL conform to one shape: `version: 2`, `build.os: ubuntu-24.04`, `build.tools.python: "3.12"`, `sphinx.configuration: docs/source/conf.py`, and `python.install` using pip with the `docs` extra (`pip install .[docs]`). The Documentation URL in each package's `pyproject.toml` `[project.urls]` SHALL reflect the package's class: EMA and io keep their own RTD URLs; `sdypy-view` switches to `https://sdypy-view.readthedocs.io/`; `sdypy-model` gains a Documentation URL pointing at `https://sdypy-model.readthedocs.io/`; FRF and excitation retain their upstream backend documentation URLs per change #3 D6.
-
-#### Scenario: Core readthedocs.yaml uses ubuntu-24.04 and Python 3.12
-- **WHEN** the core `readthedocs.yaml` is read
-- **THEN** `build.os` is `ubuntu-24.04`, `build.tools.python` is `"3.12"`, and `sphinx.configuration` is `docs/source/conf.py`
-
-#### Scenario: All sibling readthedocs.yaml files share the standard shape
-- **WHEN** `readthedocs.yaml` in each of the six sibling clones is read
-- **THEN** each sets `version: 2`, `build.os: ubuntu-24.04`, `build.tools.python: "3.12"`, and installs via `pip install .[docs]`
-
-#### Scenario: sdypy-view Documentation URL points at own RTD
-- **WHEN** `[project.urls]` in `sdypy-view/pyproject.toml` is read
-- **THEN** the `Documentation` key value is `https://sdypy-view.readthedocs.io/` or equivalent own-RTD URL
-
-#### Scenario: check_docs.py detects wrong Documentation URL class
-- **WHEN** `tools/check_docs.py --path <sdypy-view>` is run on a `sdypy-view` clone whose Documentation URL still points at its GitHub homepage
-- **THEN** the script exits non-zero and reports the URL class mismatch
-
 ### Requirement: Docs conformance checker and CI job
 
 A script `tools/check_docs.py` SHALL exist in the core repository. When run as `python tools/check_docs.py --path <repo>` it SHALL assert, per repository: `conf.py` sets `pydata_sphinx_theme`; the README is `README.rst`; the `docs` extra lists `pydata-sphinx-theme` and not a competing theme; no foreign-project residue strings appear outside the allowlist; and the `[project.urls]` Documentation target matches the correct class for that package. A core `.github/workflows/docs.yml` CI job SHALL exist that installs `.[docs]`, invokes `build_index.py`, and runs `sphinx-build -b html docs/source docs/_build/html`; the job MUST fail on a Sphinx build error. The `-W` (warnings-as-errors) flag is NOT required initially.
@@ -215,3 +197,26 @@ context, deprecation policy and status.
 - **WHEN** the built umbrella site is navigated from its landing page
 - **THEN** the nomenclature page is reachable through the toctree
 
+### Requirement: Standardised readthedocs.yaml on the oldest supported Python
+
+All seven `readthedocs.yaml` files (core + six siblings) SHALL conform to one shape: `version: 2`, `build.os: ubuntu-24.04`, `build.tools.python` set to the oldest version of the supported set (`sibling-package-template` *Supported Python versions follow SPEC 0*), `sphinx.configuration: docs/source/conf.py`, and `python.install` using pip with the `docs` extra (`pip install .[docs]`). The Documentation URL in each package's `pyproject.toml` `[project.urls]` SHALL reflect the package's class: EMA and io keep their own RTD URLs; `sdypy-view` switches to `https://sdypy-view.readthedocs.io/`; `sdypy-model` gains a Documentation URL pointing at `https://sdypy-model.readthedocs.io/`; FRF and excitation retain their upstream backend documentation URLs per change #3 D6.
+
+#### Scenario: Core readthedocs.yaml uses ubuntu-24.04 and the oldest supported Python
+- **WHEN** the core `readthedocs.yaml` is read
+- **THEN** `build.os` is `ubuntu-24.04`, `build.tools.python` is the oldest version of the supported set, and `sphinx.configuration` is `docs/source/conf.py`
+
+#### Scenario: All sibling readthedocs.yaml files share the standard shape
+- **WHEN** `readthedocs.yaml` in each of the six sibling clones is read
+- **THEN** each sets `version: 2`, `build.os: ubuntu-24.04`, `build.tools.python` to the oldest version of the supported set, and installs via `pip install .[docs]`
+
+#### Scenario: A docs Python other than the oldest supported version is reported
+- **WHEN** `python tools/check_sibling_template.py --path <sibling>` is run on a clone whose `readthedocs.yaml` sets `build.tools.python` to a version other than the oldest of the supported set
+- **THEN** the checker reports the docs Python and exits non-zero
+
+#### Scenario: sdypy-view Documentation URL points at own RTD
+- **WHEN** `[project.urls]` in `sdypy-view/pyproject.toml` is read
+- **THEN** the `Documentation` key value is `https://sdypy-view.readthedocs.io/` or equivalent own-RTD URL
+
+#### Scenario: check_docs.py detects wrong Documentation URL class
+- **WHEN** `tools/check_docs.py --path <sdypy-view>` is run on a `sdypy-view` clone whose Documentation URL still points at its GitHub homepage
+- **THEN** the script exits non-zero and reports the URL class mismatch

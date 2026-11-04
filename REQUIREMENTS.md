@@ -113,7 +113,7 @@ Spec: `openspec/specs/distribution-packaging/spec.md` · Scope: **umbrella-local
 | No tracked build artefacts | `.gitignore` (bare `_build/`); sdist excludes `docs/**/_build` |
 | Version single-sourced everywhere (installed metadata) | `pytest::test_version` |
 | sdist contains only source artefacts (explicit allow-list) | `pytest::test_published_sdist_has_no_stale_packaging` (`pypi_artifacts`) |
-| Classifiers reflect the tested support matrix (3.12–3.14) | review vs `python-package.yml` matrix |
+| Classifiers reflect the tested support matrix (the supported set) | `pytest::test_the_hub_follows_the_supported_set` |
 | Read the Docs install is complete and canonical | `readthedocs.yaml`; `check_docs.py` |
 
 ### documentation
@@ -127,7 +127,8 @@ Spec: `openspec/specs/documentation/spec.md` · Checker: `tools/check_docs.py` �
 | Umbrella landing page + unified toctree; autodoc for own-code | docs build (`docs.yml`) |
 | Unified SEP rendering via `build_index.py` | `python tools/build_index.py` (in `docs.yml`) |
 | Canonical variable table surfaced in the narrative docs by transclusion (single definition) | `manual` — `docs/source/dev/nomenclature.rst` includes the marker-delimited region of `sep-0002.rst`; verified by docs build |
-| Standardised `readthedocs.yaml`; docs conformance CI job | `check_docs.py` in CI |
+| Standardised `readthedocs.yaml` on the oldest supported Python | docs Python: `check_sibling_template.py` (siblings), `pytest::test_the_hub_follows_the_supported_set` (core), `test_a_docs_python_other_than_the_oldest_supported_version_is_reported`; `pip install .[docs]`: `check_sibling_template.py`; other shape fields: review |
+| Docs conformance checker and CI job | `check_docs.py` in CI |
 
 ### sep-governance
 Spec: `openspec/specs/sep-governance/spec.md` (SEP 0) · Checker: `tools/check_seps.py` · Scope: **umbrella-local**
@@ -155,6 +156,7 @@ Spec: `openspec/specs/sibling-package-template/spec.md` · Checker: `tools/check
 | Claude Code reads AGENTS.md (`CLAUDE.md` is `@AGENTS.md`) | `check_sibling_template.py`; `pytest::test_claude_md_is_the_one_line_pointer`, `test_missing_claude_md_is_reported`, `test_extended_claude_md_is_reported` |
 | OpenSpec configuration carries the hub's shared rules (non-shims) | `check_sibling_template.py`; `pytest::test_a_sibling_carries_the_shared_rules_unchanged`, `test_a_drifted_rules_block_is_reported`, `test_a_missing_configuration_is_reported_for_a_non_shim_sibling`, `test_a_shim_is_not_required_to_carry_openspec_configuration` |
 | Supported Python versions follow SPEC 0 (a new minor once NumPy and SciPy publish wheels); one declaration, `SUPPORTED_PYTHON` in the checker | `manual` — hub maintainer, at each SPEC 0 drop and each new CPython minor |
+| Backend libraries (pyFRF, pyExSi, pyEMA, pyuff, pyLump, lvm_read, pyMRAW) support the supported Python set | `check_sibling_template.py --python-only`; `pytest::test_a_conforming_backend_passes_the_python_only_check`, `test_an_old_floor_is_reported_by_the_python_only_check`, `test_a_matrix_missing_a_supported_version_is_reported_by_the_python_only_check`, `test_only_the_python_points_are_checked` |
 
 ### testing-ci
 Spec: `openspec/specs/testing-ci/spec.md` · Scope: **mixed** (see rows)
@@ -162,8 +164,8 @@ Spec: `openspec/specs/testing-ci/spec.md` · Scope: **mixed** (see rows)
 | Requirement | Verified by |
 |---|---|
 | `pypi_artifacts` marker registered and applied to PyPI-dependent tests | `pyproject.toml` `[tool.pytest.ini_options]`; marker usage in `tests/` |
-| GitHub CI deselects `pypi_artifacts`; matrix (3.12–3.14) green | `.github/workflows/python-package.yml` |
-| Core test + release workflows have the required shape | review of `python-package.yml`, `release-and-publish-to-pypi.yml` |
+| GitHub CI deselects `pypi_artifacts`; matrix (the supported set) green | `.github/workflows/python-package.yml` |
+| Core test + release workflows have the required shape | review of `python-package.yml`, `release-and-publish-to-pypi.yml`; matrix equals the supported set: `pytest::test_the_hub_follows_the_supported_set` |
 | Every first-level package has a functional test baseline **(org-wide)** | sibling repos' suites |
 | Core interop suite exercises cross-package composition | `pytest tests/test_interop.py` (EMA/FRF/io/excitation/model chains, ±2–5 % tolerances) |
 | Every umbrella-runnable checker executes in core CI | `check_seps.py` + `check_docs.py` steps in `.github/workflows/docs.yml`; review of § Canonical sources |

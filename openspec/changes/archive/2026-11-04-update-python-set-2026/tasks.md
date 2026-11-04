@@ -24,5 +24,5 @@
 ## 4. Verification and roster
 
 - [x] 4.1 `openspec validate update-python-set-2026 --strict` is clean
-- [ ] 4.2 `grep -rn '3\.12' openspec/specs tools tests` after archive returns no Python-set hits
-- [ ] 4.3 At archive: update the `REQUIREMENTS.md` rows (classifiers, core matrix, readthedocs, SPEC 0 set) and add the backend row (verifier: `check_sibling_template.py --python-only` and its tests)
+- [x] 4.2 `grep -rn '3\.12' openspec/specs tools tests` after archive returns no Python-set hits — only the deliberate violations in `tests/test_sibling_template.py` remain
+- [x] 4.3 At archive: update the `REQUIREMENTS.md` rows (classifiers, core matrix, readthedocs, SPEC 0 set) and add the backend row (verifier: `check_sibling_template.py --python-only` and its tests)

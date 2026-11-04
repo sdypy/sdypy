@@ -37,10 +37,10 @@ The core GitHub CI test workflow SHALL run pytest with `-m "not pypi_artifacts"`
 
 #### Scenario: CI matrix is green
 - **WHEN** the core `python-package.yml` workflow runs on a push or pull request
-- **THEN** all matrix jobs (Python 3.12, 3.13, 3.14) complete with success status
+- **THEN** all matrix jobs (one per version of the supported set) complete with success status
 
 ### Requirement: Core test workflow has the required shape
-The core `python-package.yml` MUST be triggered on `push`, `pull_request`, and `workflow_dispatch` events. The matrix SHALL cover Python versions `["3.12", "3.13", "3.14"]` with `fail-fast: false`. The workflow MUST use `actions/checkout@v7` and `actions/setup-python@v7`, which run on the Node 24 runtime; the `@v4` / `@v5` majors used previously run on the deprecated Node 20 and MUST NOT be reintroduced. The install step SHALL run `pip install .` followed by `pip install pytest flake8 build`. The workflow MUST include the existing two-pass flake8 check, the `pytest -m "not pypi_artifacts"` step, and a final `python -m build` validation step.
+The core `python-package.yml` MUST be triggered on `push`, `pull_request`, and `workflow_dispatch` events. The matrix SHALL be exactly the supported set (declared in `tools/check_sibling_template.py`, `sibling-package-template` *Supported Python versions follow SPEC 0*) with `fail-fast: false`. The workflow MUST use `actions/checkout@v7` and `actions/setup-python@v7`, which run on the Node 24 runtime; the `@v4` / `@v5` majors used previously run on the deprecated Node 20 and MUST NOT be reintroduced. The install step SHALL run `pip install .` followed by `pip install pytest flake8 build`. The workflow MUST include the existing two-pass flake8 check, the `pytest -m "not pypi_artifacts"` step, and a final `python -m build` validation step.
 
 #### Scenario: Workflow triggers are correct
 - **WHEN** `python-package.yml` is inspected
@@ -48,7 +48,7 @@ The core `python-package.yml` MUST be triggered on `push`, `pull_request`, and `
 
 #### Scenario: Matrix and action versions are correct
 - **WHEN** `python-package.yml` is inspected
-- **THEN** the matrix is `["3.12", "3.13", "3.14"]` with `fail-fast: false`
+- **THEN** the matrix lists exactly the versions of the supported set, with `fail-fast: false`
 - **AND** `actions/checkout@v7` and `actions/setup-python@v7` are used (Node 24; no Node 20 majors such as `actions/checkout@v4` or `actions/setup-python@v5`, and nothing older)
 
 #### Scenario: Workflow includes build validation step
