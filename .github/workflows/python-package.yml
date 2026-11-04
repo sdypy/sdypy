@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12", "3.13", "3.14"]
+        python-version: ["3.13", "3.14", "3.15"]
 
     steps:
       - uses: actions/checkout@v7
@@ -35,7 +35,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install .
           # PySide6 supplies the Qt binding qtpy needs to import the
-          # view/model siblings (abi3 wheels cover the whole 3.12-3.14 matrix).
+          # view/model siblings (abi3 wheels cover the whole supported matrix).
           pip install pytest flake8 build PySide6-Essentials
       - name: Lint with flake8
         run: |
