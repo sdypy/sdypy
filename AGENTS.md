@@ -66,8 +66,11 @@ the local pre-release gate and are deselected on GitHub CI.
 
 ## Required workflow: OpenSpec (spec-driven)
 
-Non-trivial changes are **spec-first**. Do not edit behaviour and back-fill a
-spec — propose the change, get the delta specs right, then implement.
+Non-trivial changes are **spec-first**: if you write one, do not edit behaviour
+and back-fill a spec — propose the change, get the delta specs right, then
+implement. A PR that arrives with code but no spec is not rejected: the
+maintainer writes the spec before merge, and review checks it as the contract,
+not as a description of whatever the code does.
 
 1. **Propose** a change under `openspec/changes/<name>/` (`proposal.md`,
    `tasks.md`, and delta specs under `specs/<capability>/spec.md`).
@@ -82,8 +85,15 @@ spec — propose the change, get the delta specs right, then implement.
    converges, carrying the `REQUIREMENTS.md` roster update with it.
 7. **Merge.**
 
-Steps 1–3 and 6 engage only for non-trivial work; a typo or a version bump skips
-OpenSpec entirely and is just steps 4, 5 and 7.
+A change is **trivial** when it adds, changes or removes no spec requirement and
+no public name, however it was written: documentation, typos, version bumps,
+test-only changes, bug fixes. It skips OpenSpec and is just steps 4, 5 and 7.
+Not trivial: editing a SEP or a spec, or a test change that removes or weakens
+a verifier listed in `REQUIREMENTS.md`.
+
+A change spanning repositories puts its spec where the contract lives (the hub,
+for org-wide contracts) and its tasks where the code lives (each sibling's own
+OpenSpec change).
 
 The OpenSpec skills/commands live in `.claude/` (`opsx:*` / `openspec-*`). If
 `openspec/` or those commands are missing, run `openspec init` / `openspec
@@ -114,7 +124,15 @@ A change is ready for review when these checks have *run* and passed —
 - **Public API is explicit** — every first-level package curates `__all__`
   (SEP 2). The umbrella exposes exactly the six sub-package names plus `sep005`.
 - **Changes land through PRs.** Review weight scales with the change: a typo
-  merges once CI is green, a contract change gets a real look.
+  merges once CI is green, a contract change gets a real look. For a
+  non-trivial change the human approval covers the contract: the spec delta,
+  its tests and the public names. Correctness of the code rests on CI and on
+  the person accountable for the PR; reading it line by line is the reviewer's
+  call.
+- **AI-assisted contributions are welcome**, including PRs an agent opens on
+  its own. The PR description says which tool and model were used and for
+  what. Before merge, a named person (the author or the merging maintainer) is
+  accountable for the PR and must be able to explain and defend its code.
 - **NumPy-style docstrings** unless a file clearly uses another style.
 - Dev-only files (`openspec/`, `.claude/`, `REQUIREMENTS.md`, this file) are
   **not** shipped in the sdist — the `[tool.hatch.build.targets.sdist]`
