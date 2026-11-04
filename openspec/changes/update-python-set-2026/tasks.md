@@ -18,7 +18,7 @@
 - [x] 3.1 Tests for the docs Python check: matching passes, other version reported, absent file not reported
 - [x] 3.2 Tests for `--python-only`: conforming clone exits 0, old floor reported, missing matrix version reported, no portion / `AGENTS.md` / release workflow not reported
 - [x] 3.3 Test that the hub passes `--python-only` and its core matrix equals the set exactly
-- [ ] 3.4 Run `pytest -m "not pypi_artifacts"` on Python 3.13 locally; CI green on 3.13, 3.14 and 3.15 — local: 150 passed on 3.13; CI pending
+- [x] 3.4 Run `pytest -m "not pypi_artifacts"` on Python 3.13 locally; CI green on 3.13, 3.14 and 3.15 — local: 150 passed on 3.13 and 3.15; CI green on PR ladisk/sdypy#19
 - [x] 3.5 Feed a synthetic violation (hub matrix with 3.12 added) and see the hub test fail — adding 3.12 to the matrix, or setting the docs Python to 3.12, fails `test_the_hub_follows_the_supported_set`
 
 ## 4. Verification and roster
