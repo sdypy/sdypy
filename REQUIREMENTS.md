@@ -81,7 +81,9 @@ Spec: `openspec/specs/public-api/spec.md` (SEP 2) · Checker: `tools/check_publi
 | Canonical names for element natural coordinates (`xi`, `eta`, `zeta`) | `pytest::test_bare_xi_is_not_enforced_as_a_damping_spelling`, `test_element_coordinates_are_not_reported` |
 | `EI` is not a divergent spelling of `stiffness_matrix` | `pytest::test_ei_is_reported_without_a_canonical_name` |
 | The checker mirrors SEP 2 in **both** directions | `pytest::test_every_enforced_spelling_appears_in_sep2`, `test_every_sep2_spelling_is_enforced` |
-| Evidenced divergences carry deprecated aliases (Bucket C) | sibling repos' suites — see [§ Pending](#c-align-sibling-nomenclature-with-sep-2-org-wide) |
+| Evidenced divergences carry deprecated aliases (Bucket C), including the pyFRF `frf_type`/`type`/`form` renames | sibling repos' suites — see [§ Pending](#c-align-sibling-nomenclature-with-sep-2-org-wide); pyFRF `tests/test_deprecations.py` for the backend renames |
+| Canonical name for the FRF estimator (`frf_estimator`: `'H1'`, `'H2'`, `'Hv'`, `'ODS'`; ISO 18431-1 wording on record) | `pytest::test_every_sep2_spelling_is_enforced` and `test_frf_estimator_and_its_context_spellings_are_documented_in_sep2` in `tests/test_nomenclature.py` for the column and notes; pyFRF `tests/test_deprecations.py` for the `frf_estimator` keyword; `manual` (docs) — review of "Relation to ISO 7626" in `docs/seps/sep-0002.rst` |
+| SEP 2 binds the signatures of re-exported backend objects (not-re-exported backend names stay out of scope) | `manual` (hub PR reviewer) — scope rule; `pytest::test_get_frf_with_type_and_form_is_not_reported`; pyFRF `tests/test_deprecations.py` verifies the re-exported `FRF` |
 | Nomenclature conformance is mechanically enforced | `tools/check_nomenclature.py`; `pytest::test_conforming_clone_passes` and the rule tests in `tests/test_nomenclature.py` |
 | Deprecated aliases are not reported as divergences (a `DeprecationWarning`-guarded parameter, or any parameter of a deprecated function) | `check_nomenclature.py`; `pytest::test_a_warned_parameter_alias_is_not_reported`, `test_parameters_of_a_deprecated_method_are_not_reported`, `test_an_unguarded_divergent_name_is_still_reported`, `test_a_warning_of_another_category_does_not_exempt_a_name` and the other alias tests in `tests/test_nomenclature.py` |
 | The checker declares its coverage boundary | review of the `check_nomenclature.py` docstring; `pytest::test_every_canonical_name_appears_in_sep2` |
@@ -250,11 +252,12 @@ caller actually touches therefore come from the backend distributions, which the
 checker cannot reach: it resolves one portion under `sdypy/`, and the backend is
 not there.
 
-SEP 2 places backend parameter names out of scope (see the `frf_form` row), so
-the backends are not audited here and their names are not pending work. Note
-only that a star-import shim republishes whatever the backend exposes. Whether
-that is acceptable is a shim-curation question for the `public-api` spec, not a
-nomenclature one.
+SEP 2 binds a backend class or function that a first-level package re-exports
+(for example pyFRF's `FRF`, re-exported by `sdypy-FRF`); backend names that are
+not re-exported are out of scope. The checker cannot reach a backend, so these
+renames are verified by the backend's own tests, not by `check_nomenclature.py`.
+Whether a star-import shim should republish everything the backend exposes is a
+shim-curation question for the `public-api` spec, not a nomenclature one.
 
 - [ ] `sdypy-EMA` (27 findings): `nat_freq` → `natural_freq` (public attribute of `Model` —
       needs a class-level `__getattr__` shim, not a plain assignment); `nat_xi` and
@@ -287,6 +290,10 @@ nomenclature one.
       `rho` → `density`; `n` → `n_<plural>`; and the bare
       uppercase parameters `N`, `R`, `G`, which need maintainer-chosen descriptive
       names as `I`/`A`/`J` above do.
+- [x] `pyFRF` (backend of `sdypy-FRF`, re-exported `FRF`): `frf_type` → `frf_estimator`
+      (`FRF.__init__` and the instance attribute); `type` → `frf_estimator` and `form` →
+      `frf_form` (`FRF.get_FRF`). Done in pyFRF 1.5.0 and `sdypy-FRF` 0.3.0 by the
+      `canonicalize-frf-estimator` change; verified by pyFRF `tests/test_deprecations.py`.
 - [ ] `sdypy-view` (1 finding, new in 0.2.0): the bare uppercase parameter `R` of
       `Plotter3D.add_camera_poses` needs a descriptive snake_case name, as `N`/`G` above.
 - [ ] `sdypy-io`, `sdypy-FRF`, `sdypy-excitation`: nothing to do — all three
