@@ -2,7 +2,8 @@
 
 Audits a first-level sdypy namespace package working clone against the
 template contract (openspec/specs/sibling-package-template/spec.md):
-root-file hygiene, pyproject shape, workflow files, the __init__.py
+root-file hygiene, pyproject shape, workflow files (the release workflow
+copied verbatim from the hub), the __init__.py
 version-derivation pattern, the agent on-ramp files (AGENTS.md, CLAUDE.md,
 openspec/config.yaml) copying the hub's shared blocks verbatim, and the
 supported Python set (SPEC 0), including the Read the Docs Python.
@@ -289,7 +290,23 @@ def check_test_workflow(workflows_dir, violations):
     check_action_versions(text, label, violations)
 
 
-def check_release_workflow(workflows_dir, violations):
+def _hub_release_workflow():
+    """The hub's release workflow, the one every sibling copies verbatim."""
+    path = HUB_ROOT / ".github" / "workflows" / RELEASE_WORKFLOW
+    return path.read_text(encoding="utf-8") if path.is_file() else None
+
+
+def _normalise(text):
+    return text.replace("\r\n", "\n").replace("\r", "\n")
+
+
+def check_release_workflow(workflows_dir, violations, hub_text=None):
+    """*Canonical release workflow*: the hub's file, copied verbatim.
+
+    The hub's copy is the only home of the release procedure (bump, tag,
+    guard, publish), so a sibling's copy is compared with it character for
+    character, line endings aside. `hub_text` overrides the hub's file (tests).
+    """
     if workflows_dir.is_dir():
         for f in workflows_dir.iterdir():
             if re.match(r"release.*_.*", f.name):
@@ -299,15 +316,13 @@ def check_release_workflow(workflows_dir, violations):
         violations.append("workflows: %s missing" % RELEASE_WORKFLOW)
         return
     label = "workflows/%s" % RELEASE_WORKFLOW
-    if not re.search(r"tags:\s*\n?\s*-?\s*['\"]?v\*", text):
-        violations.append("%s: no v* tag trigger" % label)
     if "sync_version" in text:
         violations.append("%s: contains a version-sync step" % label)
-    if "python -m build" not in text:
-        violations.append("%s: missing 'python -m build'" % label)
-    if "pypa/gh-action-pypi-publish" not in text:
-        violations.append("%s: missing pypa/gh-action-pypi-publish publish step" % label)
-    check_action_versions(text, label, violations)
+    hub = hub_text if hub_text is not None else _hub_release_workflow()
+    if hub is None:
+        violations.append("%s: the hub's copy could not be read, so the copy is unchecked" % label)
+    elif _normalise(text) != _normalise(hub):
+        violations.append("%s: differs from the hub's release workflow (copy it verbatim)" % label)
 
 
 def check_init_version(root, pkg, violations):
