@@ -8,7 +8,7 @@
 - [x] 1.6 Add to the coverage-boundary list in the `tools/check_nomenclature.py` docstring: names of re-exported backend objects (pyFRF's `FRF`) are not audited; their renames are verified by the backend's tests. Verify: `pytest tests/test_nomenclature.py` passes
 - [x] 1.7 Add tests to `tests/test_nomenclature.py`: `type` and `form` are not keys of `CANONICAL`; a clone with `pkg="FRF"` and a class with a public method `get_FRF(self, type=None, form=None)` reports no `nomenclature` fault; SEP 2's notes below the table mention `frf_estimator`, `type` and `form`. Verify: `pytest -m "not pypi_artifacts"` passes
 - [x] 1.8 Change `tests/test_interop.py:184` from `get_FRF(type="H1")` to the positional `get_FRF("H1")`, which works on pyFRF 1.4 and 1.5 without a warning. Verify: `pytest tests/test_interop.py` passes
-- [ ] 1.9 In the archive commit (task 6.3, per AGENTS.md), update `REQUIREMENTS.md`: add `public-api` rows for the new and changed requirements, naming the verifiers (`tests/test_nomenclature.py` for the column and notes; pyFRF `tests/test_deprecations.py` for the backend renames; the hub PR reviewer for the scope rule); rewrite the pending-roster paragraph that calls backend names out of scope; add a pyFRF entry to the roster. Verify: every requirement in the delta spec has a row
+- [x] 1.9 In the archive commit (task 6.3, per AGENTS.md), update `REQUIREMENTS.md`: add `public-api` rows for the new and changed requirements, naming the verifiers (`tests/test_nomenclature.py` for the column and notes; pyFRF `tests/test_deprecations.py` for the backend renames; the hub PR reviewer for the scope rule); rewrite the pending-roster paragraph that calls backend names out of scope; add a pyFRF entry to the roster. Verify: every requirement in the delta spec has a row
 - [x] 1.10 Open the hub PR on `ladisk/sdypy` with the OpenSpec artifacts in the first commit and the implementation after, linking PR #6 and PR #7. Declare `frf_estimator` as a new public name in the PR body (SEP 2 "Proposing a new term"). Verify: CI green
 
 ## 2. pyFRF (ladisk/pyFRF, branch `frf-estimator`)
@@ -18,13 +18,13 @@
 - [x] 2.3 Change `get_FRF` to `get_FRF(self, frf_estimator='default', frf_form='receptance', *, type=None, form=None)` with the same warn-and-win behaviour. Update docstrings and error messages to the new names. Leave the private constants `_FRF_TYPES` and `_FRF_FORM` as they are. Verify: tests that `get_FRF('H1', 'accelerance')`, `get_FRF(frf_estimator='H1', frf_form='accelerance')` and `get_FRF(type='H1', form='accelerance')` return equal arrays, and only the last warns
 - [x] 2.4 Update `readme.rst`, `docs/source/tutorial.rst`, `Showcase.ipynb` and `tests/test_pyFRF.py:794` to the new names, noting "since 1.5.0" in the README. Verify: `grep -rnE "frf_type|type=|form=" readme.rst docs Showcase.ipynb` finds only the deprecation note
 - [x] 2.5 Run the suite with `-W error::DeprecationWarning` to prove that no internal call uses an old name. If a third-party warning fails the run, add a targeted `filterwarnings` entry for it only. Verify: `pytest -W error::DeprecationWarning` passes
-- [ ] 2.6 Set version 1.5.0 and add a release note. Open the PR linking the hub PR. Verify: CI green; release after merge (maintainer)
+- [x] 2.6 Set version 1.5.0 and add a release note. Open the PR linking the hub PR. Verify: CI green; release after merge (maintainer)
 
 ## 3. sdypy-FRF (ladisk/sdypy-FRF)
 
 - [x] 3.1 Set `pyFRF >= 1.5` in `pyproject.toml` and version 0.3.0. Verify: `python ../../sdypy/tools/check_sibling_template.py --path .` exits 0
 - [x] 3.2 Update `README.rst` and `tests/test_frf.py` to `frf_estimator=` and `frf_form=`. Verify: `pytest -W error::DeprecationWarning` passes against pyFRF 1.5.0
-- [ ] 3.3 Open the PR linking the hub PR, after pyFRF 1.5.0 is on PyPI. Verify: CI green
+- [x] 3.3 Open the PR linking the hub PR, after pyFRF 1.5.0 is on PyPI. Verify: CI green
 
 ## 4. sdypy-EMA (ladisk/sdypy-EMA)
 
@@ -37,10 +37,10 @@
 
 - [x] 5.1 Update `docs/source/tutorial.rst` to `frf_form=`. Verify: `grep -rn frf_type docs` is empty
 - [x] 5.2 Align pyEMA's version with sdypy-EMA: set `__version__` to 0.31.0 and the dependency to `sdypy-EMA>=0.31`. Verify: `python -c "import pyEMA; print(pyEMA.__version__)"` prints 0.31.0
-- [ ] 5.3 Open the PR linking the hub PR, after sdypy-EMA 0.31.0 is on PyPI. Verify: `pytest` passes
+- [x] 5.3 Open the PR linking the hub PR, after sdypy-EMA 0.31.0 is on PyPI. Verify: `pytest` passes
 
 ## 6. Close out
 
-- [ ] 6.1 Cross-package check: in a fresh `uv venv` with all merged branches installed, run the hub `pytest -m "not pypi_artifacts" -W error::DeprecationWarning`. Verify: green, or every failure traced to a third-party warning
+- [x] 6.1 Cross-package check: in a fresh `uv venv` with all merged branches installed, run the hub `pytest -m "not pypi_artifacts" -W error::DeprecationWarning`. Verify: green, or every failure traced to a third-party warning
 - [x] 6.2 PR #6 merged on 2026-09-28; its note is replaced by the `frf_estimator` note in the merge commit
-- [ ] 6.3 After the last package PR merges, run `openspec archive canonicalize-frf-estimator` as the final hub commit, carrying the REQUIREMENTS.md update. Verify: `openspec validate --all --strict` passes
+- [x] 6.3 After the last package PR merges, run `openspec archive canonicalize-frf-estimator` as the final hub commit, carrying the REQUIREMENTS.md update. Verify: `openspec validate --all --strict` passes

@@ -296,7 +296,10 @@ Every public name in a first-level package that diverges from a canonical table 
 The inventory of evidenced divergences SHALL be derived from the output of
 `tools/check_nomenclature.py` against the sibling clones, not asserted
 independently of it. A name that no longer appears in any first-level package
-MUST NOT be carried in the inventory.
+MUST NOT be carried in the inventory. The exception is a context-dependent
+spelling on a re-exported backend object, which the checker cannot see: it is
+carried in the inventory on the strength of the SEP 2 note that records it, and
+the owning package's tests verify the rename.
 
 The inventory of evidenced divergences covered by this requirement is:
 `nat_freq` → `natural_freq` (public attribute of `EMA.Model`, `model.Beam`,
@@ -309,7 +312,10 @@ The inventory of evidenced divergences covered by this requirement is:
 `nodes`, `elements` (`model.Beam`, `model.Tetrahedron`); `n` → `n_modes`
 (`model.Beam.solve`); `FRF_ind`, `lower_ind`, `upper_ind`, `pole_ind` (EMA) and
 `derivative_E_ind`, `derivative_ro_ind`, `eig_ind` (model) → the corresponding
-`_idx` spellings.
+`_idx` spellings; `frf_type` → `frf_estimator` (constructor parameter and
+instance attribute of `FRF`, re-exported by `sdypy.FRF` from pyFRF);
+`type` → `frf_estimator` and `form` → `frf_form` (parameters of
+`FRF.get_FRF`).
 
 #### Scenario: A renamed attribute keeps a working deprecated alias
 - **WHEN** user code reads `EMA.Model.nat_freq` after the rename to `natural_freq`
@@ -330,7 +336,17 @@ The inventory of evidenced divergences covered by this requirement is:
 
 #### Scenario: A name absent from every sibling is not carried as pending work
 - **WHEN** the inventory names a divergent spelling that `tools/check_nomenclature.py` no longer reports against any sibling clone
+- **AND** the spelling is not a context-dependent spelling on a re-exported backend object, which the checker never audits
 - **THEN** that entry is removed from the inventory and from the `REQUIREMENTS.md` pending roster
+
+#### Scenario: A renamed backend keyword keeps a working deprecated alias
+- **WHEN** user code calls `sdypy.FRF.FRF(..., frf_type='H2')` or `frf.get_FRF(type='H1', form='mobility')`
+- **THEN** a `DeprecationWarning` is emitted for each old keyword
+- **AND** the object and the returned array are identical to those from `frf_estimator=` and `frf_form=`
+
+#### Scenario: A positional `get_FRF` call is unaffected
+- **WHEN** user code calls `frf.get_FRF('H1', 'accelerance')`
+- **THEN** it returns the H1 accelerance with no warning, before and after the rename
 
 ### Requirement: Nomenclature conformance is mechanically enforced
 The canonical-name contract SHALL be enforced by a standalone conformance checker, `tools/check_nomenclature.py`, following the pattern of the existing repo-layer checkers: it accepts a `--path` argument identifying a first-level package clone, prints one violation per line, exits `0` when the clone conforms and non-zero otherwise, and depends only on the Python standard library. The checker MUST determine public names by static analysis, without importing the audited package, so that packages whose import requires an optional backend (`sdypy.view` and `sdypy.model` require a Qt binding) can be audited in an environment that lacks it.
@@ -340,12 +356,19 @@ determine statically. Where a spelling is canonical in one domain and divergent
 in another, the checker enforces only the unambiguous spellings and records the
 ambiguous one as outside its coverage.
 
+A spelling whose second meaning occurs only on re-exported backend objects is
+unambiguous within the checker's reach, because the checker audits only the
+portion under `sdypy/` and never the backend. Such a spelling SHALL stay
+enforced for the meaning the checker can see. `frf_type` is the one case: the
+checker enforces it as `frf_form`, and its estimator sense on pyFRF's `FRF` is
+left to pyFRF's tests.
+
 #### Scenario: A conforming clone passes
 - **WHEN** the checker is run against a first-level package clone whose public signatures use only canonical names
 - **THEN** it prints no violation and exits `0`
 
 #### Scenario: A non-canonical parameter name is reported
-- **WHEN** the checker audits a public function declaring a parameter named `phi`, `K`, `conec`, `frf_type` or `frequency` that is not a deprecated alias
+- **WHEN** the checker audits a public function declaring a parameter named `phi`, `K`, `conec`, `frf_type` or `frequency`
 - **THEN** it reports a violation naming the file, the function, the offending parameter, and the canonical name it should use
 - **AND** the checker exits non-zero
 
@@ -370,12 +393,16 @@ ambiguous one as outside its coverage.
 - **WHEN** the checker is run against a clone of `sdypy-view` or `sdypy-model` in an environment with no Qt binding installed
 - **THEN** it completes and reports its findings, rather than failing with an import error
 
+#### Scenario: Generic backend parameter names are not reported
+- **WHEN** the checker audits a public method declaring parameters named `type` or `form`
+- **THEN** no `nomenclature` violation is reported for them
+
 ### Requirement: The checker declares its coverage boundary
-`tools/check_nomenclature.py` SHALL state, in its module docstring, which requirements of the nomenclature contract it does not verify, and `REQUIREMENTS.md` SHALL NOT record a requirement as checker-verified unless the checker actually decides it. The parts that are not statically decidable — whether a coined name corresponds to an established term of art, whether a bare `xi` denotes a damping ratio or an element natural coordinate, and whether a deprecated alias emits `DeprecationWarning` and returns the same value as its canonical counterpart — MUST remain attributed to sibling test suites or to `manual` verification.
+`tools/check_nomenclature.py` SHALL state, in its module docstring, which requirements of the nomenclature contract it does not verify, and `REQUIREMENTS.md` SHALL NOT record a requirement as checker-verified unless the checker actually decides it. The parts that are not statically decidable — whether a coined name corresponds to an established term of art, whether a bare `xi` denotes a damping ratio or an element natural coordinate, whether a deprecated alias emits `DeprecationWarning` and returns the same value as its canonical counterpart, and the names of re-exported backend objects — MUST remain attributed to sibling or backend test suites or to `manual` verification.
 
 #### Scenario: The uncovered requirements are named in the checker
 - **WHEN** the module docstring of `tools/check_nomenclature.py` is read
-- **THEN** it names the term-of-art judgement, the damping-versus-coordinate reading of a bare `xi`, and the deprecated-alias behaviour as outside the checker's scope
+- **THEN** it names the term-of-art judgement, the damping-versus-coordinate reading of a bare `xi`, the deprecated-alias behaviour, and the names of re-exported backend objects as outside the checker's scope
 
 #### Scenario: The requirements roster does not overclaim
 - **WHEN** the `public-api` rows of `REQUIREMENTS.md` are inspected after the checker lands
@@ -405,22 +432,36 @@ for the nomenclature migration map, and no other artefact may introduce a
 divergent-spelling mapping the SEP does not carry.
 
 A canonical name that replaces no evidenced divergent spelling SHALL leave the
-column empty rather than invent one. Adding a spelling to the column is an
+column empty rather than invent one.
+
+A spelling whose meaning depends on its context (it is canonical, or names a
+different quantity, elsewhere) SHALL NOT be listed in the column, because the
+checker reports every spelling in the column on sight. Such a spelling SHALL
+instead be recorded in the notes below the table, naming the context in which
+it diverges and its canonical replacement there. Those notes are part of the
+migration map. The bare `xi`, the bare `phi`, the estimator sense of
+`frf_type`, and the `get_FRF` parameters `type` and `form` are recorded this
+way. Adding a spelling to the column is an
 amendment to SEP 2 and follows the same review path as any other SEP amendment.
 
 #### Scenario: The table carries the migration map
 - **WHEN** the canonical variable table in `docs/seps/sep-0002.rst` is inspected
 - **THEN** it has an "Instead of" column
-- **AND** the divergent spellings that first-level packages are required to rename away from appear in that column against their canonical name
+- **AND** every divergent spelling that first-level packages are required to rename away from appears either in that column against its canonical name or, if its meaning depends on its context, in a note below the table
 
 #### Scenario: A canonical name with no evidenced divergence has an empty cell
-- **WHEN** a canonical table entry replaces no divergent spelling found in any first-level package
+- **WHEN** a canonical table entry replaces no divergent spelling found in any first-level package, or replaces only context-dependent spellings recorded in the notes
 - **THEN** its "Instead of" cell is empty
 
 #### Scenario: A mapping absent from SEP 2 is not enforceable
 - **WHEN** any tooling or roster asserts that a divergent spelling must be renamed to a canonical name
-- **AND** that spelling does not appear in SEP 2's "Instead of" column
+- **AND** that spelling appears neither in SEP 2's "Instead of" column nor in a note below the table
 - **THEN** the assertion is a violation of this requirement, and the fix is to amend SEP 2 or drop the assertion
+
+#### Scenario: A context-dependent spelling stays out of the column
+- **WHEN** the canonical variable table in `docs/seps/sep-0002.rst` is inspected
+- **THEN** `type` and `form` do not appear in any "Instead of" cell, and `frf_type` appears only against `frf_form`
+- **AND** a note below the table records `frf_type` (on an FRF estimator), `type` and `form` (on `get_FRF`) with their canonical replacements
 
 ### Requirement: Canonical names for element natural coordinates
 The natural (isoparametric) coordinates of a finite element SHALL be named
@@ -482,3 +523,116 @@ The nomenclature checker SHALL NOT report a divergent name that the audited code
 #### Scenario: A warning of another category does not exempt a name
 - **WHEN** the conditional that tests a divergent parameter calls `warnings.warn` with `UserWarning` or `FutureWarning`
 - **THEN** the parameter is still reported
+
+### Requirement: Canonical name for the FRF estimator
+The choice of FRF estimator SHALL be named `frf_estimator` in the public API of every first-level package, including backend objects it re-exports. Its values SHALL be `'H1'`, `'H2'`, `'Hv'` and `'ODS'`. It MUST NOT share a name with the FRF form, which remains `frf_form`.
+
+ISO 7626 does not name this quantity, so the general guidelines govern. SEP 2 SHALL record in its "Relation to ISO 7626" section that ISO 18431-1 calls H1 and H2 the frequency response function "of the first type" and "of the second type", and that SDyPy follows the modal-testing literature's term *estimator* instead, because `type` is ambiguous and shadows a Python built-in.
+
+#### Scenario: The table carries the estimator row
+- **WHEN** the canonical variable table in `docs/seps/sep-0002.rst` is inspected
+- **THEN** it has an *FRF estimator* row with canonical name `frf_estimator` and the values `'H1'`, `'H2'`, `'Hv'` and `'ODS'`
+
+#### Scenario: The estimator is selected by its canonical name
+- **WHEN** user code constructs `sdypy.FRF.FRF(..., frf_estimator='H2')` and calls `get_FRF(frf_estimator='default', frf_form='accelerance')`
+- **THEN** no warning is emitted and the H2 accelerance is returned
+
+#### Scenario: The ISO wording is on the record
+- **WHEN** the "Relation to ISO 7626" section of SEP 2 is read
+- **THEN** it cites ISO 18431-1's "first type" / "second type" wording and gives the reason for `frf_estimator`
+
+### Requirement: SEP 2 binds the signatures of re-exported backend objects
+When a first-level package re-exports a class or function from a backend package, the signature and public attributes of that object SHALL be treated as part of the first-level package's public API and SHALL follow SEP 2. Backend names that a first-level package does not re-export remain out of scope.
+
+#### Scenario: A re-exported backend class is in scope
+- **WHEN** `sdypy.FRF` re-exports pyFRF's `FRF` class unchanged
+- **THEN** the parameter names of `FRF.__init__` and `FRF.get_FRF` and the public attributes of `FRF` instances are assessed against SEP 2
+
+#### Scenario: A backend name that is not re-exported is out of scope
+- **WHEN** a backend package exposes a function that no first-level package re-exports
+- **THEN** SEP 2 makes no demand on its names
+
+#### Scenario: The table no longer excludes backend names
+- **WHEN** the *FRF form* row of the canonical table is read
+- **THEN** it does not state that backend parameter names are out of scope
+
+### Requirement: SEP 2 records its relation to ISO 7626
+SEP 2 SHALL name ISO 7626 (*Mechanical vibration and shock — Experimental determination of mechanical mobility*) as the external terminology reference for the quantities that standard defines, and SHALL record every place where a canonical SDyPy name diverges from the ISO-preferred term.
+
+A divergence is permitted, but it MUST be deliberate and reasoned on the record. An undocumented divergence is a defect in SEP 2, not in the package that follows the table.
+
+At the time of writing there is exactly one: the `frf_form` value `'receptance'` against ISO 7626-1's preferred *dynamic compliance*. ISO recognises *receptance* as a synonym; SEP 2 keeps it because it is the entrenched term in the modal-testing literature and the existing API string in `sdypy-EMA` and the pyFRF backend.
+
+#### Scenario: The ISO relation is stated in the SEP
+- **WHEN** `docs/seps/sep-0002.rst` is read
+- **THEN** it names ISO 7626 as the terminology reference for the quantities that standard defines
+- **AND** it records `'receptance'` as a deliberate divergence, with the reason
+
+#### Scenario: A new divergence must be recorded
+- **WHEN** a canonical name is adopted that differs from the ISO-preferred term for the same quantity
+- **THEN** SEP 2 records the divergence and the reason in the same amendment that adopts the name
+
+### Requirement: A name for an uncovered quantity satisfies the guidelines and ISO 7626
+A public name coined for a quantity that the canonical table does not cover SHALL satisfy both the SEP 2 general guidelines and the ISO 7626 terminology, where ISO defines that quantity. Where ISO defines no term for it, the general guidelines and the existing precedence rule govern alone, and ISO's silence is not itself a violation.
+
+This composes with the existing precedence requirement rather than replacing it: a canonical table entry still wins over everything, and an established domain term of art still overrides the word-order heuristic.
+
+#### Scenario: ISO defines the quantity
+- **WHEN** a public name is coined for a quantity that ISO 7626 defines, and the canonical table has no entry for it
+- **THEN** the ISO-preferred term is used, adapted to the `snake_case` conventions of SEP 2
+
+#### Scenario: ISO is silent on the quantity
+- **WHEN** a public name is coined for a quantity that ISO 7626 does not define
+- **THEN** the general guidelines and the precedence rule govern, and the absence of an ISO term is not a violation
+
+### Requirement: The pull-request author declares new public names
+The author of a pull request that introduces a public name for a quantity the canonical table does not cover SHALL declare that name in the pull request, and the reviewer SHALL assess it against the general guidelines and ISO 7626. Conformance to SEP 2 is the author's responsibility: no tool detects an undeclared new name.
+
+The discussion happens in that pull request. A separate SEP amendment pull request MUST NOT be required before it can merge, and an uncontested name merges with its feature.
+
+A name is escalated only when the pull request cannot settle it — the guidelines and ISO conflict, ISO is silent where a term was expected, or the reviewers disagree. Escalation is an issue on `sdypy` followed by a pull request amending SEP 2, and it blocks the contested name alone, not the rest of the feature.
+
+#### Scenario: An uncontested declared name lands with its feature
+- **WHEN** an author declares a new public name in a feature pull request and the reviewer accepts it against the guidelines and ISO 7626
+- **THEN** the name merges with the feature
+- **AND** no separate SEP amendment pull request is opened before the merge
+
+#### Scenario: A contested name escalates alone
+- **WHEN** a declared name cannot be settled in the pull request because the guidelines and ISO conflict, or the reviewers disagree
+- **THEN** the question goes to an issue on `sdypy` and a pull request amending SEP 2
+- **AND** the rest of the feature is not blocked
+
+### Requirement: Declared names reach the table through a ledger and a triggered amendment
+Declared names SHALL be collected on a *SEP 2 pending terms* issue and MUST reach the canonical table through an amendment pull request that a maintainer triggers, not through an edit made by the declaring author in passing.
+
+The issue is not permanent. One is opened when the first name since the last amendment is declared, and the amendment pull request closes it. An open issue is therefore itself the signal that an amendment is due, and no empty issue sits around between rounds.
+
+The amendment is triggered manually, with a reminder at release time. It is not scheduled: term churn is low, and a periodic trigger would mostly produce empty pull requests.
+
+The amendment is largely mechanical transcription, because the naming dilemmas were settled in the pull requests that introduced the names. A human reviews and merges it regardless. Recording never gates a feature pull request.
+
+#### Scenario: A declared name is recorded later, in batch
+- **WHEN** names have been declared and merged since the last SEP 2 amendment
+- **THEN** a *SEP 2 pending terms* issue is open and lists them
+- **AND** a triggered amendment pull request adds the agreed ones to the canonical table
+- **AND** no feature pull request was blocked waiting for it
+
+#### Scenario: The amendment is reviewed by a human
+- **WHEN** an amendment pull request is opened from the ledger
+- **THEN** a maintainer reviews and merges it, rather than it landing automatically
+
+### Requirement: The narrative docs carry the worked procedure, not the SEP
+The umbrella narrative documentation SHALL carry the operational detail of the naming procedure — how to check a proposed name, what the checker does and does not decide, and how a settled name reaches the canonical table — so that SEP 2 states the rule and stays short.
+
+The checking section MUST state that `tools/check_nomenclature.py` is not run automatically against any package: the umbrella CI excludes it by design, and nothing else invokes it, so it is run by hand against a clone. It MUST state the four faults the checker decides, and that a clean run means no known fault rather than a good name.
+
+The recording section MUST give the ordered steps: the `list-table` row in `docs/seps/sep-0002.rst`, the `CANONICAL` entry in `tools/check_nomenclature.py` for any evidenced divergent spelling, then the test run. The existing two-way mirror tests are the gate: a table row whose divergent spellings are absent from the map, or a map entry absent from the table, MUST fail the suite rather than merge silently.
+
+#### Scenario: A contributor checks a proposed name
+- **WHEN** a contributor consults the narrative nomenclature page before proposing a public name
+- **THEN** it tells them how to run the checker by hand, that nothing runs it for them, and what it does and does not decide
+
+#### Scenario: A contributor records a settled name
+- **WHEN** a contributor follows the documented steps to add a settled name to the canonical table
+- **THEN** the steps cover the SEP table row, the checker map, and the test run
+- **AND** omitting the checker map for a name that replaces a divergent spelling fails the mirror tests
