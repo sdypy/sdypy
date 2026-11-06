@@ -131,7 +131,12 @@ amendment.
      - ``frf_form``
      - ``frf_type``
      -
-     - Form of the frequency response function: ``'receptance'``, ``'mobility'`` or ``'accelerance'``. Canonical name at the sdypy level. Backend parameter names are out of scope.
+     - Form of the frequency response function: ``'receptance'``, ``'mobility'`` or ``'accelerance'``. Also binds re-exported backend objects (see *Re-exported backend objects*). ``frf_type`` has a second meaning; see the note below the table.
+   * - FRF estimator
+     - ``frf_estimator``
+     -
+     -
+     - Choice of FRF estimator: ``'H1'``, ``'H2'``, ``'Hv'`` or ``'ODS'``. ``'ODS'`` is an operating deflection shape, not an H-estimator in the strict sense. Divergent spellings depend on context; see the note below the table.
    * - Young's modulus
      - ``young_modulus``
      - ``E``, ``Young``
@@ -193,7 +198,7 @@ amendment.
      -
      - Natural (isoparametric) coordinates of a finite element. An established term of art in finite-element analysis, and canonical as written: these are **not** divergent spellings of ``damping_ratio``.
 
-Two entries need a word of explanation.
+Three entries need a word of explanation.
 
 ``EI`` is a scalar bending rigidity, the product of Young's modulus and the
 second moment of area. It is not a stiffness matrix. ``stiffness_matrix`` is
@@ -208,6 +213,15 @@ a damping ratio uses ``damping_ratio`` wherever it appears. A finite-element
 routine keeps ``xi``, ``eta`` and ``zeta``. Only the unambiguous damping
 spellings (``nat_xi``, ``pole_xi``) are in the **Instead of** column. A bare
 ``xi`` cannot be classified without knowledge of what the routine computes.
+
+``frf_type`` names two quantities. For the FRF form it is divergent from
+``frf_form``. For the choice between ``'H1'``, ``'H2'``, ``'Hv'`` and ``'ODS'``
+it is divergent from ``frf_estimator``. On ``get_FRF``, ``type`` is divergent
+from ``frf_estimator`` and ``form`` from ``frf_form``. The **Instead of**
+column carries only ``frf_type`` against ``frf_form``, because that is the
+meaning the conformance checker sees in the first-level packages. The
+estimator meaning, ``type`` and ``form`` occur on pyFRF's ``FRF`` class, which
+``sdypy.FRF`` re-exports, and pyFRF's own tests verify their renames.
 
 .. canonical-table-end
 
@@ -225,6 +239,11 @@ prefers *dynamic compliance*, and SDyPy uses ``'receptance'``. ISO recognises
 *receptance* as a synonym; SDyPy keeps it because it is the entrenched term in
 the modal-testing literature and the existing API string in ``sdypy-EMA`` and
 the pyFRF backend. The audit behind this decision is recorded in `issue #2`_.
+
+ISO 7626 does not name the choice of FRF estimator. ISO 18431-1 [5]_ calls H1
+and H2 the frequency response function "of the first type" and "of the second
+type". SDyPy uses ``frf_estimator``, the term of the modal-testing literature,
+because ``type`` is ambiguous and shadows a Python built-in.
 
 A divergence from the ISO-preferred term is permitted, but it is recorded in
 this section by the same amendment that adopts the name. An undocumented
@@ -294,6 +313,15 @@ implementation detail. Packages that wrap a backend re-export the curated
 names explicitly. They do not star-import the backend, so third-party and
 standard-library names never enter the public surface.
 
+Re-exported backend objects
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A class or function that a first-level package re-exports from a backend is
+part of that package's public API, and its parameters and public attributes
+follow this SEP. ``sdypy.FRF.FRF`` is pyFRF's ``FRF`` class, so its names are
+bound here. Backend names that no first-level package re-exports are out of
+scope.
+
 Deprecation policy
 ^^^^^^^^^^^^^^^^^^
 
@@ -325,6 +353,9 @@ References and Footnotes
 
 .. [4] ISO 7626-5:2019, *… Part 5: Measurements using impact excitation with an
    exciter which is not attached to the structure*.
+
+.. [5] ISO 18431-1:2005, *Mechanical vibration and shock — Signal processing —
+   Part 1: General introduction*.
 
 .. _Open Publication License: https://www.opencontent.org/openpub/
 .. _ISO 7626: https://www.iso.org/standard/50426.html

@@ -181,7 +181,7 @@ class TestFlagshipChain:
                 resp=resp3d,
             )
         # get_FRF() returns (n_resp_dof, n_exc_dof, n_freq) = (2, 1, N_freq)
-        H1 = frf_obj.get_FRF(type="H1")[:, 0, :]   # (2, N_freq)
+        H1 = frf_obj.get_FRF("H1")[:, 0, :]   # (2, N_freq)
         freq_axis = frf_obj.get_f_axis()             # (N_freq,)
 
         # restrict to frequency band covering both modes (30..1500 Hz)

@@ -4,7 +4,9 @@
 The contract for the public API surface of the SDyPy first-level packages: every package declares an explicit, curated `__all__` with no leaked third-party or stdlib names, sanctioned module-type entries only, deprecated aliases kept for renamed names through v1.x, and the umbrella exposing exactly the six first-level names plus the `sep005` alias. Established by the `standardize-public-api` change (SEP 2).
 
 **Scope:** Org-wide — binds all six first-level sibling packages, **except** the *Umbrella `__all__` is the six first-level names plus the sep005 alias* requirement, which is umbrella-local. Governed by SEP 2.
+
 ## Requirements
+
 ### Requirement: Every first-level package declares an explicit `__all__`
 Every first-level sdypy namespace package (`sdypy.EMA`, `sdypy.io`, `sdypy.FRF`, `sdypy.excitation`, `sdypy.view`, `sdypy.model`) SHALL declare a non-empty `__all__` list in its `sdypy/<pkg>/__init__.py`. Every name in `__all__` MUST resolve via `getattr` on the module object after import.
 
@@ -343,7 +345,7 @@ ambiguous one as outside its coverage.
 - **THEN** it prints no violation and exits `0`
 
 #### Scenario: A non-canonical parameter name is reported
-- **WHEN** the checker audits a public function declaring a parameter named `phi`, `K`, `conec`, `frf_type` or `frequency`
+- **WHEN** the checker audits a public function declaring a parameter named `phi`, `K`, `conec`, `frf_type` or `frequency` that is not a deprecated alias
 - **THEN** it reports a violation naming the file, the function, the offending parameter, and the canonical name it should use
 - **AND** the checker exits non-zero
 
@@ -462,3 +464,21 @@ never ratified.
 - **WHEN** `pytest -m "not pypi_artifacts"` is run in an environment with no first-level package installed
 - **THEN** the two-way mirror tests execute and pass
 
+### Requirement: Deprecated aliases are not reported as divergences
+The nomenclature checker SHALL NOT report a divergent name that the audited code already treats as deprecated, because *Evidenced divergences carry deprecated aliases to the canonical names* requires such names to remain. A name counts as deprecated when, statically, either the parameter is tested in a conditional whose body calls `warnings.warn` with category `DeprecationWarning`, or the function or method that declares it calls `warnings.warn` with category `DeprecationWarning` unconditionally at the top level of its body, or is decorated with `deprecated`. The same divergent name without such a guard MUST still be reported.
+
+#### Scenario: A warned parameter alias is not reported
+- **WHEN** the checker audits a public function declaring `frf_type=None` whose body contains `if frf_type is not None:` followed by `warnings.warn(..., DeprecationWarning)`
+- **THEN** no violation is reported for `frf_type`
+
+#### Scenario: Parameters of a deprecated method are not reported
+- **WHEN** the checker audits a public method whose body begins by calling `warnings.warn(..., DeprecationWarning)` unconditionally and which declares a parameter `FRF_ind`
+- **THEN** no violation is reported for `FRF_ind`
+
+#### Scenario: An unguarded divergent name is still reported
+- **WHEN** the checker audits a public function declaring `frf_type` with no deprecation warning guarding it
+- **THEN** it reports `frf_type` with the canonical name `frf_form`
+
+#### Scenario: A warning of another category does not exempt a name
+- **WHEN** the conditional that tests a divergent parameter calls `warnings.warn` with `UserWarning` or `FutureWarning`
+- **THEN** the parameter is still reported

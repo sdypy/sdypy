@@ -47,6 +47,7 @@ pytest                                # full local run incl. pypi_artifacts gate
 python tools/check_docs.py --path .         # documentation conformance (umbrella)
 python tools/check_seps.py --path .         # SEP metadata conformance (umbrella)
 python -m build                       # build sdist + wheel
+python docs/seps/tools/build_index.py                # generate the SEP index (before the docs build)
 sphinx-build -b html docs/source docs/_build/html   # build docs
 ```
 
@@ -65,8 +66,11 @@ the local pre-release gate and are deselected on GitHub CI.
 
 ## Required workflow: OpenSpec (spec-driven)
 
-Non-trivial changes are **spec-first**. Do not edit behaviour and back-fill a
-spec — propose the change, get the delta specs right, then implement.
+Non-trivial changes are **spec-first**: if you write one, do not edit behaviour
+and back-fill a spec — propose the change, get the delta specs right, then
+implement. A PR that arrives with code but no spec is not rejected: the
+maintainer writes the spec before merge, and review checks it as the contract,
+not as a description of whatever the code does.
 
 1. **Propose** a change under `openspec/changes/<name>/` (`proposal.md`,
    `tasks.md`, and delta specs under `specs/<capability>/spec.md`).
@@ -81,14 +85,33 @@ spec — propose the change, get the delta specs right, then implement.
    converges, carrying the `REQUIREMENTS.md` roster update with it.
 7. **Merge.**
 
-Steps 1–3 and 6 engage only for non-trivial work; a typo or a version bump skips
-OpenSpec entirely and is just steps 4, 5 and 7.
+A change is **trivial** when it adds, changes or removes no spec requirement and
+no public name, however it was written: documentation, typos, version bumps,
+test-only changes, bug fixes. It skips OpenSpec and is just steps 4, 5 and 7.
+Not trivial: editing a SEP or a spec, or a test change that removes or weakens
+a verifier listed in `REQUIREMENTS.md`.
+
+A change spanning repositories puts its spec where the contract lives (the hub,
+for org-wide contracts) and its tasks where the code lives (each sibling's own
+OpenSpec change).
 
 The OpenSpec skills/commands live in `.claude/` (`opsx:*` / `openspec-*`). If
 `openspec/` or those commands are missing, run `openspec init` / `openspec
 update` first. Operational or governance work with **no honest spec delta**
 (e.g. PyPI releases, flipping a SEP's status) does **not** belong in OpenSpec —
 track it in `REQUIREMENTS.md` § Pending instead.
+
+## Definition of done
+
+A change is ready for review when these checks have *run* and passed —
+"should pass" is not done:
+
+- CI is green on the PR.
+- Non-trivial: `openspec validate <name> --strict` is clean, every box in
+  `tasks.md` is ticked, and each new requirement has a test, a checker or a
+  named human judge (its `REQUIREMENTS.md` row lands with the archive, step 6).
+- A sibling's public names changed: the three sibling checkers above pass
+  against that sibling.
 
 ## Conventions & virtues
 
@@ -101,11 +124,34 @@ track it in `REQUIREMENTS.md` § Pending instead.
 - **Public API is explicit** — every first-level package curates `__all__`
   (SEP 2). The umbrella exposes exactly the six sub-package names plus `sep005`.
 - **Changes land through PRs.** Review weight scales with the change: a typo
-  merges once CI is green, a contract change gets a real look.
+  merges once CI is green, a contract change gets a real look. For a
+  non-trivial change the human approval covers the contract: the spec delta,
+  its tests and the public names. Correctness of the code rests on CI and on
+  the person accountable for the PR; reading it line by line is the reviewer's
+  call.
+- **AI-assisted contributions are welcome**, including PRs an agent opens on
+  its own. The PR description says which tool and model were used and for
+  what. Before merge, a named person (the author or the merging maintainer) is
+  accountable for the PR and must be able to explain and defend its code.
 - **NumPy-style docstrings** unless a file clearly uses another style.
 - Dev-only files (`openspec/`, `.claude/`, `REQUIREMENTS.md`, this file) are
   **not** shipped in the sdist — the `[tool.hatch.build.targets.sdist]`
   allow-list in `pyproject.toml` is explicit; keep it that way.
+
+## For sibling repositories
+
+Every first-level sibling copies the block below into its own `AGENTS.md`
+verbatim (*Agent instructions link to the hub's org-wide rules*,
+`sibling-package-template` spec); the hub's copy here is the block's only
+home, so edit it only in this file.
+
+<!-- >>> sdypy hub links -->
+- [AGENTS.md](https://github.com/sdypy/sdypy/blob/main/AGENTS.md) — workflow and definition of done
+- [docs/seps/](https://github.com/sdypy/sdypy/tree/main/docs/seps/) — SEP governance docs
+- [docs/source/dev/nomenclature.rst](https://github.com/sdypy/sdypy/blob/main/docs/source/dev/nomenclature.rst) — naming a new public term (SEP 2)
+- [openspec/specs/](https://github.com/sdypy/sdypy/tree/main/openspec/specs/) — canonical capability specs
+- [REQUIREMENTS.md](https://github.com/sdypy/sdypy/blob/main/REQUIREMENTS.md) — requirements roster
+<!-- <<< sdypy hub links -->
 
 ## Authoritative sources (read these, don't guess)
 

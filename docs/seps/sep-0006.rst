@@ -1,0 +1,198 @@
+============================================
+SEP 6 — SDyPy values: Python and open source
+============================================
+
+:Authors: Klemen Zaletelj <klemen.zaletelj@fs.uni-lj.si>
+:Status: Draft
+:Type: Informational
+:Created: 2026-09-28
+
+
+Abstract
+--------
+
+SDyPy is built on two values: it is written in Python, and it is open source.
+A third follows from both: code written against SDyPy should keep working.
+This SEP describes these values as guidelines for decision making. They help
+contributors and reviewers choose between options that the rules leave open.
+They are not rules, and nothing in this SEP is enforced or checked.
+
+Motivation and Scope
+--------------------
+
+Many decisions in SDyPy are not settled by any rule: how to shape a new
+function, whether to add a dependency, how much to generalise, what to accept
+in review. These decisions are easier, and more consistent across packages,
+when the people who make them share a sense of what SDyPy values.
+
+The values are already practised, but they are only mentioned in passing: the
+`Scope of SDyPy <scope>`__ page prefers pure Python and the SciPy stack, and
+SEP 1 asks for a permissive licence. This SEP writes the values down in one
+place, with the reasons for them.
+
+This SEP does not add requirements. Where a value has already become a rule,
+that rule lives in its own SEP (SEP 1 integration levels, SEP 2 nomenclature,
+SEP 3 namespace, SEP 5 timeseries), and the rule applies as written. This SEP
+is referred to in those SEPs only as background. If a value should become a
+rule, that is proposed in a separate SEP.
+
+The values are offered to the SDyPy umbrella, to the first-level packages,
+and to any package that integrates with SDyPy.
+
+Value 1: Python first
+---------------------
+
+SDyPy is written in Python, for people who work in Python. Where the Python
+community already has a good answer, SDyPy prefers it to an answer of its own.
+
+The Zen of Python
+^^^^^^^^^^^^^^^^^
+
+*The Zen of Python* (`PEP 20 <https://peps.python.org/pep-0020/>`__, shown by
+``import this``) is the main guide for design decisions in SDyPy. The
+aphorisms below are the ones that SDyPy draws on most. Each is given with the
+direction it suggests and, where one exists, the rule that grew from it.
+
+*Explicit is better than implicit.*
+   Prefer a visible public API, stated units and inputs passed as arguments
+   over hidden state and silent assumptions. The ``__all__`` rule of SEP 2 and
+   the named unit fields of SEP 5 reflect this.
+
+*Readability counts.*
+   Prefer names that say what a quantity is, and code that a student of
+   structural dynamics can follow. SDyPy code is also teaching material. The
+   canonical names of SEP 2, such as ``damping_ratio``, grew from this.
+
+*There should be one — and preferably only one — obvious way to do it.*
+   Before adding a new way to do something, look for an existing one in
+   SDyPy and extend it if possible. The single timeseries format of SEP 5 and
+   the single namespace of SEP 3 grew from this.
+
+*Namespaces are one honking great idea — let's do more of those!*
+   Prefer small, focused packages joined in the ``sdypy`` namespace over one
+   large package (SEP 3).
+
+*Simple is better than complex.*
+   Prefer a plain function to a framework, and NumPy, SciPy and Matplotlib to
+   a new dependency or a reimplementation of general numerics.
+
+*Errors should never pass silently.*
+   Prefer a clear error on invalid input to a result that is quietly wrong,
+   as ``sdypy.sep005.assert_sep005`` does for timeseries.
+
+*Now is better than never. Although never is often better than* right *now.*
+   Share an idea early as a draft, and settle it after discussion and a
+   working implementation (SEP 0).
+
+Python practice
+^^^^^^^^^^^^^^^
+
+These follow from the same value. They are preferences, to be weighed against
+the needs of each package:
+
+- pure Python, with compiled code only where the SciPy stack is too slow;
+- dependencies on the SciPy stack and on other SDyPy packages before other
+  libraries;
+- wheels on PyPI, so that ``pip install`` works without a compiler;
+- `PEP 8 <https://peps.python.org/pep-0008/>`__ style and NumPy-style
+  docstrings;
+- support for the Python versions recommended by the Scientific Python
+  `SPEC 0 <https://scientific-python.org/specs/spec-0000/>`__ policy.
+
+Value 2: Open source and open science
+-------------------------------------
+
+SDyPy exists to join the open research effort in structural dynamics. When a
+decision affects who can use, study, change or build on SDyPy, prefer the
+option that keeps SDyPy open:
+
+- **Free to use.** A permissive licence lets anyone use SDyPy for any
+  purpose, including commercial work. SDyPy uses MIT (SEP 1 sets the licence
+  expected of integrated packages).
+- **Open development.** Discuss and decide in public: in issues, pull requests
+  and SEPs (SEP 0), not in private channels.
+- **Reproducibility.** Prefer open datasets, versioned releases and citable
+  packages, so that a published result can be repeated with the same code.
+- **Shared ownership.** SDyPy is developed by several institutions, for both
+  academic and industrial users. Weigh a decision by its effect on the whole
+  community, not on one lab or company.
+- **Interoperability.** Prefer open data formats (SEP 5) and standard names
+  (SEP 2, ISO 7626), so that users and their data are not locked in to one
+  package or tool.
+
+Value 3: Stability for users
+----------------------------
+
+Users build scripts, teaching material and published analyses on SDyPy. A
+change that breaks them costs every user time, and can make a published
+result impossible to repeat. When a decision affects existing user code,
+prefer the option that keeps that code working, and when a break is needed,
+make it predictable:
+
+- **Semantic versioning.** Versions follow `Semantic Versioning
+  <https://semver.org/>`__, MAJOR.MINOR.PATCH: a patch release fixes bugs, a
+  minor release adds features without breaking existing code, and only a
+  major release breaks backward compatibility.
+- **Deprecate before removing.** Before a public name, parameter or behaviour
+  is removed, it emits a warning that says what to use instead. Keep the
+  warning for at least two minor releases and at least six months, whichever
+  is longer, so that users see it before the removal.
+- **Warn before a behaviour change.** When the same call will give a
+  different result, warn first. Prefer ``FutureWarning`` for this, because
+  Python shows it to end users, while ``DeprecationWarning`` is hidden by
+  default outside the user's own script.
+- **Remove only in a major release.** Collect removals into a major release,
+  and publish a migration note that lists each removed name or behaviour with
+  its replacement.
+- **Record the breaks.** List every deprecation and breaking change in the
+  changelog, so that a result can be traced to the version that produced it.
+
+For renamed public names, SEP 2 sets a binding deprecation policy: the old
+name stays as an alias that emits ``DeprecationWarning`` through all of v1.x,
+and is removed no earlier than v2.0. That policy applies as written; the
+guidance above covers the other changes.
+
+Usage and Impact
+----------------
+
+Use the values when a decision is open: in design discussions, in a SEP, or
+in review. A reviewer can use them to explain a suggestion, for example:
+"*explicit is better than implicit* — could this function be private, or
+added to ``__all__``?" The values are reasons to discuss. They are not by
+themselves grounds to reject a contribution.
+
+The values can point in different directions. Pure Python can conflict with
+speed, and one obvious way can conflict with a user's need. When they
+conflict, choose with judgement and say in the pull request or SEP which
+value was given priority, and why.
+
+Backward compatibility
+----------------------
+
+None. This SEP adds no requirement.
+
+Alternatives
+------------
+
+The values could stay implicit, known to long-time contributors and learned
+by new ones through review. Writing them down makes them available to
+everyone from the start.
+
+Discussion
+----------
+
+- `Scope of SDyPy <scope>`__
+
+References and Footnotes
+------------------------
+
+- `PEP 20 — The Zen of Python <https://peps.python.org/pep-0020/>`__
+- `PEP 8 — Style Guide for Python Code <https://peps.python.org/pep-0008/>`__
+- `SPEC 0 — Minimum Supported Dependencies <https://scientific-python.org/specs/spec-0000/>`__
+- `Semantic Versioning 2.0.0 <https://semver.org/>`__
+- `NEP 23 — Backwards compatibility and deprecation policy <https://numpy.org/neps/nep-0023-backwards-compatibility.html>`__
+
+Copyright
+---------
+
+This document has been placed in the public domain.

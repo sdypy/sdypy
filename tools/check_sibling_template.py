@@ -2,8 +2,10 @@
 
 Audits a first-level sdypy namespace package working clone against the
 template contract (openspec/specs/sibling-package-template/spec.md):
-root-file hygiene, pyproject shape, workflow files, and the __init__.py
-version-derivation pattern.
+root-file hygiene, pyproject shape, workflow files, the __init__.py
+version-derivation pattern, the agent on-ramp files (AGENTS.md, CLAUDE.md,
+openspec/config.yaml) copying the hub's shared blocks verbatim, and the
+supported Python set (SPEC 0).
 
 Usage:
     python tools/check_sibling_template.py --path <sibling-clone-dir>
@@ -17,7 +19,17 @@ import sys
 import tomllib
 from pathlib import Path
 
-CI_MATRIX = {"3.10", "3.11", "3.12"}
+# The supported Python set follows Scientific Python's SPEC 0
+# (https://scientific-python.org/specs/spec-0000/): every stable minor version
+# released less than three years ago for which the current NumPy and SciPy
+# publish wheels. This is the set's one declaration (every other requirement
+# refers to it); the hub maintainer keeps it current at each SPEC 0 quarterly
+# drop and once NumPy and SciPy ship wheels for a new CPython minor - it is
+# hand-maintained on purpose, not derived from today's date, so the checker's
+# verdict does not change with the calendar (design.md Decision 4).
+SUPPORTED_PYTHON = {"3.12", "3.13", "3.14"}
+PYTHON_FLOOR = min(SUPPORTED_PYTHON, key=lambda v: tuple(int(p) for p in v.split(".")))
+
 FORBIDDEN_ROOT_FILES = (
     "setup.py",
     "setup.cfg",
@@ -27,6 +39,26 @@ FORBIDDEN_ROOT_FILES = (
 TEST_WORKFLOW = "python-package.yml"
 RELEASE_WORKFLOW = "release-and-publish-to-pypi.yml"
 MIN_ACTION_MAJORS = {"actions/checkout": 4, "actions/setup-python": 5}
+
+# Marker comments delimiting the hub's shared blocks (design.md Decision 1).
+# Matched as a substring of their line, not the whole line, since the
+# config.yaml marker carries a trailing note the checker does not care about.
+AGENTS_LINKS_START = "<!-- >>> sdypy hub links -->"
+AGENTS_LINKS_END = "<!-- <<< sdypy hub links -->"
+SHARED_RULES_START = "# >>> shared rules from the sdypy hub"
+SHARED_RULES_END = "# <<< shared rules"
+
+# Backend shims are exempt from carrying openspec/config.yaml (*A shim is not
+# required to carry OpenSpec configuration*). Mirrors the portion names
+# tools/check_public_api.py already uses for its own shim handling
+# (SHIM_BACKENDS keys); kept as a local constant so the two checkers do not
+# import each other.
+SHIM_PACKAGES = {"FRF", "excitation"}
+
+# The hub's own root, resolved from this file's location - never from the
+# working directory, so the checker gives the same verdict regardless of where
+# it is invoked from (spec: *Read the hub's files relative to the checker*).
+HUB_ROOT = Path(__file__).resolve().parents[1]
 
 
 def find_package_name(root):
@@ -79,8 +111,12 @@ def check_pyproject(root, pkg, violations):
     elif not re.fullmatch(r"\d+\.\d+\.\d+", str(project.get("version", ""))):
         violations.append("pyproject: [project] version is %r, expected a literal X.Y.Z" % project.get("version"))
 
-    if project.get("requires-python") != ">=3.10":
-        violations.append("pyproject: requires-python is %r, expected '>=3.10'" % project.get("requires-python"))
+    expected_floor = ">=%s" % PYTHON_FLOOR
+    if project.get("requires-python") != expected_floor:
+        violations.append(
+            "pyproject: requires-python is %r, expected %r"
+            % (project.get("requires-python"), expected_floor)
+        )
 
     lic = project.get("license")
     lic_text = lic.get("text") if isinstance(lic, dict) else lic
@@ -94,10 +130,10 @@ def check_pyproject(root, pkg, violations):
         for m in [re.fullmatch(r"Programming Language :: Python :: (3\.\d+)", c)]
         if m
     }
-    if declared != CI_MATRIX:
+    if declared != SUPPORTED_PYTHON:
         violations.append(
-            "pyproject: Python classifiers %s do not match the CI matrix %s"
-            % (sorted(declared), sorted(CI_MATRIX))
+            "pyproject: Python classifiers %s do not match the supported set %s"
+            % (sorted(declared), sorted(SUPPORTED_PYTHON))
         )
     if "License :: OSI Approved :: MIT License" not in classifiers:
         violations.append("pyproject: missing 'License :: OSI Approved :: MIT License' classifier")
@@ -170,11 +206,26 @@ def check_test_workflow(workflows_dir, violations):
     if "pull_request" not in text:
         violations.append("%s: no pull_request trigger" % label)
     matrix = set(re.findall(r"['\"](3\.\d+)['\"]", text))
-    if not CI_MATRIX <= matrix:
-        violations.append("%s: python matrix %s does not cover %s" % (label, sorted(matrix), sorted(CI_MATRIX)))
-    if not re.search(r"pip install \.(?!\[)", text):
-        violations.append("%s: package must be installed via 'pip install .'" % label)
-    if "requirements" in text:
+    if not SUPPORTED_PYTHON <= matrix:
+        violations.append(
+            "%s: python matrix %s does not cover the supported set %s"
+            % (label, sorted(matrix), sorted(SUPPORTED_PYTHON))
+        )
+    # Accept 'pip install .' and 'pip install .[extra1,extra2]', quoted with
+    # single quotes, double quotes, or no quotes at all. Written as three
+    # alternatives rather than one pattern with a backreference to an optional
+    # quote group: when that group matches zero characters it does not
+    # "participate", and Python's re then refuses to match its backreference
+    # at all - even against an empty string.
+    _dot_extras = r"\.(?:\[[^\]]*\])?"
+    if not re.search(
+        r'pip install (?:%s|"%s"|\'%s\')' % (_dot_extras, _dot_extras, _dot_extras), text
+    ):
+        violations.append(
+            "%s: package must be installed via 'pip install .' or "
+            "'pip install .[<extras>]'" % label
+        )
+    if re.search(r"requirements[\w.-]*\.txt", text):
         violations.append("%s: references a requirements file" % label)
     for needle, what in (("flake8", "flake8 step"), ("pytest", "pytest step"),
                          ("python -m build", "build validation step")):
@@ -217,6 +268,103 @@ def check_init_version(root, pkg, violations):
         violations.append("%s: missing PackageNotFoundError -> '0+unknown' fallback" % label)
     if re.search(r"""^__version__\s*=\s*["']\d""", text, re.M):
         violations.append("%s: hard-coded __version__ literal present" % label)
+
+
+def extract_marker_block(text, start_marker, end_marker):
+    """Return a marker-delimited region of `text`, markers included.
+
+    Both markers are matched as a substring of the line they appear on - the
+    shared-rules marker in `openspec/config.yaml` carries a trailing note
+    ("... - edit them there") that this comparison ignores. The returned block
+    runs from the start of the start marker's line to the end of the end
+    marker's line, with line endings normalised to ``\\n``.
+
+    Returns ``None`` when either marker is absent, or the end marker precedes
+    the start marker.
+    """
+    normalised = text.replace("\r\n", "\n").replace("\r", "\n")
+    start_pos = normalised.find(start_marker)
+    end_pos = normalised.find(end_marker)
+    if start_pos == -1 or end_pos == -1 or end_pos < start_pos:
+        return None
+    block_start = normalised.rfind("\n", 0, start_pos) + 1
+    line_end = normalised.find("\n", end_pos)
+    block_end = len(normalised) if line_end == -1 else line_end
+    return normalised[block_start:block_end]
+
+
+def _hub_block(relative_path, start_marker, end_marker):
+    """Extract a shared block from a hub file, resolved from this file."""
+    path = HUB_ROOT / relative_path
+    if not path.is_file():
+        return None
+    return extract_marker_block(path.read_text(encoding="utf-8"), start_marker, end_marker)
+
+
+def check_agents_md(root, hub_block, violations):
+    """*Agent instructions link to the hub's org-wide rules.*
+
+    A `hub_block` of `None` means the hub's own `AGENTS.md` has no valid
+    marker-delimited block - a hub-side regression, not a sibling problem -
+    and is reported rather than silently letting every sibling pass.
+    """
+    if hub_block is None:
+        violations.append(
+            "on-ramp: hub AGENTS.md link block not found - cannot compare "
+            "against it (the hub itself has no valid marker-delimited block)"
+        )
+        return
+    path = root / "AGENTS.md"
+    if not path.is_file():
+        violations.append("on-ramp: AGENTS.md missing")
+        return
+    text = path.read_text(encoding="utf-8")
+    block = extract_marker_block(text, AGENTS_LINKS_START, AGENTS_LINKS_END)
+    if block is None:
+        violations.append("on-ramp: AGENTS.md has no hub link block")
+    elif block != hub_block:
+        violations.append("on-ramp: AGENTS.md link block does not match the hub's")
+
+
+def check_claude_md(root, violations):
+    """*Claude Code reads AGENTS.md.*"""
+    path = root / "CLAUDE.md"
+    if not path.is_file():
+        violations.append("on-ramp: CLAUDE.md missing")
+        return
+    text = path.read_text(encoding="utf-8")
+    if text not in ("@AGENTS.md", "@AGENTS.md\n"):
+        violations.append("on-ramp: CLAUDE.md must contain exactly '@AGENTS.md'")
+
+
+def check_openspec_config(root, pkg, hub_block, violations):
+    """*OpenSpec configuration carries the hub's shared rules*, non-shims only.
+
+    A `hub_block` of `None` means the hub's own `openspec/config.yaml` has no
+    valid marker-delimited block - a hub-side regression, not a sibling
+    problem - and is reported rather than silently letting every non-shim
+    sibling pass. Checked after the shim exemption: a shim needs no
+    `openspec/` regardless of whether the hub's block is intact.
+    """
+    if pkg in SHIM_PACKAGES:
+        return
+    if hub_block is None:
+        violations.append(
+            "on-ramp: hub openspec/config.yaml shared rules block not found - "
+            "cannot compare against it (the hub itself has no valid "
+            "marker-delimited block)"
+        )
+        return
+    path = root / "openspec" / "config.yaml"
+    if not path.is_file():
+        violations.append("on-ramp: openspec/config.yaml missing")
+        return
+    text = path.read_text(encoding="utf-8")
+    block = extract_marker_block(text, SHARED_RULES_START, SHARED_RULES_END)
+    if block is None:
+        violations.append("on-ramp: openspec/config.yaml has no shared rules block")
+    elif block != hub_block:
+        violations.append("on-ramp: openspec/config.yaml shared rules do not match the hub's")
 
 
 def check_scaffolding(root, violations):
@@ -262,6 +410,12 @@ def main(argv=None):
     check_release_workflow(workflows_dir, violations)
     check_init_version(root, pkg, violations)
     check_scaffolding(root, violations)
+
+    hub_agents_block = _hub_block("AGENTS.md", AGENTS_LINKS_START, AGENTS_LINKS_END)
+    hub_rules_block = _hub_block("openspec/config.yaml", SHARED_RULES_START, SHARED_RULES_END)
+    check_agents_md(root, hub_agents_block, violations)
+    check_claude_md(root, violations)
+    check_openspec_config(root, pkg, hub_rules_block, violations)
 
     name = "sdypy-%s" % pkg
     if violations:

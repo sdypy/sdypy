@@ -178,6 +178,121 @@ def test_missing_namespace_dir_is_an_error(tmp_path):
 
 
 # --------------------------------------------------------------------------
+# Layer one: deprecated aliases are not reported (public-api spec, ADDED
+# requirement *Deprecated aliases are not reported as divergences*)
+# --------------------------------------------------------------------------
+
+def test_a_warned_parameter_alias_is_not_reported(tmp_path):
+    src = (
+        "import warnings\n\n\n"
+        "def f(frf_form='receptance', frf_type=None):\n"
+        "    if frf_type is not None:\n"
+        "        warnings.warn('frf_type is deprecated', DeprecationWarning)\n"
+        "        frf_form = frf_type\n"
+        "    return frf_form\n"
+    )
+    assert check_clone(write_clone(tmp_path, src)) == []
+
+
+def test_parameters_of_a_deprecated_method_are_not_reported(tmp_path):
+    src = (
+        "import warnings\n\n\n"
+        "class Model:\n"
+        "    def old_reconstruct(self, FRF_ind):\n"
+        "        warnings.warn('deprecated', DeprecationWarning)\n"
+        "        return FRF_ind\n"
+    )
+    assert check_clone(write_clone(tmp_path, src)) == []
+
+
+def test_a_bare_warn_call_is_recognised(tmp_path):
+    """``from warnings import warn`` - no ``warnings.`` qualifier - still
+    exempts the guarded parameter. No import tracking is done; the bare name
+    ``warn`` is trusted at face value (review round 1, finding 2)."""
+    src = (
+        "from warnings import warn\n\n\n"
+        "def f(frf_form='receptance', frf_type=None):\n"
+        "    if frf_type is not None:\n"
+        "        warn('frf_type is deprecated', DeprecationWarning)\n"
+        "        frf_form = frf_type\n"
+        "    return frf_form\n"
+    )
+    assert check_clone(write_clone(tmp_path, src)) == []
+
+
+def test_a_guard_inside_a_nested_helper_does_not_exempt_the_outer_parameter(tmp_path):
+    """A same-named parameter of an inner helper function opens its own scope:
+    its guard must not exempt the *outer* function's parameter of the same
+    name (review round 1, finding 1). The outer `x` is still reported; the
+    checker does not know `x` is a canonical name, so it is silent about it,
+    but a canonical-diverging name in the same shape (`frf_type`) makes the
+    leak observable."""
+    src = (
+        "import warnings\n\n\n"
+        "def outer(frf_type):\n"
+        "    def helper(frf_type):\n"
+        "        if frf_type is not None:\n"
+        "            warnings.warn('deprecated', DeprecationWarning)\n"
+        "    helper(frf_type)\n"
+        "    return frf_type\n"
+    )
+    violations = check_clone(write_clone(tmp_path, src))
+    assert len(violations) == 1
+    assert "outer" in violations[0]
+    assert "frf_form" in violations[0]
+
+
+def test_an_unguarded_divergent_name_is_still_reported(tmp_path):
+    """The same spelling with no deprecation warning guarding it is reported."""
+    src = "def f(frf_type):\n    return frf_type\n"
+    violations = check_clone(write_clone(tmp_path, src))
+    assert len(violations) == 1
+    assert "frf_form" in violations[0]
+
+
+def test_a_warning_of_another_category_does_not_exempt_a_name(tmp_path):
+    src = (
+        "import warnings\n\n\n"
+        "def f(frf_type=None):\n"
+        "    if frf_type is not None:\n"
+        "        warnings.warn('renamed', UserWarning)\n"
+        "    return frf_type\n"
+    )
+    violations = check_clone(write_clone(tmp_path, src))
+    assert len(violations) == 1
+    assert "frf_form" in violations[0]
+
+
+def test_deprecated_decorator_exempts_all_parameters(tmp_path):
+    src = (
+        "from warnings import deprecated\n\n\n"
+        "class Model:\n"
+        "    @deprecated('use get_constants instead')\n"
+        "    def FRF_reconstruct(self, FRF_ind):\n"
+        "        return FRF_ind\n"
+    )
+    assert check_clone(write_clone(tmp_path, src)) == []
+
+
+def test_deprecated_alias_exemption_does_not_extend_to_attributes(tmp_path):
+    """Attributes are unaffected: a guarded parameter's own attribute mirror
+    (a common pattern - stashing the deprecated value on self) is still
+    reported, because only parameters are exempted (design.md Decision 5)."""
+    src = (
+        "import warnings\n\n\n"
+        "class Model:\n"
+        "    def __init__(self, frf_type=None):\n"
+        "        if frf_type is not None:\n"
+        "            warnings.warn('deprecated', DeprecationWarning)\n"
+        "        self.frf_type = frf_type\n"
+    )
+    violations = check_clone(write_clone(tmp_path, src))
+    assert len(violations) == 1
+    assert "attribute" in violations[0]
+    assert "frf_form" in violations[0]
+
+
+# --------------------------------------------------------------------------
 # Layer one: the mirror cannot drift away from SEP 2
 # --------------------------------------------------------------------------
 
@@ -289,6 +404,36 @@ def test_bare_xi_is_not_enforced_as_a_damping_spelling():
 def test_element_coordinates_are_not_reported(tmp_path):
     src = "def shape_functions(xi, eta, zeta):\n    return xi, eta, zeta\n"
     assert check_clone(write_clone(tmp_path, src, pkg="model")) == []
+
+
+def test_generic_frf_parameter_names_are_not_enforced():
+    """`type` and `form` diverge from `frf_estimator` and `frf_form` only on
+    pyFRF's `get_FRF`. Enforcing them would report every `type` or `form`
+    parameter in all six packages, so SEP 2 records them in a note instead.
+    """
+    assert "type" not in CANONICAL
+    assert "form" not in CANONICAL
+    assert CANONICAL["frf_type"] == "frf_form"
+
+
+def test_get_frf_with_type_and_form_is_not_reported(tmp_path):
+    src = (
+        "class FRF:\n"
+        "    def get_FRF(self, type=None, form=None):\n"
+        "        return type, form\n"
+    )
+    assert check_clone(write_clone(tmp_path, src, pkg="FRF")) == []
+
+
+def test_frf_estimator_and_its_context_spellings_are_documented_in_sep2():
+    text = SEP2.read_text(encoding="utf-8")
+    table, _, _ = text.partition(".. canonical-table-end")
+    assert "``frf_estimator``" in table
+    for value in ("'H1'", "'H2'", "'Hv'", "'ODS'"):
+        assert value in table
+    note = table.rpartition("need a word of explanation.")[2]
+    for spelling in ("``frf_type``", "``type``", "``form``", "``frf_estimator``"):
+        assert spelling in note
 
 
 def test_ei_is_reported_without_a_canonical_name(tmp_path):

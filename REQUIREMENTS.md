@@ -32,7 +32,7 @@ the spec (via an OpenSpec change) — then update the corresponding row here.
 | `tools/check_docs.py` | Executable `documentation` conformance — **runs in `docs.yml`** |
 | `tools/check_public_api.py` | Executable `public-api` (`__all__`) conformance — **audits a sibling clone**, `--path ../sdypy-EMA` |
 | `tools/check_nomenclature.py` | Executable SEP 2 nomenclature conformance — **audits a sibling clone**; its own logic is covered by `tests/test_nomenclature.py` in CI |
-| `tools/check_sibling_template.py` | Executable `sibling-package-template` conformance — **audits a sibling clone** |
+| `tools/check_sibling_template.py` | Executable `sibling-package-template` conformance — **audits a sibling clone**; its own logic is covered by `tests/test_sibling_template.py` in CI |
 | `tests/` | Functional + interop + conformance test suite |
 
 The three clone-auditing checkers cannot run against this repository: each
@@ -83,6 +83,7 @@ Spec: `openspec/specs/public-api/spec.md` (SEP 2) · Checker: `tools/check_publi
 | The checker mirrors SEP 2 in **both** directions | `pytest::test_every_enforced_spelling_appears_in_sep2`, `test_every_sep2_spelling_is_enforced` |
 | Evidenced divergences carry deprecated aliases (Bucket C) | sibling repos' suites — see [§ Pending](#c-align-sibling-nomenclature-with-sep-2-org-wide) |
 | Nomenclature conformance is mechanically enforced | `tools/check_nomenclature.py`; `pytest::test_conforming_clone_passes` and the rule tests in `tests/test_nomenclature.py` |
+| Deprecated aliases are not reported as divergences (a `DeprecationWarning`-guarded parameter, or any parameter of a deprecated function) | `check_nomenclature.py`; `pytest::test_a_warned_parameter_alias_is_not_reported`, `test_parameters_of_a_deprecated_method_are_not_reported`, `test_an_unguarded_divergent_name_is_still_reported`, `test_a_warning_of_another_category_does_not_exempt_a_name` and the other alias tests in `tests/test_nomenclature.py` |
 | The checker declares its coverage boundary | review of the `check_nomenclature.py` docstring; `pytest::test_every_canonical_name_appears_in_sep2` |
 | A bare `xi` is not statically decidable (damping vs element coordinate) | `manual` — declared in the `check_nomenclature.py` docstring; sibling suites own it |
 | Sibling nomenclature conformance is a pre-release gate | `pytest::test_installed_package_uses_canonical_names` (`pypi_artifacts`) |
@@ -147,7 +148,13 @@ Spec: `openspec/specs/sibling-package-template/spec.md` · Checker: `tools/check
 | Single build definition; version single-sourced via metadata | `check_sibling_template.py` |
 | Native namespace portion + wheel contents (no `sdypy/__init__.py`) | `check_sibling_template.py`; `pytest::test_published_wheel_ships_only_own_portion` (`pypi_artifacts`) |
 | sdist is an explicit allow-list | `check_sibling_template.py` |
-| Canonical test + release workflows; metadata consistency; scaffolding | `check_sibling_template.py` |
+| Canonical release workflow; repository scaffolding | `check_sibling_template.py` |
+| Canonical test workflow on the supported Python set (`pip install .[<extras>]` allowed, never `requirements*.txt`) | `check_sibling_template.py`; `pytest::test_pip_install_with_extras_is_accepted`, `test_requirements_txt_is_still_rejected`, `test_matrix_not_covering_the_supported_set_is_reported`, `test_matrix_covering_the_supported_set_passes` |
+| Metadata consistency with the supported Python set | `check_sibling_template.py`; `pytest::test_requires_python_floor_is_the_oldest_supported_version`, `test_wrong_requires_python_floor_is_reported`, `test_classifiers_not_matching_the_supported_set_are_reported` |
+| Agent instructions link to the hub's org-wide rules (`AGENTS.md` link block) | `check_sibling_template.py`; `pytest::test_agents_md_carries_the_hub_link_block`, `test_missing_agents_md_is_reported`, `test_agents_md_with_an_edited_link_block_is_reported` and the other `AGENTS.md` tests in `tests/test_sibling_template.py` |
+| Claude Code reads AGENTS.md (`CLAUDE.md` is `@AGENTS.md`) | `check_sibling_template.py`; `pytest::test_claude_md_is_the_one_line_pointer`, `test_missing_claude_md_is_reported`, `test_extended_claude_md_is_reported` |
+| OpenSpec configuration carries the hub's shared rules (non-shims) | `check_sibling_template.py`; `pytest::test_a_sibling_carries_the_shared_rules_unchanged`, `test_a_drifted_rules_block_is_reported`, `test_a_missing_configuration_is_reported_for_a_non_shim_sibling`, `test_a_shim_is_not_required_to_carry_openspec_configuration` |
+| Supported Python versions follow SPEC 0 (a new minor once NumPy and SciPy publish wheels); one declaration, `SUPPORTED_PYTHON` in the checker | `manual` — hub maintainer, at each SPEC 0 drop and each new CPython minor |
 
 ### testing-ci
 Spec: `openspec/specs/testing-ci/spec.md` · Scope: **mixed** (see rows)

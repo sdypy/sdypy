@@ -9,6 +9,13 @@ canonical variable table of SEP 2, without importing anything:
   * a public parameter must not be a single uppercase letter or an all-caps
     abbreviation - SEP 2 already binds parameters to snake_case.
 
+A divergent parameter is not reported when the code already treats it as a
+**deprecated alias**: an ``if`` naming the parameter whose body calls
+``warnings.warn(..., DeprecationWarning)`` exempts that one parameter, and a
+function or method that itself calls ``warnings.warn(..., DeprecationWarning)``
+unconditionally at the top level of its body, or is decorated ``@deprecated``,
+exempts all of its parameters. Public attributes are never exempt this way.
+
 Violations print to stdout as ``<file>: <rule>: <detail>`` and the script exits
 non-zero.
 
@@ -33,6 +40,11 @@ Coverage boundary - what this checker does NOT decide:
   * whether a deprecated alias emits ``DeprecationWarning`` and returns the same
     value as its canonical counterpart. That is runtime behaviour, verified by
     the sibling packages' own test suites.
+  * names of re-exported backend objects. SEP 2 binds them (pyFRF's ``FRF``,
+    re-exported as ``sdypy.FRF.FRF``), but this checker audits only the portion
+    under ``sdypy/`` and never the backend. Their renames (``frf_type``,
+    ``type`` -> ``frf_estimator``; ``form`` -> ``frf_form``) are verified by
+    the backend's own tests.
   * names introduced by decorators or generated dynamically. Static analysis
     only sees plain ``def``/``class`` statements; the six first-level packages
     define their public surfaces that way today, but a sibling that changes
@@ -203,13 +215,135 @@ def check_name(name, kind, where):
     return []
 
 
+def _is_deprecation_warn_call(node):
+    """True for a ``warnings.warn(..., DeprecationWarning)`` call node.
+
+    Matches both the qualified form (``warnings.warn(...)``) and a bare
+    ``warn(...)`` call - the common shape of ``from warnings import warn``.
+    No import tracking is done: a bare ``warn`` name is trusted at face value,
+    the same way the qualified form trusts that ``warnings`` was not
+    reassigned.
+
+    The category is read from the second positional argument or a
+    ``category=`` keyword, matching either a bare name (``DeprecationWarning``)
+    or an attribute access (``warnings.DeprecationWarning``, ``exceptions.``...).
+    """
+    if not isinstance(node, ast.Call):
+        return False
+    func = node.func
+    is_warn_call = (
+        isinstance(func, ast.Attribute)
+        and func.attr == "warn"
+        and isinstance(func.value, ast.Name)
+        and func.value.id == "warnings"
+    ) or (isinstance(func, ast.Name) and func.id == "warn")
+    if not is_warn_call:
+        return False
+    category = node.args[1] if len(node.args) >= 2 else None
+    for kw in node.keywords:
+        if kw.arg == "category":
+            category = kw.value
+    if isinstance(category, ast.Name):
+        return category.id == "DeprecationWarning"
+    if isinstance(category, ast.Attribute):
+        return category.attr == "DeprecationWarning"
+    return False
+
+
+def _is_deprecated_decorator(func_node):
+    """True when `func_node` carries a `@deprecated` decorator.
+
+    Matches a bare name, a dotted attribute (`warnings.deprecated`,
+    `typing_extensions.deprecated`), and either called with arguments
+    (`@deprecated("reason")`) or not.
+    """
+    for dec in func_node.decorator_list:
+        target = dec.func if isinstance(dec, ast.Call) else dec
+        if isinstance(target, ast.Name) and target.id == "deprecated":
+            return True
+        if isinstance(target, ast.Attribute) and target.attr == "deprecated":
+            return True
+    return False
+
+
+def _walk_own_scope(node):
+    """Yield `node` and its descendants, without entering a nested scope.
+
+    A nested ``def``/``async def``/``lambda``/``class`` opens its own
+    parameter namespace: a guard or a ``warn`` call written inside one must
+    not exempt a same-named parameter of the *enclosing* function. `ast.walk`
+    does not know about scoping, so every deprecated-alias search below uses
+    this instead.
+    """
+    yield node
+    for child in ast.iter_child_nodes(node):
+        if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.ClassDef)):
+            continue
+        yield from _walk_own_scope(child)
+
+
+def _is_function_deprecated(func_node):
+    """True when the whole function is deprecated (public-api spec).
+
+    Either it is decorated ``@deprecated``, or a call to
+    ``warnings.warn(..., DeprecationWarning)`` sits unconditionally at the top
+    level of its body - deliberately *not* a recursive search, so a warning
+    nested inside a conditional (or inside a nested helper) does not exempt
+    every parameter.
+    """
+    if _is_deprecated_decorator(func_node):
+        return True
+    return any(
+        isinstance(stmt, ast.Expr) and _is_deprecation_warn_call(stmt.value)
+        for stmt in func_node.body
+    )
+
+
+def _body_calls_deprecation_warn(body):
+    """True when any statement in `body` warns, searched within its own scope."""
+    return any(
+        _is_deprecation_warn_call(sub)
+        for stmt in body
+        for sub in _walk_own_scope(stmt)
+    )
+
+
+def deprecated_alias_parameters(func_node):
+    """Return the parameter names of `func_node` exempt as deprecated aliases.
+
+    Implements *Deprecated aliases are not reported as divergences*
+    (public-api spec): a function that is itself deprecated exempts every
+    parameter; otherwise, each ``if`` whose test names a parameter and whose
+    body warns ``DeprecationWarning`` exempts that one parameter. The search
+    stays within `func_node`'s own scope (`_walk_own_scope`): an `if` inside a
+    nested helper function does not exempt the *outer* function's parameter of
+    the same name, even when the helper happens to reuse that name.
+    """
+    param_names = set(parameter_names(func_node))
+    if _is_function_deprecated(func_node):
+        return set(param_names)
+
+    exempt = set()
+    for node in _walk_own_scope(func_node):
+        if not isinstance(node, ast.If):
+            continue
+        tested = {n.id for n in _walk_own_scope(node.test) if isinstance(n, ast.Name)}
+        guarded = tested & param_names
+        if guarded and _body_calls_deprecation_warn(node.body):
+            exempt |= guarded
+    return exempt
+
+
 def check_function(node, label, violations, class_name=None):
     """Audit one public function or method."""
     qualified = "%s.%s" % (class_name, node.name) if class_name else node.name
     exempt = node.name in CRITERION_FUNCTIONS
+    deprecated_aliases = deprecated_alias_parameters(node)
 
     for name in parameter_names(node):
         if exempt and name in CRITERION_ARGUMENTS:
+            continue
+        if name in deprecated_aliases:
             continue
         for rule, detail in check_name(name, "parameter", "%s():" % qualified):
             violations.append("%s: %s: %s" % (label, rule, detail))

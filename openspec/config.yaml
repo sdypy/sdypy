@@ -1,32 +1,26 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+# Shown to every agent drafting an OpenSpec artifact, on every call: keep it
+# to what agents get wrong here, and point to a rule's home, never restate it.
+# The rules block between the markers is copied verbatim into every sibling
+# package's config.yaml; the sibling template checker compares the copies.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+context: |
+  sdypy is the umbrella distribution of Structural Dynamics Python. It ships no
+  science code: only a lazy facade (sdypy/__init__.py) over six sibling packages
+  (EMA, io, FRF, excitation, model, view) plus the sep005 alias.
+  openspec/specs/ here holds the org-wide contracts. A sibling's own openspec/
+  specs only that package's capabilities and links to hub rules, never restates them.
+  AGENTS.md routes to everything; REQUIREMENTS.md maps each requirement to its verifier.
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+rules:
+  # >>> shared rules from the sdypy hub (openspec/config.yaml) — edit them there
+  proposal:
+    - State whether the change is trivial (no behaviour or public-name change) or non-trivial, as the sdypy hub's AGENTS.md defines it; a trivial change gets no specs.
+  specs:
+    - One requirement states one verifiable behaviour; split a requirement that bundles several SHALLs.
+    - Every requirement body contains SHALL or MUST (validate --strict fails otherwise).
+    - New or renamed public names follow the SEP 2 nomenclature (sdypy hub, docs/source/dev/nomenclature.rst); renames keep a deprecated alias per the hub's public-api spec.
+  tasks:
+    - "Every new requirement names its verifier for REQUIREMENTS.md: a test, a checker, or a named human judge (who signs off, not only which document to read)."
+  # <<< shared rules
