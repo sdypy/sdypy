@@ -5,10 +5,15 @@ template contract (openspec/specs/sibling-package-template/spec.md):
 root-file hygiene, pyproject shape, workflow files, the __init__.py
 version-derivation pattern, the agent on-ramp files (AGENTS.md, CLAUDE.md,
 openspec/config.yaml) copying the hub's shared blocks verbatim, and the
-supported Python set (SPEC 0).
+supported Python set (SPEC 0), including the Read the Docs Python.
+
+With --python-only it checks just the Python set (floor, classifiers, the
+versions named in any workflow, the Read the Docs Python) in any repository,
+without an sdypy/ portion: the mode for the consortium's backend libraries.
 
 Usage:
     python tools/check_sibling_template.py --path <sibling-clone-dir>
+    python tools/check_sibling_template.py --python-only --path <any-clone-dir>
 
 Exits 0 when the clone conforms; exits 1 and prints every violation found
 otherwise. Requires Python >= 3.11 (tomllib).
@@ -27,7 +32,7 @@ from pathlib import Path
 # drop and once NumPy and SciPy ship wheels for a new CPython minor - it is
 # hand-maintained on purpose, not derived from today's date, so the checker's
 # verdict does not change with the calendar (design.md Decision 4).
-SUPPORTED_PYTHON = {"3.12", "3.13", "3.14"}
+SUPPORTED_PYTHON = {"3.13", "3.14", "3.15"}
 PYTHON_FLOOR = min(SUPPORTED_PYTHON, key=lambda v: tuple(int(p) for p in v.split(".")))
 
 FORBIDDEN_ROOT_FILES = (
@@ -111,12 +116,7 @@ def check_pyproject(root, pkg, violations):
     elif not re.fullmatch(r"\d+\.\d+\.\d+", str(project.get("version", ""))):
         violations.append("pyproject: [project] version is %r, expected a literal X.Y.Z" % project.get("version"))
 
-    expected_floor = ">=%s" % PYTHON_FLOOR
-    if project.get("requires-python") != expected_floor:
-        violations.append(
-            "pyproject: requires-python is %r, expected %r"
-            % (project.get("requires-python"), expected_floor)
-        )
+    check_python_metadata(project, violations)
 
     lic = project.get("license")
     lic_text = lic.get("text") if isinstance(lic, dict) else lic
@@ -124,17 +124,6 @@ def check_pyproject(root, pkg, violations):
         violations.append("pyproject: license is %r, expected 'MIT'" % (lic,))
 
     classifiers = project.get("classifiers", [])
-    declared = {
-        m.group(1)
-        for c in classifiers
-        for m in [re.fullmatch(r"Programming Language :: Python :: (3\.\d+)", c)]
-        if m
-    }
-    if declared != SUPPORTED_PYTHON:
-        violations.append(
-            "pyproject: Python classifiers %s do not match the supported set %s"
-            % (sorted(declared), sorted(SUPPORTED_PYTHON))
-        )
     if "License :: OSI Approved :: MIT License" not in classifiers:
         violations.append("pyproject: missing 'License :: OSI Approved :: MIT License' classifier")
     if not any(c.startswith("Development Status ::") for c in classifiers):
@@ -172,6 +161,72 @@ def check_pyproject(root, pkg, violations):
     readme_file = readme.get("file") if isinstance(readme, dict) else readme
     if not readme_file or not (root / readme_file).is_file():
         violations.append("pyproject: readme field %r does not match a file in the repo root" % readme_file)
+
+
+def check_python_metadata(project, violations):
+    expected_floor = ">=%s" % PYTHON_FLOOR
+    if project.get("requires-python") != expected_floor:
+        violations.append(
+            "pyproject: requires-python is %r, expected %r"
+            % (project.get("requires-python"), expected_floor)
+        )
+    declared = {
+        m.group(1)
+        for c in project.get("classifiers", [])
+        for m in [re.fullmatch(r"Programming Language :: Python :: (3\.\d+)", c)]
+        if m
+    }
+    if declared != SUPPORTED_PYTHON:
+        violations.append(
+            "pyproject: Python classifiers %s do not match the supported set %s"
+            % (sorted(declared), sorted(SUPPORTED_PYTHON))
+        )
+
+
+def check_readthedocs_python(root, violations):
+    # Read the Docs accepts several file names; a repository without one has
+    # no hosted docs build to check.
+    for name in ("readthedocs.yaml", ".readthedocs.yaml", "readthedocs.yml", ".readthedocs.yml"):
+        path = root / name
+        if path.is_file():
+            break
+    else:
+        return
+    # build.tools.python is the only "python:" key that carries a version
+    # (the top-level python: block holds install steps).
+    m = re.search(r"^\s+python:\s*['\"]?(3\.\d+)['\"]?\s*$", path.read_text(encoding="utf-8"), re.M)
+    found = m.group(1) if m else None
+    if found != PYTHON_FLOOR:
+        violations.append(
+            "%s: build.tools.python is %r, expected the oldest supported version %r"
+            % (name, found, PYTHON_FLOOR)
+        )
+
+
+def check_python_only(root, violations):
+    pp_path = root / "pyproject.toml"
+    if not pp_path.is_file():
+        violations.append("pyproject: pyproject.toml missing")
+    else:
+        try:
+            data = tomllib.loads(pp_path.read_text(encoding="utf-8"))
+        except tomllib.TOMLDecodeError as exc:
+            violations.append("pyproject: unparseable: %s" % exc)
+        else:
+            check_python_metadata(data.get("project", {}), violations)
+    # Backends name their test workflow differently, so read every workflow.
+    workflows_dir = root / ".github" / "workflows"
+    tested = set()
+    if workflows_dir.is_dir():
+        for f in sorted(workflows_dir.iterdir()):
+            if f.suffix in (".yml", ".yaml"):
+                tested |= set(re.findall(r"['\"](3\.\d+)['\"]", f.read_text(encoding="utf-8")))
+    if not SUPPORTED_PYTHON <= tested:
+        violations.append(
+            "workflows: tested Python versions %s do not cover the supported set %s"
+            % (sorted(tested), sorted(SUPPORTED_PYTHON))
+        )
+    check_readthedocs_python(root, violations)
 
 
 def _workflow_text(path):
@@ -390,12 +445,25 @@ def check_scaffolding(root, violations):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--path", required=True, help="path to a sibling package working clone")
+    parser.add_argument("--python-only", action="store_true",
+                        help="check only the supported Python set (any repository, e.g. a backend)")
     args = parser.parse_args(argv)
 
     root = Path(args.path).resolve()
     if not root.is_dir():
         print("ERROR: %s is not a directory" % root)
         return 2
+
+    if args.python_only:
+        violations = []
+        check_python_only(root, violations)
+        if violations:
+            print("%s: %d Python-set violation(s):" % (root.name, len(violations)))
+            for v in violations:
+                print("  - %s" % v)
+            return 1
+        print("%s: follows the supported Python set %s" % (root.name, sorted(SUPPORTED_PYTHON)))
+        return 0
 
     pkg = find_package_name(root)
     if pkg is None:
@@ -410,6 +478,7 @@ def main(argv=None):
     check_release_workflow(workflows_dir, violations)
     check_init_version(root, pkg, violations)
     check_scaffolding(root, violations)
+    check_readthedocs_python(root, violations)
 
     hub_agents_block = _hub_block("AGENTS.md", AGENTS_LINKS_START, AGENTS_LINKS_END)
     hub_rules_block = _hub_block("openspec/config.yaml", SHARED_RULES_START, SHARED_RULES_END)

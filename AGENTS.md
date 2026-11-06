@@ -34,7 +34,8 @@ the facade, packaging, docs, tests, and governance. See
 
 ## Development environment
 
-- **Python ≥ 3.12** (tested 3.12–3.14). Use **`uv`** for envs and installs
+- **Python**: the supported set (SPEC 0), declared once as `SUPPORTED_PYTHON`
+  in `tools/check_sibling_template.py`. Use **`uv`** for envs and installs
   (`uv venv`, `uv pip install -e ".[dev]"`), not plain `pip`/`conda`.
 - Build backend is **hatchling**; there is no `setup.py`.
 
