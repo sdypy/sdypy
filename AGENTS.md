@@ -87,8 +87,9 @@ not as a description of whatever the code does.
 7. **Merge.**
 
 A change is **trivial** when it adds, changes or removes no spec requirement and
-no public name, however it was written: documentation, typos, version bumps,
-test-only changes, bug fixes. It skips OpenSpec and is just steps 4, 5 and 7.
+no public name, however it was written: documentation, typos, test-only
+changes, bug fixes. A version bump is never a PR at all: the release workflow
+makes it (§ Releasing). It skips OpenSpec and is just steps 4, 5 and 7.
 Not trivial: editing a SEP or a spec, or a test change that removes or weakens
 a verifier listed in `REQUIREMENTS.md`.
 
@@ -113,6 +114,35 @@ A change is ready for review when these checks have *run* and passed —
   named human judge (its `REQUIREMENTS.md` row lands with the archive, step 6).
 - A sibling's public names changed: the three sibling checkers above pass
   against that sibling.
+
+## Releasing
+
+There is one way to release a package, the same in the hub and in every
+sibling: the **Release and publish to PyPI** workflow
+(`.github/workflows/release-and-publish-to-pypi.yml`, the hub's file, copied
+verbatim into each sibling).
+
+- **Who:** a maintainer with write access to the repository.
+- **Before:** the default branch holds everything that goes into the release,
+  and its CI is green. In the hub, check for an open *SEP 2 pending terms*
+  issue; if one is open, trigger the canonical-table amendment described in
+  `docs/source/dev/nomenclature.rst`. This is a reminder, not a gate.
+- **Run:** *Actions → Release and publish to PyPI → Run workflow*, on the
+  default branch, with the new version: `X.Y.Z`, optionally followed by `aN`,
+  `bN` or `rcN`, no leading `v`.
+- **What it does:** it refuses a malformed version, an existing tag, or a
+  version not newer than the current one. It then writes the version into
+  `pyproject.toml`, commits *Release X.Y.Z*, tags that commit `vX.Y.Z`, builds,
+  checks that the sdist and wheel carry the version, pushes the commit and the
+  tag together, publishes to PyPI and creates the GitHub Release. The release
+  commit goes to the default branch without a PR.
+- **If it fails** before the push, nothing has changed: fix the cause and run
+  it again. If it fails after the push (PyPI or the GitHub Release), re-run the
+  failed jobs of that run; do not start a new release of the same version.
+- **Check:** `uv pip install --refresh <package>==X.Y.Z` in a clean venv (the
+  PyPI page lags for a few minutes).
+- **Don't:** push `v*` tags by hand (they publish nothing), create releases on
+  the GitHub Releases page, or change `version` in `pyproject.toml` in a PR.
 
 ## Conventions & virtues
 
@@ -148,6 +178,7 @@ home, so edit it only in this file.
 
 <!-- >>> sdypy hub links -->
 - [AGENTS.md](https://github.com/sdypy/sdypy/blob/main/AGENTS.md) — workflow and definition of done
+- [AGENTS.md § Releasing](https://github.com/sdypy/sdypy/blob/main/AGENTS.md#releasing) — the only way to release
 - [docs/seps/](https://github.com/sdypy/sdypy/tree/main/docs/seps/) — SEP governance docs
 - [docs/source/dev/nomenclature.rst](https://github.com/sdypy/sdypy/blob/main/docs/source/dev/nomenclature.rst) — naming a new public term (SEP 2)
 - [openspec/specs/](https://github.com/sdypy/sdypy/tree/main/openspec/specs/) — canonical capability specs

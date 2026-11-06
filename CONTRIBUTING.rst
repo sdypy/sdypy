@@ -5,6 +5,11 @@ Pull requests are welcome. How a change is proposed, checked and merged is
 described in one place, for people and AI agents alike:
 `AGENTS.md <https://github.com/sdypy/sdypy/blob/main/AGENTS.md>`_.
 
+Releases are made only by the release workflow, as described in
+`AGENTS.md § Releasing <https://github.com/sdypy/sdypy/blob/main/AGENTS.md#releasing>`_:
+do not push ``v*`` tags by hand, create releases on the GitHub Releases page,
+or change the version in a pull request.
+
 A code of conduct applies to all spaces managed by the SDyPy project,
 including issues and pull requests:
 https://github.com/sdypy/sdypy/blob/main/docs/source/dev/code_of_conduct.rst.
