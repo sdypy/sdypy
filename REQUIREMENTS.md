@@ -184,14 +184,17 @@ than as OpenSpec changes. Preserved in full in the archived change tasks under
 Acceptance: the `pypi_artifacts`-marked tests flip from red to green from a fresh
 `pip install`.
 
-- [ ] Fix the published wheels of **`sdypy-view`** (0.1.6) and **`sdypy-model`**:
+- [x] Fix the published wheels of **`sdypy-view`** (0.1.6) and **`sdypy-model`**:
       remove the top-level `sdypy/__init__.py` so each is a native PEP 420
       portion; bump patch versions. *(genuine code fix, in the sibling repos)*
+      Done in view 0.2.0 and model 0.2.0 (2026-11-06).
 - [ ] Publish the coordinated releases: minor releases EMA 0.30.0, io 0.4.0,
       FRF 0.2.0, excitation 0.2.0, view 0.2.0, model 0.2.0 (public-api round) and
-      the template patch releases.
-- [ ] After releases land: fresh-venv `pip install sdypy` runs the conformance
+      the template patch releases. Published so far: EMA 0.31.0, io 0.4.0,
+      FRF 0.3.0, excitation 0.2.0, view 0.2.0, model 0.2.0.
+- [x] After releases land: fresh-venv `pip install sdypy` runs the conformance
       tests green (`test_public_api`, `test_namespace_conformance` flip green).
+      Green on 2026-11-06; only `test_nomenclature` stays red, see § C.
 - [ ] Verify GitHub Actions concludes green on all seven ladisk fork repos
       (the four previously-silent forks show their first successful run).
 - [ ] Register `sdypy-FRF`, `sdypy-excitation`, `sdypy-view` on Read the Docs;
@@ -284,13 +287,16 @@ nomenclature one.
       `rho` → `density`; `n` → `n_<plural>`; and the bare
       uppercase parameters `N`, `R`, `G`, which need maintainer-chosen descriptive
       names as `I`/`A`/`J` above do.
-- [ ] `sdypy-view`: nothing to do — already conformant (`nodes`, `elements`, `mode_shape`,
-      `n_frames`). No release needed for this bucket.
+- [ ] `sdypy-view` (1 finding, new in 0.2.0): the bare uppercase parameter `R` of
+      `Plotter3D.add_camera_poses` needs a descriptive snake_case name, as `N`/`G` above.
 - [ ] `sdypy-io`, `sdypy-FRF`, `sdypy-excitation`: nothing to do — all three
       report zero.
 - [ ] Core repo follow-up, after EMA and model ship the rename: move
       `tests/test_interop.py` (six reads of `model.nat_freq` / `ema.nat_freq`) to
       `natural_freq`. Not a blocker — the deprecated alias keeps the suite green meanwhile.
+- [ ] Umbrella 0.6.0 ships with `test_nomenclature` red for EMA, view and model
+      (decided 2026-11-06): the failures are sibling names, which an umbrella release
+      neither causes nor fixes. The gate is green again once this bucket is done.
 - [ ] Every rename keeps its alias through all of v1.x; removal is gated at v2.0 by the
       SEP 2 deprecation policy.
 
