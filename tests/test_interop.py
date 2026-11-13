@@ -32,51 +32,133 @@ import pytest
 import sdypy
 
 
+# Class-scoped fixtures live at module level (pytest 10 forbids them as
+# instance methods).
+
+@pytest.fixture(scope="class")
+def lumped_model():
+    np.random.seed(6020)
+    n_dof = 2
+    masses = np.random.uniform(0.1, 1, n_dof)
+    stiffnesses = np.random.uniform(500e3, 1e6, n_dof)
+    damping = np.random.uniform(10, 100, n_dof)
+    lm = sdypy.model.lumped.Model(
+        n_dof=n_dof,
+        mass=masses,
+        stiffness=stiffnesses,
+        damping=damping,
+        boundaries="left",
+    )
+    return lm
+
+
+@pytest.fixture(scope="class")
+def ema_result(lumped_model):
+    lm = lumped_model
+    f_nat_true = lm.get_eig_freq()
+    zeta_true = lm.get_damping_ratios()
+
+    freq = np.linspace(30, 1500, 1000)
+    # get_FRF_matrix returns (n_dof, n_dof, n_freq); slice input dof 0
+    FRF_matrix = lm.get_FRF_matrix(freq=freq, frf_method="f")[0, :, :]
+
+    model = sdypy.EMA.Model(
+        frf=FRF_matrix,
+        freq=freq,
+        lower=freq[0],
+        upper=freq[-1],
+        pol_order_high=30,
+    )
+    model.get_poles(method="lscf", show_progress=False)
+    model.select_closest_poles(f_nat_true)
+    model.get_constants(whose_poles="own", FRF_ind="all")
+
+    return model, f_nat_true, zeta_true
+
+
+@pytest.fixture(scope="class")
+def chain_result():
+    rng = np.random.default_rng(TestFlagshipChain.SEED)
+
+    # --- 2-DOF model (same seed block keeps determinism) ---------------
+    np.random.seed(6020)
+    n_dof = 2
+    masses = np.random.uniform(0.1, 1, n_dof)
+    stiffnesses = np.random.uniform(500e3, 1e6, n_dof)
+    damping = np.random.uniform(10, 100, n_dof)
+    lm = sdypy.model.lumped.Model(
+        n_dof=n_dof,
+        mass=masses,
+        stiffness=stiffnesses,
+        damping=damping,
+        boundaries="left",
+    )
+    f_nat_true = lm.get_eig_freq()  # (n_dof,)
+    zeta_true = lm.get_damping_ratios()  # (n_dof,) - same model, single source of truth
+
+    # --- pseudo-random excitation signal --------------------------------
+    # sdypy.excitation.pseudo_random(N, rg) -> 1-D ndarray, peak = 1
+    exc = sdypy.excitation.pseudo_random(N=TestFlagshipChain.N_SAMPLES, rg=rng)
+
+    # --- compute time-domain response -----------------------------------
+    # get_response returns (n_resp_dof, N_samples) by default
+    resp = lm.get_response(
+        exc_dof=np.array([0]),
+        exc=exc,
+        sampling_rate=TestFlagshipChain.SAMPLING_RATE,
+        return_t_axis=False,
+    )  # shape (2, N_SAMPLES)
+
+    # --- H1 FRF estimate ------------------------------------------------
+    # pyFRF interprets 2-D arrays as (n_measurements, time), so for a
+    # SIMO system (1 exc DOF, 2 resp DOFs) we must pass 3-D arrays:
+    #   exc:  (1 measurement, 1 exc DOF,  N_samples)
+    #   resp: (1 measurement, 2 resp DOFs, N_samples)
+    exc3d = exc[np.newaxis, np.newaxis, :]   # (1, 1, N)
+    resp3d = resp[np.newaxis, :, :]          # (1, 2, N)
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")  # suppress divide-by-zero at DC
+        frf_obj = sdypy.FRF.FRF(
+            sampling_freq=TestFlagshipChain.SAMPLING_RATE,
+            exc=exc3d,
+            resp=resp3d,
+        )
+    # get_FRF() returns (n_resp_dof, n_exc_dof, n_freq) = (2, 1, N_freq)
+    H1 = frf_obj.get_FRF("H1")[:, 0, :]   # (2, N_freq)
+    freq_axis = frf_obj.get_f_axis()             # (N_freq,)
+
+    # restrict to frequency band covering both modes (30..1500 Hz)
+    f_lo, f_hi = 30.0, 1500.0
+    mask = (freq_axis >= f_lo) & (freq_axis <= f_hi)
+    freq_band = freq_axis[mask]
+    H1_band = H1[:, mask]                        # (2, N_band)
+
+    # --- EMA identification ---------------------------------------------
+    ema = sdypy.EMA.Model(
+        frf=H1_band,
+        freq=freq_band,
+        lower=freq_band[0],
+        upper=freq_band[-1],
+        pol_order_high=40,
+    )
+    ema.get_poles(method="lscf", show_progress=False)
+    ema.select_closest_poles(f_nat_true)
+    ema.get_constants(whose_poles="own", FRF_ind="all")
+
+    # damping stability check: unphysical values signal instability
+    xi_id = ema.nat_xi
+    damping_stable = bool(np.all(xi_id > 0) and np.all(xi_id < 0.5))
+
+    return ema, f_nat_true, zeta_true, damping_stable
+
+
 # ---------------------------------------------------------------------------
 # Area 1: lumped → EMA
 # ---------------------------------------------------------------------------
 
 class TestLumpedToEMA:
     """Build 2-DOF model, compute analytical FRF, identify poles via LSCF."""
-
-    @pytest.fixture(scope="class")
-    def lumped_model(self):
-        np.random.seed(6020)
-        n_dof = 2
-        masses = np.random.uniform(0.1, 1, n_dof)
-        stiffnesses = np.random.uniform(500e3, 1e6, n_dof)
-        damping = np.random.uniform(10, 100, n_dof)
-        lm = sdypy.model.lumped.Model(
-            n_dof=n_dof,
-            mass=masses,
-            stiffness=stiffnesses,
-            damping=damping,
-            boundaries="left",
-        )
-        return lm
-
-    @pytest.fixture(scope="class")
-    def ema_result(self, lumped_model):
-        lm = lumped_model
-        f_nat_true = lm.get_eig_freq()
-        zeta_true = lm.get_damping_ratios()
-
-        freq = np.linspace(30, 1500, 1000)
-        # get_FRF_matrix returns (n_dof, n_dof, n_freq); slice input dof 0
-        FRF_matrix = lm.get_FRF_matrix(freq=freq, frf_method="f")[0, :, :]
-
-        model = sdypy.EMA.Model(
-            frf=FRF_matrix,
-            freq=freq,
-            lower=freq[0],
-            upper=freq[-1],
-            pol_order_high=30,
-        )
-        model.get_poles(method="lscf", show_progress=False)
-        model.select_closest_poles(f_nat_true)
-        model.get_constants(whose_poles="own", FRF_ind="all")
-
-        return model, f_nat_true, zeta_true
 
     def test_identified_nat_freq_within_2pct(self, ema_result):
         """Identified natural frequencies must lie within rtol=2e-2 of truth."""
@@ -131,82 +213,6 @@ class TestFlagshipChain:
     SAMPLING_RATE = 5000  # Hz
     N_SAMPLES = 65536     # long block; good resolution (~0.076 Hz/bin)
     SEED = 7777
-
-    @pytest.fixture(scope="class")
-    def chain_result(self):
-        rng = np.random.default_rng(self.SEED)
-
-        # --- 2-DOF model (same seed block keeps determinism) ---------------
-        np.random.seed(6020)
-        n_dof = 2
-        masses = np.random.uniform(0.1, 1, n_dof)
-        stiffnesses = np.random.uniform(500e3, 1e6, n_dof)
-        damping = np.random.uniform(10, 100, n_dof)
-        lm = sdypy.model.lumped.Model(
-            n_dof=n_dof,
-            mass=masses,
-            stiffness=stiffnesses,
-            damping=damping,
-            boundaries="left",
-        )
-        f_nat_true = lm.get_eig_freq()  # (n_dof,)
-        zeta_true = lm.get_damping_ratios()  # (n_dof,) - same model, single source of truth
-
-        # --- pseudo-random excitation signal --------------------------------
-        # sdypy.excitation.pseudo_random(N, rg) -> 1-D ndarray, peak = 1
-        exc = sdypy.excitation.pseudo_random(N=self.N_SAMPLES, rg=rng)
-
-        # --- compute time-domain response -----------------------------------
-        # get_response returns (n_resp_dof, N_samples) by default
-        resp = lm.get_response(
-            exc_dof=np.array([0]),
-            exc=exc,
-            sampling_rate=self.SAMPLING_RATE,
-            return_t_axis=False,
-        )  # shape (2, N_SAMPLES)
-
-        # --- H1 FRF estimate ------------------------------------------------
-        # pyFRF interprets 2-D arrays as (n_measurements, time), so for a
-        # SIMO system (1 exc DOF, 2 resp DOFs) we must pass 3-D arrays:
-        #   exc:  (1 measurement, 1 exc DOF,  N_samples)
-        #   resp: (1 measurement, 2 resp DOFs, N_samples)
-        exc3d = exc[np.newaxis, np.newaxis, :]   # (1, 1, N)
-        resp3d = resp[np.newaxis, :, :]          # (1, 2, N)
-        import warnings
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")  # suppress divide-by-zero at DC
-            frf_obj = sdypy.FRF.FRF(
-                sampling_freq=self.SAMPLING_RATE,
-                exc=exc3d,
-                resp=resp3d,
-            )
-        # get_FRF() returns (n_resp_dof, n_exc_dof, n_freq) = (2, 1, N_freq)
-        H1 = frf_obj.get_FRF("H1")[:, 0, :]   # (2, N_freq)
-        freq_axis = frf_obj.get_f_axis()             # (N_freq,)
-
-        # restrict to frequency band covering both modes (30..1500 Hz)
-        f_lo, f_hi = 30.0, 1500.0
-        mask = (freq_axis >= f_lo) & (freq_axis <= f_hi)
-        freq_band = freq_axis[mask]
-        H1_band = H1[:, mask]                        # (2, N_band)
-
-        # --- EMA identification ---------------------------------------------
-        ema = sdypy.EMA.Model(
-            frf=H1_band,
-            freq=freq_band,
-            lower=freq_band[0],
-            upper=freq_band[-1],
-            pol_order_high=40,
-        )
-        ema.get_poles(method="lscf", show_progress=False)
-        ema.select_closest_poles(f_nat_true)
-        ema.get_constants(whose_poles="own", FRF_ind="all")
-
-        # damping stability check: unphysical values signal instability
-        xi_id = ema.nat_xi
-        damping_stable = bool(np.all(xi_id > 0) and np.all(xi_id < 0.5))
-
-        return ema, f_nat_true, zeta_true, damping_stable
 
     def test_chain_nat_freq_within_5pct(self, chain_result):
         """Identified natural frequencies must lie within rtol=5e-2 of truth
