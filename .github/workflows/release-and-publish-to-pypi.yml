@@ -4,8 +4,9 @@ name: Release and publish to PyPI
 # the sdypy hub): Actions -> "Release and publish to PyPI" -> Run workflow, on
 # the default branch, with the new version. The workflow writes the version
 # into pyproject.toml, commits it, tags that commit vX.Y.Z, pushes both,
-# publishes to PyPI and creates the GitHub Release. A v* tag pushed by hand
-# publishes nothing.
+# publishes to PyPI and creates the GitHub Release, but only after the
+# repository's own test workflow (python-package.yml) has passed on the commit
+# being released. A v* tag pushed by hand publishes nothing.
 #
 # This file is the sdypy hub's. Every first-level package copies it verbatim
 # (sibling-package-template spec, checked by tools/check_sibling_template.py),
@@ -24,13 +25,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
-    name: Bump, build and tag
+  default-branch:
+    name: Check the branch
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    permissions: {}
     env:
-      VERSION: ${{ inputs.version }}
       DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
     steps:
       - name: Refuse to release from any branch but the default
@@ -39,6 +38,26 @@ jobs:
             echo "::error::run the release on $DEFAULT_BRANCH, not $GITHUB_REF"
             exit 1
           fi
+
+  test:
+    name: Test
+    needs: default-branch
+    # The repository's own test workflow (the sibling template fixes its
+    # name), run on the commit being released. No secrets are passed.
+    uses: ./.github/workflows/python-package.yml
+    permissions:
+      contents: read
+
+  release:
+    name: Bump, build and tag
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ inputs.version }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0

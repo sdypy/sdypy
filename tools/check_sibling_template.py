@@ -261,6 +261,9 @@ def check_test_workflow(workflows_dir, violations):
         violations.append("%s: no push trigger" % label)
     if "pull_request" not in text:
         violations.append("%s: no pull_request trigger" % label)
+    # The canonical release workflow calls this workflow before releasing.
+    if not re.search(r"on:\s*\[[^\]]*\bworkflow_call\b|^\s+workflow_call\s*:", text, re.M):
+        violations.append("%s: no workflow_call trigger (the release workflow calls it)" % label)
     matrix = set(re.findall(r"['\"](3\.\d+)['\"]", text))
     if not SUPPORTED_PYTHON <= matrix:
         violations.append(

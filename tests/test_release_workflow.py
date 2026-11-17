@@ -6,7 +6,9 @@ tested here, one test per spec-delta scenario where it can be exercised
 offline:
 
 - the sibling template checker compares a sibling's copy with the hub's;
-- the hub's workflow has the required triggers and steps;
+- the hub's workflow has the required triggers, jobs and steps, including
+  the call to the repository's own test workflow before the release job
+  (`release-runs-tests` change);
 - the two Python guards embedded in the workflow (the version bump and the
   distribution check) are extracted and run against fixtures in `tmp_path`,
   so the code tested is the code the workflow runs.
@@ -129,10 +131,72 @@ def test_a_hand_pushed_tag_publishes_nothing():
     assert "tags" not in on_block(WORKFLOW_TEXT)
 
 
+def job(text, name):
+    """The body of the top-level job `name`, up to the next job or EOF."""
+    m = re.search(r"(?ms)^  %s:\n(.*?)(?=^  \S|\Z)" % re.escape(name), text)
+    return m.group(1) if m else None
+
+
+def job_names(text):
+    jobs = re.search(r"(?ms)^jobs:\n(.*)", text).group(1)
+    return re.findall(r"(?m)^  ([\w-]+):\n", jobs)
+
+
+def needs(text, name):
+    m = re.search(r"(?m)^    needs: (\S+)$", job(text, name) or "")
+    return m.group(1) if m else None
+
+
 def test_a_run_off_the_default_branch_fails():
-    step = re.search(r"(?ms)- name: Refuse to release.*?exit 1", WORKFLOW_TEXT).group(0)
+    assert job_names(WORKFLOW_TEXT)[0] == "default-branch"
+    first = job(WORKFLOW_TEXT, "default-branch")
+    step = re.search(r"(?ms)- name: Refuse to release.*?exit 1", first).group(0)
     assert '"$GITHUB_REF" != "refs/heads/$DEFAULT_BRANCH"' in step
+    # The first job checks out nothing, and every other job waits for it.
+    assert "actions/checkout" not in first and "uses:" not in first
     assert WORKFLOW_TEXT.index("Refuse to release") < WORKFLOW_TEXT.index("actions/checkout")
+    assert needs(WORKFLOW_TEXT, "test") == "default-branch"
+
+
+# --------------------------------------------------------------------------
+# The release runs the repository's tests first
+# --------------------------------------------------------------------------
+
+TEST_WORKFLOW_TEXT = (WORKFLOW.parent / "python-package.yml").read_text(encoding="utf-8")
+
+
+def release_gated_on_tests(text):
+    """True when `text` runs the repository's test workflow before releasing."""
+    test = job(text, "test")
+    if test is None or "    uses: ./.github/workflows/python-package.yml\n" not in test:
+        return False
+    if "    permissions:\n      contents: read\n" not in test or re.search(r"(?m)^    secrets:", test):
+        return False
+    return (needs(text, "release") == "test" and needs(text, "publish") == "release"
+            and needs(text, "github-release") == "publish")
+
+
+def test_the_release_job_needs_the_test_job():
+    assert release_gated_on_tests(WORKFLOW_TEXT)
+
+
+@pytest.mark.parametrize("break_it", [
+    lambda t: t.replace("    needs: test\n", ""),
+    lambda t: t.replace("uses: ./.github/workflows/python-package.yml",
+                        "uses: ./.github/workflows/pytest.yaml"),
+    lambda t: t.replace("    permissions:\n      contents: read\n",
+                        "    permissions:\n      contents: read\n    secrets: inherit\n"),
+], ids=["release-without-needs", "other-test-workflow", "secrets-inherited"])
+def test_a_release_not_gated_on_the_tests_is_detected(break_it):
+    broken = break_it(WORKFLOW_TEXT)
+    assert broken != WORKFLOW_TEXT
+    assert not release_gated_on_tests(broken)
+
+
+def test_the_test_workflow_can_be_called_and_keeps_its_triggers():
+    block = on_block(TEST_WORKFLOW_TEXT)
+    for trigger in ("push", "pull_request", "workflow_dispatch", "workflow_call"):
+        assert re.search(r"(?m)^  %s:" % trigger, block), trigger
 
 
 def test_the_release_commit_and_tag_are_pushed_atomically_before_publishing():

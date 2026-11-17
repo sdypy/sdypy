@@ -130,7 +130,9 @@ verbatim into each sibling).
 - **Run:** *Actions → Release and publish to PyPI → Run workflow*, on the
   default branch, with the new version: `X.Y.Z`, optionally followed by `aN`,
   `bN` or `rcN`, no leading `v`.
-- **What it does:** it refuses a malformed version, an existing tag, or a
+- **What it does:** it first runs the repository's own test workflow
+  (`python-package.yml`) on the commit being released; if any test job fails,
+  nothing else runs. It refuses a malformed version, an existing tag, or a
   version not newer than the current one. It then writes the version into
   `pyproject.toml`, commits *Release X.Y.Z*, tags that commit `vX.Y.Z`, builds,
   checks that the sdist and wheel carry the version, pushes the commit and the

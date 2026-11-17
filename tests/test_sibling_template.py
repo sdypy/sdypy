@@ -234,6 +234,7 @@ name: Python package
 on:
   push:
   pull_request:
+  workflow_call:
 
 jobs:
   test:
@@ -302,6 +303,26 @@ def test_matrix_covering_the_supported_set_passes(tmp_path):
     violations = []
     check_test_workflow(workflows_dir, violations)
     assert not any("does not cover" in v for v in violations)
+
+
+def test_a_callable_test_workflow_passes(tmp_path):
+    workflows_dir = write_workflow(tmp_path, "pip install .")
+    violations = []
+    check_test_workflow(workflows_dir, violations)
+    assert violations == []
+
+
+@pytest.mark.parametrize("on", ["on:\n  push:\n  pull_request:\n", "on: [push, pull_request]\n"])
+def test_a_test_workflow_without_workflow_call_is_reported(tmp_path, on):
+    workflows_dir = write_workflow(tmp_path, "pip install .")
+    path = workflows_dir / "python-package.yml"
+    text = path.read_text(encoding="utf-8")
+    uncallable = text.replace("on:\n  push:\n  pull_request:\n  workflow_call:\n", on)
+    assert "workflow_call" not in uncallable
+    path.write_text(uncallable, encoding="utf-8")
+    violations = []
+    check_test_workflow(workflows_dir, violations)
+    assert any("no workflow_call trigger" in v for v in violations)
 
 
 # --------------------------------------------------------------------------
