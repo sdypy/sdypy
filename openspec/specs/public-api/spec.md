@@ -304,14 +304,15 @@ the owning package's tests verify the rename.
 
 The inventory of evidenced divergences covered by this requirement is:
 `nat_freq` → `natural_freq` (public attribute of `EMA.Model`, `model.Beam`,
-`model.Tetrahedron`); `nat_xi`, `pole_xi` → `damping_ratio` and `phi` →
-`mode_shape` in EMA public signatures other than the criterion functions;
+`model.Tetrahedron`); `nat_xi` → `damping_ratio` and `phi` → `mode_shape` in
+EMA public signatures other than the criterion functions;
 `lower`, `upper`, `f_lower`, `f_upper` → `freq_lower` and `freq_upper` (EMA);
-`frf_type` → `frf_form` (EMA); `K`, `M`, `EI` → `stiffness_matrix`,
+`frf_type` → `frf_form` (EMA); `K`, `M` → `stiffness_matrix`,
 `mass_matrix` (model); `E`, `Young` → `young_modulus`, `nu`, `Poisson` →
 `poisson_ratio`, `rho`, `ro`, `Density` → `density` (model); `org`, `conec` →
 `nodes`, `elements` (`model.Beam`, `model.Tetrahedron`); `n` → `n_modes`
-(`model.Beam.solve`); `FRF_ind`, `lower_ind`, `upper_ind`, `pole_ind` (EMA) and
+(`model.Beam.solve`); `A` → `mode_shape` (eigenvector attribute), `A` →
+`area` (cross-section) and `frequency` → `freq` (model); `FRF_ind`, `lower_ind`, `upper_ind`, `pole_ind` (EMA) and
 `derivative_E_ind`, `derivative_ro_ind`, `eig_ind` (model) → the corresponding
 `_idx` spellings; `frf_type` → `frf_estimator` (constructor parameter and
 instance attribute of `FRF`, defined in `sdypy.FRF`);

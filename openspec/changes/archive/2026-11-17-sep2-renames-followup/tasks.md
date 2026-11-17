@@ -11,4 +11,4 @@
 
 ## 3. Roster
 
-- [ ] 3.1 Archive with the REQUIREMENTS.md roster update
+- [x] 3.1 Archive with the REQUIREMENTS.md roster update
