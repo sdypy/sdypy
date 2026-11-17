@@ -26,13 +26,6 @@
 - [x] 5.1 `openspec validate release-runs-tests --strict` and `openspec validate --all --strict` are clean
 - [ ] 5.2 At archive: `REQUIREMENTS.md` rows — *The release runs the repository's tests first* → `tests/test_release_workflow.py` tests from 4.1; *Releases start only by hand* → 4.2 test; *Canonical test workflow* → 4.4 tests; *Core test workflow* → 4.3 test; § Pending entry for the sibling follow-ups below
 
-## 6. Sibling follow-ups (cross-repo, each in the sibling's own PR)
+## 6. Sibling adoption (recommended, not part of this change)
 
-Each sibling copies the hub's new `release-and-publish-to-pypi.yml` verbatim **and**, in the same PR, adds `workflow_call` to its `python-package.yml`; `check_sibling_template.py --path <clone>` passes afterwards.
-
-- [ ] 6.1 sdypy-EMA
-- [ ] 6.2 sdypy-io
-- [ ] 6.3 sdypy-FRF
-- [ ] 6.4 sdypy-excitation
-- [ ] 6.5 sdypy-model
-- [ ] 6.6 sdypy-view
+Siblings adopt the gate in their own time: copy the hub's new `release-and-publish-to-pypi.yml` and, in the same PR, add `workflow_call` to `python-package.yml`. Nothing here waits on it; it goes to `REQUIREMENTS.md` § Pending with the archive.

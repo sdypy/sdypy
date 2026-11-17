@@ -58,7 +58,10 @@ None.
   `.github/workflows/python-package.yml`, `tools/check_sibling_template.py`,
   `tests/test_release_workflow.py`, `tests/test_sibling_template.py`,
   `AGENTS.md` § Releasing, `REQUIREMENTS.md` (at archive).
-- Every sibling is reported by the checker until it copies the new release
-  workflow and adds `workflow_call` to its `python-package.yml`, in its own
-  PR. Until then its existing release workflow keeps working.
+- Siblings are not required to follow at once; other work on their
+  templates is in progress. Until a sibling copies the new release workflow
+  and adds `workflow_call` to its `python-package.yml`, its existing release
+  keeps working and `check_sibling_template.py` reports the drift when run on
+  it. Adoption is tracked in `REQUIREMENTS.md` § Pending, and neither the
+  archive of this change nor any check waits on it.
 - A release takes as long as the test matrix plus the release itself.
