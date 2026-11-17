@@ -175,7 +175,7 @@ Every first-level sdypy namespace package SHALL provide a `CLAUDE.md` at the rep
 - **THEN** the checker reports it and exits non-zero
 
 ### Requirement: OpenSpec configuration carries the hub's shared rules
-Every first-level sdypy namespace package other than the two backend shims (`sdypy-FRF`, `sdypy-excitation`) SHALL provide `openspec/config.yaml` whose `rules` block is the hub's shared rules block verbatim: the region of the hub's `openspec/config.yaml` delimited by the comment lines `# >>> shared rules from the sdypy hub` and `# <<< shared rules`, markers included. The sibling's `context` is its own and is not compared.
+Every first-level sdypy namespace package other than the backend shim `sdypy-excitation` SHALL provide `openspec/config.yaml` whose `rules` block is the hub's shared rules block verbatim: the region of the hub's `openspec/config.yaml` delimited by the comment lines `# >>> shared rules from the sdypy hub` and `# <<< shared rules`, markers included. The sibling's `context` is its own and is not compared.
 
 #### Scenario: A sibling carries the shared rules unchanged
 - **WHEN** a non-shim sibling's `openspec/config.yaml` contains the hub's shared rules block unchanged and a context of its own
@@ -190,8 +190,12 @@ Every first-level sdypy namespace package other than the two backend shims (`sdy
 - **THEN** the checker reports the missing file and exits non-zero
 
 #### Scenario: A shim is not required to carry OpenSpec configuration
-- **WHEN** `sdypy-FRF` or `sdypy-excitation` has no `openspec/` directory
+- **WHEN** `sdypy-excitation` has no `openspec/` directory
 - **THEN** no violation is reported for it
+
+#### Scenario: sdypy-FRF is not exempt
+- **WHEN** `sdypy-FRF` has no `openspec/config.yaml`
+- **THEN** the checker reports the missing file and exits non-zero
 
 ### Requirement: Supported Python versions follow SPEC 0
 The Python minor versions a first-level sdypy namespace package supports SHALL follow Scientific Python's SPEC 0: from the oldest minor version released less than three years ago through the newest stable CPython release for which the current NumPy and SciPy releases both publish wheels. The concrete set SHALL be declared in exactly one place, the sibling template checker; every other requirement refers to it as *the supported set*. At the time of this change (2026-11-04) the supported set is 3.13, 3.14 and 3.15.
@@ -232,7 +236,7 @@ Every first-level sdypy namespace package SHALL provide a GitHub Actions test wo
 - **THEN** every `uses:` reference to `actions/checkout` is at `@v4` or later and every reference to `actions/setup-python` is at `@v5` or later
 
 ### Requirement: Metadata consistency with the supported Python set
-Every first-level sdypy namespace package SHALL declare the hatchling build backend, a `requires-python` floor equal to the oldest version of the supported set, an MIT license, `Programming Language :: Python :: 3.x` classifiers for every Python minor version in the CI matrix, `project.urls` whose Homepage and Source entries point at the package's own repository (the Documentation entry SHALL resolve either to the package's own hosted documentation or, for a thin wrapper without hosted docs, to its backend library's documentation), and both `dev` and `docs` optional-dependency extras. The `dev` extra SHALL reference the `docs` extra rather than duplicating its entries.
+Every first-level sdypy namespace package SHALL declare the hatchling build backend, a `requires-python` floor equal to the oldest version of the supported set, an MIT license, `Programming Language :: Python :: 3.x` classifiers for every Python minor version in the CI matrix, `project.urls` whose Homepage and Source entries point at the package's own repository (the Documentation entry SHALL resolve either to the package's own hosted documentation or, for the shim `sdypy-excitation`, which has no hosted docs, to its backend library's documentation), and both `dev` and `docs` optional-dependency extras. The `dev` extra SHALL reference the `docs` extra rather than duplicating its entries.
 
 #### Scenario: hatchling is the declared build backend
 - **WHEN** `pyproject.toml` is inspected
@@ -251,8 +255,12 @@ Every first-level sdypy namespace package SHALL declare the hatchling build back
 - **THEN** the `[project.urls]` Homepage and Source entries resolve to that package's own repository, not a backend library's
 
 #### Scenario: Documentation URL of a thin wrapper resolves to its backend's docs
-- **WHEN** `pyproject.toml` is inspected for sdypy-FRF or sdypy-excitation
-- **THEN** the `[project.urls]` Documentation entry resolving to pyFRF's or pyExSi's documentation is conformant, because these wrappers have no hosted documentation of their own
+- **WHEN** `pyproject.toml` is inspected for sdypy-excitation
+- **THEN** the `[project.urls]` Documentation entry resolving to pyExSi's documentation is conformant, because the shim has no hosted documentation of its own
+
+#### Scenario: sdypy-FRF documentation must be its own
+- **WHEN** `pyproject.toml` is inspected for sdypy-FRF
+- **THEN** the `[project.urls]` Documentation entry must be its own readthedocs.io site, because `sdypy-FRF` is a regular package
 
 #### Scenario: dev and docs extras are declared
 - **WHEN** `pyproject.toml` is inspected

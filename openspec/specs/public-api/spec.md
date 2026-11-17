@@ -39,11 +39,12 @@ No `__all__` list of any first-level package SHALL contain a name that refers to
 - **THEN** the names `beta`, `CubicSpline`, `np`, and `scipy` are not present in that namespace
 
 ### Requirement: Shim packages use explicit curated re-exports
-`sdypy/FRF/__init__.py` and `sdypy/excitation/__init__.py` SHALL NOT contain any `from <backend> import *` star-import. Both files MUST use explicit named imports (`from pyFRF import FRF, ...` and `from pyExSi import burst_random, ...`) and declare a matching `__all__`.
+`sdypy/excitation/__init__.py` is the only shim: it SHALL NOT contain any `from <backend> import *` star-import, MUST use explicit named imports (`from pyExSi import burst_random, ...`) and MUST declare a matching `__all__`. `sdypy/FRF/__init__.py` is not a shim: it holds its code in its own modules (`sdypy/FRF/frf.py`, `sdypy/FRF/fft_tools.py`), SHALL NOT contain any `import *` and MUST import its curated names explicitly from those modules (`from .frf import FRF, assert_sep005, direction_dict`) and declare a matching `__all__`. `sdypy-FRF` MUST NOT depend on `pyFRF`.
 
 #### Scenario: No star-import in FRF `__init__.py`
 - **WHEN** `sdypy/FRF/__init__.py` in the sdypy-FRF repository clone is inspected
-- **THEN** the file contains no line matching `from pyFRF import *` or any `import *` form
+- **THEN** the file contains no `import *` form
+- **AND** its curated names are imported from the package's own modules, not from `pyFRF`
 
 #### Scenario: No star-import in excitation `__init__.py`
 - **WHEN** `sdypy/excitation/__init__.py` in the sdypy-excitation repository clone is inspected
@@ -138,10 +139,10 @@ Every public name renamed in this change SHALL be kept as a deprecated alias tha
 - **AND** the object is constructed identically to using `frf_form=`
 
 ### Requirement: Advisory drift check for shims
-The conformance tooling SHALL report backend public callables that are absent from the curated `__all__` of `sdypy.FRF` and `sdypy.excitation`, but this report MUST NOT cause CI to fail. The drift check is advisory only: it surfaces new backend names that may warrant a curation decision without blocking the build.
+The conformance tooling SHALL report backend public callables that are absent from the curated `__all__` of `sdypy.excitation`, but this report MUST NOT cause CI to fail. The drift check is advisory only: it surfaces new backend names that may warrant a curation decision without blocking the build.
 
 #### Scenario: Drift check reports uncurated backend names without failing
-- **WHEN** `tools/check_public_api.py` is run against the sibling clones and a backend (pyFRF or pyExSi) exposes a public callable not in the corresponding shim's `__all__`
+- **WHEN** `tools/check_public_api.py` is run against the sibling clones and a backend (pyExSi) exposes a public callable not in the shim's `__all__`
 - **THEN** the checker prints a report listing the uncurated names
 - **AND** the checker exits with code 0 (does not fail CI)
 
@@ -313,7 +314,7 @@ The inventory of evidenced divergences covered by this requirement is:
 (`model.Beam.solve`); `FRF_ind`, `lower_ind`, `upper_ind`, `pole_ind` (EMA) and
 `derivative_E_ind`, `derivative_ro_ind`, `eig_ind` (model) → the corresponding
 `_idx` spellings; `frf_type` → `frf_estimator` (constructor parameter and
-instance attribute of `FRF`, re-exported by `sdypy.FRF` from pyFRF);
+instance attribute of `FRF`, defined in `sdypy.FRF`);
 `type` → `frf_estimator` and `form` → `frf_form` (parameters of
 `FRF.get_FRF`).
 
@@ -545,8 +546,8 @@ ISO 7626 does not name this quantity, so the general guidelines govern. SEP 2 SH
 When a first-level package re-exports a class or function from a backend package, the signature and public attributes of that object SHALL be treated as part of the first-level package's public API and SHALL follow SEP 2. Backend names that a first-level package does not re-export remain out of scope.
 
 #### Scenario: A re-exported backend class is in scope
-- **WHEN** `sdypy.FRF` re-exports pyFRF's `FRF` class unchanged
-- **THEN** the parameter names of `FRF.__init__` and `FRF.get_FRF` and the public attributes of `FRF` instances are assessed against SEP 2
+- **WHEN** `sdypy.excitation` re-exports a pyExSi function unchanged
+- **THEN** its parameter names are assessed against SEP 2
 
 #### Scenario: A backend name that is not re-exported is out of scope
 - **WHEN** a backend package exposes a function that no first-level package re-exports

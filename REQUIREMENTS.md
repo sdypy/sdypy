@@ -244,16 +244,17 @@ installed distributions.
 All six first-level packages are checked: EMA 0.29.1 → 27, io 0.4.0 → 0,
 FRF 0.1.0 → 0, excitation 0.1.1 → 0, view 0.1.6 → 0, model 0.1.5 → 82.
 
-**A zero for a shim package is vacuous.** `sdypy-FRF` and `sdypy-excitation`
-contain no code of their own — each is a single `__init__.py` that does
-`from pyFRF import *` / `from pyExSi import *`. `sdypy-io` re-exports `pyuff`,
+**A zero for a shim package is vacuous.** `sdypy-excitation` contains no code of
+its own: it is a single `__init__.py` that does `from pyExSi import *`.
+`sdypy-FRF` was a shim over pyFRF until 0.4.0; it now carries pyFRF's code, so
+its zero is real (`frf-not-a-shim`). `sdypy-io` re-exports `pyuff`,
 `lvm_read` and `pyMRAW` as module aliases beside its own `sfmov`. The names a
 caller actually touches therefore come from the backend distributions, which the
 checker cannot reach: it resolves one portion under `sdypy/`, and the backend is
 not there.
 
 SEP 2 binds a backend class or function that a first-level package re-exports
-(for example pyFRF's `FRF`, re-exported by `sdypy-FRF`); backend names that are
+(for example the pyExSi functions re-exported by `sdypy-excitation`); backend names that are
 not re-exported are out of scope. The checker cannot reach a backend, so these
 renames are verified by the backend's own tests, not by `check_nomenclature.py`.
 Whether a star-import shim should republish everything the backend exposes is a
