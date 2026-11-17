@@ -28,7 +28,7 @@ from pathlib import Path
 # Curated public surfaces - mirrors openspec/specs (public-api capability).
 CURATED = {
     "EMA": [
-        "Model", "MAC", "MSF", "MCF", "complex_freq_to_freq_and_damp",
+        "Model", "ModelPoly", "MAC", "MSF", "MCF", "complex_freq_to_freq_and_damp",
         "stabilization", "normal_modes", "pole_picking",
     ],
     "io": ["uff", "lvm", "mraw", "sfmov"],
