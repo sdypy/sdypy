@@ -129,7 +129,7 @@ The `docs/seps/build_index.py` generator SHALL be the single source of truth for
 
 ### Requirement: Autodoc wired for own-code packages
 
-The `code.rst` autodoc page in the core umbrella, `sdypy-view`, and `sdypy-model` SHALL contain real `.. automodule::` or `.. autoclass::` directives covering the curated public API. The commented-out autodoc block in core `docs/source/code.rst` MUST be replaced with active directives. `sdypy-view`'s `conf.py` SHALL declare `autodoc_mock_imports` for `PyQt6` (and `pyvistaqt` if needed) so the docs build succeeds without a Qt installation. The namespace shims `io`, `FRF`, and `excitation` are NOT required to add autodoc.
+The `code.rst` autodoc page in the core umbrella, `sdypy-view`, `sdypy-model`, and `sdypy-FRF` SHALL contain real `.. automodule::` or `.. autoclass::` directives covering the curated public API. The commented-out autodoc block in core `docs/source/code.rst` MUST be replaced with active directives. `sdypy-view`'s `conf.py` SHALL declare `autodoc_mock_imports` for `PyQt6` (and `pyvistaqt` if needed) so the docs build succeeds without a Qt installation. The namespace packages `io` and `excitation` are NOT required to add autodoc. `FRF` holds its own code and is required to.
 
 #### Scenario: Core code.rst contains active automodule directives
 - **WHEN** `docs/source/code.rst` in the core repo is read
@@ -142,6 +142,10 @@ The `code.rst` autodoc page in the core umbrella, `sdypy-view`, and `sdypy-model
 #### Scenario: sdypy-model code.rst contains active autodoc directives
 - **WHEN** `docs/source/code.rst` in the `sdypy-model` clone is read
 - **THEN** it contains at least one uncommented `.. automodule::` or `.. autoclass::` directive
+
+#### Scenario: sdypy-FRF is not exempt from autodoc
+- **WHEN** `docs/source/code.rst` in the `sdypy-FRF` clone is read
+- **THEN** it contains at least one uncommented `.. automodule::` or `.. autoclass::` directive covering the curated FRF API
 
 ### Requirement: Docs conformance checker and CI job
 

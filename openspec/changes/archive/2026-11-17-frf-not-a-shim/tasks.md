@@ -13,4 +13,4 @@
 
 - [x] 3.1 `openspec validate frf-not-a-shim --strict` is clean
 - [x] 3.2 `pytest -m "not pypi_artifacts"` adds no failure to the baseline
-- [ ] 3.3 In the archive commit, update REQUIREMENTS.md: the shim rows and the 'A zero for a shim package is vacuous' note (FRF is no longer a shim)
+- [x] 3.3 In the archive commit, update REQUIREMENTS.md: the shim rows and the 'A zero for a shim package is vacuous' note (FRF is no longer a shim)
