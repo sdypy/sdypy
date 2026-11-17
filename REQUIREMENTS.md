@@ -70,7 +70,11 @@ Spec: `openspec/specs/public-api/spec.md` (SEP 2) · Checker: `tools/check_publi
 | Module-type entries in `__all__` only where sanctioned | `pytest::test_module_entries_only_where_sanctioned` |
 | Curated surface matches the SEP 2 table | `pytest::test_curated_surface_matches_spec` |
 | Umbrella `__all__` = the six names (+ `sep005` alias) **(umbrella-local)** | `pytest::test_umbrella_all_is_the_six_subpackages_plus_sep005` |
-| Renamed names keep deprecated aliases through v1.x | `pytest::test_shim_drift_check_is_advisory` (advisory) |
+| Shim packages use explicit curated re-exports (no `import *`) | `check_public_api.py` (star-import check, run against a sibling clone) |
+| Public naming conventions for new and renamed names (CapWords classes, snake_case functions and parameters) | `check_nomenclature.py` (snake_case rules); `pytest::test_conforming_clone_passes`; CapWords and the criterion-function exception are `manual` (hub PR reviewer) |
+| Renamed names keep deprecated aliases through v1.x | sibling repos' suites (EMA, model; pyFRF `tests/test_deprecations.py`); no hub test — not verified from the umbrella |
+| Advisory drift check for shims (reports, never fails CI) | `pytest::test_shim_drift_check_is_advisory`; `check_public_api.py` drift report |
+| SEP 2 contains the amended naming rules | `manual` (docs) — review of `docs/seps/sep-0002.rst` |
 | Canonical table wins over the word-order heuristic | `manual` (SEP 2 prose) — checker planned, see `enforce-sep2-nomenclature` |
 | Canonical names for modal quantities (`mode_shape`, `damping_ratio`, `n_modes`) | sibling repos' suites; checker planned |
 | Canonical names for system matrices (`mass_matrix`, `stiffness_matrix`, `damping_matrix`) | sibling repos' suites; checker planned |
@@ -110,10 +114,10 @@ Spec: `openspec/specs/distribution-packaging/spec.md` · Scope: **umbrella-local
 
 | Requirement | Verified by |
 |---|---|
-| Single build definition (hatchling, `pyproject.toml`, no `setup.py`) | `check_sibling_template.py`; build in CI (`python -m build`) |
-| No dead CI configuration | `check_docs.py` / review |
+| Single build definition (hatchling, `pyproject.toml`, no `setup.py`) | build in CI (`python -m build`); `manual` — review that no `setup.py`/`requirements*.txt` exists (the umbrella has no gate; `check_sibling_template.py` audits siblings only) |
+| No dead CI configuration | `manual` — review that no `.travis.yml` exists; no checker tests it |
 | No tracked build artefacts | `.gitignore` (bare `_build/`); sdist excludes `docs/**/_build` |
-| Version single-sourced everywhere (installed metadata) | `pytest::test_version` |
+| Version single-sourced everywhere (installed metadata) | docs build (`docs.yml`) — `docs/source/conf.py` reads `importlib.metadata.version("sdypy")`; `pytest::test_version` only checks that `__version__` is a string; the no-duplicate rule is `manual` review |
 | sdist contains only source artefacts (explicit allow-list) | `pytest::test_published_sdist_has_no_stale_packaging` (`pypi_artifacts`) |
 | Classifiers reflect the tested support matrix (the supported set) | `pytest::test_the_hub_follows_the_supported_set` |
 | Read the Docs install is complete and canonical | `readthedocs.yaml`; `check_docs.py` |
@@ -151,7 +155,15 @@ Spec: `openspec/specs/sibling-package-template/spec.md` · Checker: `tools/check
 | Single build definition; version single-sourced via metadata | `check_sibling_template.py` |
 | Native namespace portion + wheel contents (no `sdypy/__init__.py`) | `check_sibling_template.py`; `pytest::test_published_wheel_ships_only_own_portion` (`pypi_artifacts`) |
 | sdist is an explicit allow-list | `check_sibling_template.py` |
-| Canonical release workflow; repository scaffolding | `check_sibling_template.py` |
+| Repository scaffolding | `check_sibling_template.py` |
+| Conformance checking (distribution layer in core CI; repo layer by `check_sibling_template.py`) | `pytest::test_published_sdist_has_no_stale_packaging`, `test_published_wheel_ships_only_own_portion`, `test_sibling_version_resolvable_from_metadata` (`pypi_artifacts`); `check_sibling_template.py` with `tests/test_sibling_template.py` |
+| Release workflow is the hub's file, copied verbatim | `check_sibling_template.py`; `pytest::test_a_verbatim_copy_of_the_hub_workflow_passes`, `test_a_drifted_copy_is_reported`, `test_the_old_tag_triggered_workflow_is_reported`, `test_a_missing_release_workflow_is_reported`, `test_an_underscore_named_release_workflow_is_reported`, `test_an_unreadable_hub_copy_is_reported_not_silently_passed` in `tests/test_release_workflow.py` |
+| Releases start only by hand from the default branch | `pytest::test_the_workflow_is_started_only_by_hand_with_a_version`, `test_a_hand_pushed_tag_publishes_nothing`, `test_a_run_off_the_default_branch_fails` |
+| The release workflow writes the version into `pyproject.toml` | `pytest::test_the_bump_writes_the_project_version_only` |
+| The release tag sits on the version commit | `pytest::test_the_tag_sits_on_the_bump_commit` |
+| The release is pushed atomically before it is published (runs serialised) | `pytest::test_the_release_commit_and_tag_are_pushed_atomically_before_publishing`, `test_releases_are_serialised` |
+| The release workflow refuses an inconsistent version | `pytest::test_a_malformed_version_is_refused`, `test_an_existing_tag_is_refused`, `test_a_version_not_newer_than_the_current_one_is_refused`, `test_a_dynamic_version_is_refused`, `test_a_distribution_with_another_version_is_refused`, `test_a_missing_sdist_is_refused` |
+| Releasing is documented once, in the hub | `pytest::test_the_hub_agents_md_has_a_releasing_section`, `test_the_hub_link_block_links_to_the_releasing_section` |
 | Canonical test workflow on the supported Python set (`pip install .[<extras>]` allowed, never `requirements*.txt`) | `check_sibling_template.py`; `pytest::test_pip_install_with_extras_is_accepted`, `test_requirements_txt_is_still_rejected`, `test_matrix_not_covering_the_supported_set_is_reported`, `test_matrix_covering_the_supported_set_passes` |
 | Metadata consistency with the supported Python set | `check_sibling_template.py`; `pytest::test_requires_python_floor_is_the_oldest_supported_version`, `test_wrong_requires_python_floor_is_reported`, `test_classifiers_not_matching_the_supported_set_are_reported` |
 | Agent instructions link to the hub's org-wide rules (`AGENTS.md` link block) | `check_sibling_template.py`; `pytest::test_agents_md_carries_the_hub_link_block`, `test_missing_agents_md_is_reported`, `test_agents_md_with_an_edited_link_block_is_reported` and the other `AGENTS.md` tests in `tests/test_sibling_template.py` |
@@ -167,10 +179,11 @@ Spec: `openspec/specs/testing-ci/spec.md` · Scope: **mixed** (see rows)
 |---|---|
 | `pypi_artifacts` marker registered and applied to PyPI-dependent tests | `pyproject.toml` `[tool.pytest.ini_options]`; marker usage in `tests/` |
 | GitHub CI deselects `pypi_artifacts`; matrix (the supported set) green | `.github/workflows/python-package.yml` |
-| Core test + release workflows have the required shape | review of `python-package.yml`, `release-and-publish-to-pypi.yml`; matrix equals the supported set: `pytest::test_the_hub_follows_the_supported_set` |
+| Core test + release workflows have the required shape | review of `python-package.yml`; release workflow: `pytest::test_the_workflow_uses_current_actions_and_publishes_with_either_auth` (`tests/test_release_workflow.py`); matrix equals the supported set: `pytest::test_the_hub_follows_the_supported_set` |
 | Every first-level package has a functional test baseline **(org-wide)** | sibling repos' suites |
 | Core interop suite exercises cross-package composition | `pytest tests/test_interop.py` (EMA/FRF/io/excitation/model chains, ±2–5 % tolerances) |
 | Every umbrella-runnable checker executes in core CI | `check_seps.py` + `check_docs.py` steps in `.github/workflows/docs.yml`; review of § Canonical sources |
+| Sibling workflow files are not modified by the baseline change **(org-wide)** | `manual` — one-off constraint on that change's diffs, since archived; nothing to re-verify |
 | All seven fork CIs green after pushes **(org-wide)** | `manual` — see Pending |
 
 ---
@@ -192,11 +205,29 @@ Acceptance: the `pypi_artifacts`-marked tests flip from red to green from a fres
       Done in view 0.2.0 and model 0.2.0 (2026-11-06).
 - [ ] Publish the coordinated releases: minor releases EMA 0.30.0, io 0.4.0,
       FRF 0.2.0, excitation 0.2.0, view 0.2.0, model 0.2.0 (public-api round) and
-      the template patch releases. Published so far: EMA 0.31.0, io 0.4.0,
-      FRF 0.3.0, excitation 0.2.0, view 0.2.0, model 0.2.0.
+      the template patch releases. Published so far (2026-11-17): EMA 0.32.0,
+      io 0.4.0, FRF 0.4.0, excitation 0.2.0, view 0.2.0, model 0.3.0. Still open:
+      the template release — `sdypy-io` 0.4.0 declares `requires-python >=3.10`
+      (the floor is 3.13).
+- [x] First hub release made by the canonical workflow (`one-step-release`):
+      umbrella 0.7.0, 2026-11-17.
+- [ ] Each sibling copies the canonical release workflow and the `AGENTS.md`
+      link block verbatim (six PRs; `check_sibling_template.py` reports the
+      drift). Not verified here.
+- [ ] Optional: a `v*` tag ruleset on each repository, so a hand-pushed tag is
+      refused as well as ignored.
+- [ ] Protect `main` on `sdypy/sdypy` (required checks: Testing, Docs; PRs
+      required; the release workflow needs a bypass). On hold while active work
+      lands, decided 2026-11-17.
+- [ ] `sdypy-FRF` 0.4.0 on PyPI still has its Documentation URL pointing to
+      `pyfrf.readthedocs.io`, and the hub docs (`docs/source/packages.rst`,
+      `index.rst`) still say "built on the upstream pyFRF library". Both predate
+      `frf-not-a-shim`; fix the sibling's `project.urls` in its next release and
+      the hub text in a docs PR.
 - [x] After releases land: fresh-venv `pip install sdypy` runs the conformance
       tests green (`test_public_api`, `test_namespace_conformance` flip green).
-      Green on 2026-11-06; only `test_nomenclature` stays red, see § C.
+      Green on 2026-11-06; `test_nomenclature` stayed red then. On 2026-11-17
+      only the `view` case is still red, see § C.
 - [ ] Verify GitHub Actions concludes green on all seven ladisk fork repos
       (the four previously-silent forks show their first successful run).
 - [ ] Register `sdypy-FRF`, `sdypy-excitation`, `sdypy-view` on Read the Docs;
@@ -301,16 +332,17 @@ shim-curation question for the `public-api` spec, not a nomenclature one.
       (`FRF.__init__` and the instance attribute); `type` → `frf_estimator` and `form` →
       `frf_form` (`FRF.get_FRF`). Done in pyFRF 1.5.0 and `sdypy-FRF` 0.3.0 by the
       `canonicalize-frf-estimator` change; verified by pyFRF `tests/test_deprecations.py`.
-- [ ] `sdypy-view` (1 finding, new in 0.2.0): the bare uppercase parameter `R` of
+- [ ] `sdypy-view` (1 finding, new in 0.2.0; still reported by the `pypi_artifacts`
+      gate on 2026-11-17): the bare uppercase parameter `R` of
       `Plotter3D.add_camera_poses` needs a descriptive snake_case name, as `N`/`G` above.
 - [ ] `sdypy-io`, `sdypy-FRF`, `sdypy-excitation`: nothing to do — all three
       report zero.
-- [ ] Core repo follow-up, after EMA and model ship the rename: move
-      `tests/test_interop.py` (six reads of `model.nat_freq` / `ema.nat_freq`) to
-      `natural_freq`. Not a blocker — the deprecated alias keeps the suite green meanwhile.
-- [ ] Umbrella 0.6.0 ships with `test_nomenclature` red for EMA, view and model
+- [x] Core repo follow-up: `tests/test_interop.py` reads `natural_freq`, not
+      `nat_freq`.
+- [ ] Umbrella 0.6.0 shipped with `test_nomenclature` red for EMA, view and model
       (decided 2026-11-06): the failures are sibling names, which an umbrella release
-      neither causes nor fixes. The gate is green again once this bucket is done.
+      neither causes nor fixes. EMA 0.32.0 and model 0.3.0 now pass; the gate is
+      green again once `sdypy-view` is done.
 - [ ] Every rename keeps its alias through all of v1.x; removal is gated at v2.0 by the
       SEP 2 deprecation policy.
 
@@ -330,9 +362,8 @@ these out of scope.
 - [ ] `tools/check_nomenclature.py` is never run automatically: the umbrella
       `docs.yml` excludes it by design, and no sibling CI invokes it. It is run
       by hand against a clone. Decide whether that stays true.
-- [ ] The *SEP 2 pending terms* issue convention is documented but untested in
-      practice: the first one is opened when a name is actually declared. Watch
-      that it is opened rather than skipped.
+- [x] The *SEP 2 pending terms* issue convention is used: the first one, issue
+      #43, is open (2026-11-17). It closes with the amendment PR.
 - [ ] Generating the author's declaration from a public-name diff would automate
       the one step that is currently pure discipline. Revisit once the human
       path has been used a few times.

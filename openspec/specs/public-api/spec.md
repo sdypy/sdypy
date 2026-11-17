@@ -4,9 +4,7 @@
 The contract for the public API surface of the SDyPy first-level packages: every package declares an explicit, curated `__all__` with no leaked third-party or stdlib names, sanctioned module-type entries only, deprecated aliases kept for renamed names through v1.x, and the umbrella exposing exactly the six first-level names plus the `sep005` alias. Established by the `standardize-public-api` change (SEP 2).
 
 **Scope:** Org-wide — binds all six first-level sibling packages, **except** the *Umbrella `__all__` is the six first-level names plus the sep005 alias* requirement, which is umbrella-local. Governed by SEP 2.
-
 ## Requirements
-
 ### Requirement: Every first-level package declares an explicit `__all__`
 Every first-level sdypy namespace package (`sdypy.EMA`, `sdypy.io`, `sdypy.FRF`, `sdypy.excitation`, `sdypy.view`, `sdypy.model`) SHALL declare a non-empty `__all__` list in its `sdypy/<pkg>/__init__.py`. Every name in `__all__` MUST resolve via `getattr` on the module object after import.
 
@@ -20,7 +18,7 @@ Every first-level sdypy namespace package (`sdypy.EMA`, `sdypy.io`, `sdypy.FRF`,
 
 #### Scenario: Curated names match the design-specified lists
 - **WHEN** the `__all__` of each package is inspected after import
-- **THEN** `sdypy.EMA.__all__` contains exactly `["Model", "MAC", "MSF", "MCF", "complex_freq_to_freq_and_damp", "stabilization", "normal_modes", "pole_picking"]`
+- **THEN** `sdypy.EMA.__all__` contains exactly `["Model", "ModelPoly", "MAC", "MSF", "MCF", "complex_freq_to_freq_and_damp", "stabilization", "normal_modes", "pole_picking"]`
 - **AND** `sdypy.io.__all__` contains exactly `["uff", "lvm", "mraw", "sfmov"]`
 - **AND** `sdypy.FRF.__all__` contains exactly `["FRF", "assert_sep005", "direction_dict"]`
 - **AND** `sdypy.excitation.__all__` contains exactly `["burst_random", "get_kurtosis", "get_psd", "impulse", "nonstationary_signal", "normal_random", "pseudo_random", "random_gaussian", "sine_sweep", "stationary_nongaussian_signal", "uniform_random"]`
@@ -638,3 +636,4 @@ The recording section MUST give the ordered steps: the `list-table` row in `docs
 - **WHEN** a contributor follows the documented steps to add a settled name to the canonical table
 - **THEN** the steps cover the SEP table row, the checker map, and the test run
 - **AND** omitting the checker map for a name that replaces a divergent spelling fails the mirror tests
+
