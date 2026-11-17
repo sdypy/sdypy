@@ -260,7 +260,7 @@ renames are verified by the backend's own tests, not by `check_nomenclature.py`.
 Whether a star-import shim should republish everything the backend exposes is a
 shim-curation question for the `public-api` spec, not a nomenclature one.
 
-- [ ] `sdypy-EMA` (27 findings): `nat_freq` → `natural_freq` (public attribute of `Model` —
+- [x] `sdypy-EMA` (27 findings): `nat_freq` → `natural_freq` (public attribute of `Model` —
       needs a class-level `__getattr__` shim, not a plain assignment); `nat_xi` and
       `pole_xi` → `damping_ratio` (`Model.select_closest_poles`, `Model.get_poles`);
       `phi` → `mode_shape` (`Model.get_constants` — a genuine mode shape, but the
@@ -270,7 +270,9 @@ shim-curation question for the `public-api` spec, not a nomenclature one.
       `Model.get_constants`); `frf_type` → `frf_form` (`Model.__init__`,
       `Model.read_uff`, `LSFD`, `LSFD_old`, `LSFD_proportional`);
       `FRF_ind`/`lower_ind`/`upper_ind`/`pole_ind` → the `_idx` spellings.
-- [ ] `sdypy-model` (82 findings): `nat_freq` → `natural_freq` (`Beam.solve`,
+      Done in sdypy-EMA 0.32.0; `pole_xi` became `pole_damping_ratio`, a new name
+      for the SEP 2 pending-terms ledger. `check_nomenclature.py` reports 0.
+- [x] `sdypy-model` (82 findings): `nat_freq` → `natural_freq` (`Beam.solve`,
       `Tetrahedron.solve`); `K`/`M` → `stiffness_matrix`/`mass_matrix` (`Beam.assemble`,
       `Shell.construct_global_matrices`, `solve_eigenvalue`, `lump_mass_matrix`);
       `org`/`conec` → `nodes`/`elements` (`Beam`, `Tetrahedron`, `construct_loce`);
@@ -285,12 +287,16 @@ shim-curation question for the `public-api` spec, not a nomenclature one.
       replacement. In particular `EI` (`matrices_k_e`, `Beam`) is a scalar bending
       rigidity (E·I), **not** a stiffness matrix — SEP 2's `stiffness_matrix` row
       explicitly disclaims it.
-- [ ] `sdypy-model`, `acoustic_external` and `mesh` (16 further findings, present in the
+      Done in sdypy-model 0.3.0 (`sep2-renames` change in sdypy-model); `I`, `J`,
+      `EI` became `area_moment`, `jacobian`, `bending_stiffness`, new names for the
+      SEP 2 pending-terms ledger. `check_nomenclature.py` reports 0.
+- [x] `sdypy-model`, `acoustic_external` and `mesh` (16 further findings, present in the
       published 0.1.5 but absent from the local 0.1.2 checkout): `frequency` → `freq`
       (`AcousticExternalProblem.__init__`, `Body.__init__`, and three more sites);
       `rho` → `density`; `n` → `n_<plural>`; and the bare
       uppercase parameters `N`, `R`, `G`, which need maintainer-chosen descriptive
-      names as `I`/`A`/`J` above do.
+      names as `I`/`A`/`J` above do. Done in sdypy-model 0.3.0 (`N`, `R`, `G` became
+      `shape_functions`, `rotation_matrix`, `greens_function`).
 - [x] `pyFRF` (backend of `sdypy-FRF`, re-exported `FRF`): `frf_type` → `frf_estimator`
       (`FRF.__init__` and the instance attribute); `type` → `frf_estimator` and `form` →
       `frf_form` (`FRF.get_FRF`). Done in pyFRF 1.5.0 and `sdypy-FRF` 0.3.0 by the
