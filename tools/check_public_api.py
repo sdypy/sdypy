@@ -7,7 +7,7 @@ Audits a sibling clone's ``sdypy/<pkg>/__init__.py`` without importing it:
 
 Violations print to stdout and the script exits non-zero.
 
-For the two backend shims (FRF, excitation) it additionally runs an ADVISORY
+For the backend shim (excitation) it additionally runs an ADVISORY
 drift check: backend public callables missing from the curated ``__all__`` are
 reported so they get a conscious curation decision, but never affect the exit
 code. Drift requires the backend to be importable in the running environment;
@@ -47,7 +47,7 @@ CURATED = {
 }
 
 # Shim packages whose curated list is a deliberate subset of a backend.
-SHIM_BACKENDS = {"FRF": "pyFRF", "excitation": "pyExSi"}
+SHIM_BACKENDS = {"excitation": "pyExSi"}
 
 
 def find_portion_init(clone_root):

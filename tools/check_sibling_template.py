@@ -54,12 +54,12 @@ AGENTS_LINKS_END = "<!-- <<< sdypy hub links -->"
 SHARED_RULES_START = "# >>> shared rules from the sdypy hub"
 SHARED_RULES_END = "# <<< shared rules"
 
-# Backend shims are exempt from carrying openspec/config.yaml (*A shim is not
+# The backend shim (excitation) is exempt from carrying openspec/config.yaml (*A shim is not
 # required to carry OpenSpec configuration*). Mirrors the portion names
 # tools/check_public_api.py already uses for its own shim handling
 # (SHIM_BACKENDS keys); kept as a local constant so the two checkers do not
 # import each other.
-SHIM_PACKAGES = {"FRF", "excitation"}
+SHIM_PACKAGES = {"excitation"}
 
 # The hub's own root, resolved from this file's location - never from the
 # working directory, so the checker gives the same verdict regardless of where

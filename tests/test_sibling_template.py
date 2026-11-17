@@ -192,11 +192,17 @@ def test_a_missing_configuration_is_reported_for_a_non_shim_sibling(tmp_path):
     assert violations == ["on-ramp: openspec/config.yaml missing"]
 
 
-@pytest.mark.parametrize("shim", ["FRF", "excitation"])
-def test_a_shim_is_not_required_to_carry_openspec_configuration(tmp_path, shim):
+def test_a_shim_is_not_required_to_carry_openspec_configuration(tmp_path):
     violations = []
-    check_openspec_config(tmp_path, shim, HUB_RULES_BLOCK, violations)
+    check_openspec_config(tmp_path, "excitation", HUB_RULES_BLOCK, violations)
     assert violations == []
+
+
+def test_frf_is_not_exempt_from_openspec_configuration(tmp_path):
+    """sdypy-FRF holds its own code and is no longer a shim."""
+    violations = []
+    check_openspec_config(tmp_path, "FRF", HUB_RULES_BLOCK, violations)
+    assert violations == ["on-ramp: openspec/config.yaml missing"]
 
 
 def test_a_broken_hub_rules_block_is_reported_not_silently_passed(tmp_path):
@@ -214,7 +220,7 @@ def test_a_shim_stays_exempt_even_when_the_hub_rules_block_is_broken(tmp_path):
     """The shim exemption is checked first: a shim needs no openspec/config.yaml
     regardless of whether the hub's own block is intact."""
     violations = []
-    check_openspec_config(tmp_path, "FRF", None, violations)
+    check_openspec_config(tmp_path, "excitation", None, violations)
     assert violations == []
 
 

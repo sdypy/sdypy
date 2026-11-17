@@ -6,7 +6,7 @@ Audits a repo (core or a sibling clone) WITHOUT building the docs:
   * the pyproject docs extra lists pydata-sphinx-theme and no competing theme;
   * no foreign-project residue strings appear (outside an allowlist);
   * the [project.urls] Documentation target matches the package's class
-    (own Read the Docs site, or upstream backend docs for the thin wrappers).
+    (own Read the Docs site, or upstream backend docs for the thin shim).
 
 Usage:
     python tools/check_docs.py --path .                       # core
@@ -43,9 +43,9 @@ RESIDUE_REGEX = re.compile(r"(?<!h)ttps://")
 # Lines containing any allowlist token are exempt from the residue scan.
 ALLOWLIST_TOKENS = ("adapted from", "import numpy")
 
-# Upstream-backend doc targets for the thin-wrapper packages; everyone else
+# Upstream-backend doc target for the thin-wrapper shim; everyone else
 # must point at their own readthedocs.io site.
-UPSTREAM_DOC_TARGET = {"sdypy-FRF": "pyfrf", "sdypy-excitation": "pyexsi"}
+UPSTREAM_DOC_TARGET = {"sdypy-excitation": "pyexsi"}
 
 
 def _load_pyproject(root):
