@@ -65,8 +65,8 @@ def ema_result(lumped_model):
     model = sdypy.EMA.Model(
         frf=FRF_matrix,
         freq=freq,
-        lower=freq[0],
-        upper=freq[-1],
+        freq_lower=freq[0],
+        freq_upper=freq[-1],
         pol_order_high=30,
     )
     model.get_poles(method="lscf", show_progress=False)
@@ -138,8 +138,8 @@ def chain_result():
     ema = sdypy.EMA.Model(
         frf=H1_band,
         freq=freq_band,
-        lower=freq_band[0],
-        upper=freq_band[-1],
+        freq_lower=freq_band[0],
+        freq_upper=freq_band[-1],
         pol_order_high=40,
     )
     ema.get_poles(method="lscf", show_progress=False)
@@ -147,7 +147,7 @@ def chain_result():
     ema.get_constants(whose_poles="own", FRF_ind="all")
 
     # damping stability check: unphysical values signal instability
-    xi_id = ema.nat_xi
+    xi_id = ema.damping_ratio
     damping_stable = bool(np.all(xi_id > 0) and np.all(xi_id < 0.5))
 
     return ema, f_nat_true, zeta_true, damping_stable
@@ -160,13 +160,13 @@ def chain_result():
 class TestLumpedToEMA:
     """Build 2-DOF model, compute analytical FRF, identify poles via LSCF."""
 
-    def test_identified_nat_freq_within_2pct(self, ema_result):
+    def test_identified_natural_freq_within_2pct(self, ema_result):
         """Identified natural frequencies must lie within rtol=2e-2 of truth."""
         model, f_nat_true, _ = ema_result
-        nat_freq_id = np.sort(model.nat_freq)
+        natural_freq_id = np.sort(model.natural_freq)
         f_true_sorted = np.sort(f_nat_true)
         np.testing.assert_allclose(
-            nat_freq_id, f_true_sorted, rtol=2e-2,
+            natural_freq_id, f_true_sorted, rtol=2e-2,
             err_msg="Identified nat. freq. deviate more than 2%% from analytical values"
         )
 
@@ -174,9 +174,9 @@ class TestLumpedToEMA:
         """Identified damping ratios must lie within rtol=2e-2 of truth."""
         model, f_nat_true, zeta_true = ema_result
         # sort by frequency order to align identified vs. analytical damping
-        id_order = np.argsort(model.nat_freq)
+        id_order = np.argsort(model.natural_freq)
         true_order = np.argsort(f_nat_true)
-        nat_xi_id = model.nat_xi[id_order]
+        nat_xi_id = model.damping_ratio[id_order]
         zeta_sorted = zeta_true[true_order]
         np.testing.assert_allclose(
             nat_xi_id, zeta_sorted, rtol=2e-2,
@@ -214,16 +214,16 @@ class TestFlagshipChain:
     N_SAMPLES = 65536     # long block; good resolution (~0.076 Hz/bin)
     SEED = 7777
 
-    def test_chain_nat_freq_within_5pct(self, chain_result):
+    def test_chain_natural_freq_within_5pct(self, chain_result):
         """Identified natural frequencies must lie within rtol=5e-2 of truth
         after the full pseudo_random -> response -> H1 -> EMA chain."""
         ema, f_nat_true, _, _ = chain_result
-        id_order = np.argsort(ema.nat_freq)
+        id_order = np.argsort(ema.natural_freq)
         true_order = np.argsort(f_nat_true)
-        nat_freq_id = ema.nat_freq[id_order]
+        natural_freq_id = ema.natural_freq[id_order]
         f_true_sorted = f_nat_true[true_order]
         np.testing.assert_allclose(
-            nat_freq_id, f_true_sorted, rtol=5e-2,
+            natural_freq_id, f_true_sorted, rtol=5e-2,
             err_msg=(
                 "Chain-identified nat. freq. deviate more than 5%% from truth; "
                 "excitation, response or FRF stage may have a mismatch"
@@ -246,9 +246,9 @@ class TestFlagshipChain:
                 "Flagship chain: damping identification numerically unstable "
                 "(H1 from single broadband block); frequency check still passes."
             )
-        id_order = np.argsort(ema.nat_freq)
+        id_order = np.argsort(ema.natural_freq)
         true_order = np.argsort(f_nat_true)
-        xi_id = ema.nat_xi[id_order]
+        xi_id = ema.damping_ratio[id_order]
         zeta_sorted = zeta_true[true_order]
         np.testing.assert_allclose(
             xi_id, zeta_sorted, rtol=5e-2,
