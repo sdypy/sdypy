@@ -8,10 +8,10 @@ compliance before pushing your code:
 
 -  Many integrated development environments (IDEs) have options that
    automatically check for PEP8 compliance. In Spyder, for example,
-   `enable Real-time code style analysis`_ in Tools |rarr| Preferences |rarr|
-   Editor |rarr| Code Introspection/Analysis and "Automatically remove
-   trailing spaces when saving files" in in Tools |rarr| Preferences |rarr|
-   Editor |rarr| Advanced Settings. This can help you fix PEP8 issues as you
+   `enable Real-time code style analysis`_ in Tools → Preferences →
+   Editor → Code Introspection/Analysis and "Automatically remove
+   trailing spaces when saving files" in in Tools → Preferences →
+   Editor → Advanced Settings. This can help you fix PEP8 issues as you
    write your code.
 
 -  You can also perform checks using the |flake8|_ tool. 

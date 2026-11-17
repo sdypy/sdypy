@@ -34,4 +34,4 @@ jobs:
         working-directory: docs/seps
 
       - name: Build HTML docs
-        run: python -m sphinx -b html docs/source docs/_build/html
+        run: python -m sphinx -b html -W --keep-going docs/source docs/_build/html

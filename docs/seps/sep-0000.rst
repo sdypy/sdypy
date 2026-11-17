@@ -82,7 +82,7 @@ tag is the best way to doing this `mailing list`_.
 The proposal should be submitted as a draft SEP via a `GitHub pull
 request`_ to the ``docs/seps`` directory with the name ``sep-<n>.rst``
 where ``<n>`` is an appropriately assigned four-digit number (e.g.,
-``sep-0000.rst``). The draft must use the :docs:`sep-template` file.
+``sep-0000.rst``). The draft must use the :doc:`sep-template` file.
 
 Once the PR for the SEP is in place, a post should be made to the
 mailing list containing the sections up to "Backward compatibility",

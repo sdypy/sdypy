@@ -32,6 +32,7 @@ In particular, the goals are:
   
   - SDyPy or related packages should provide and easy way for generation 
     of publication ready and interactive visualisation for:
-      - models (nodes, sufraces, elements, STL),
-      - measurement location,
-      - mode shapes,...
+
+    - models (nodes, sufraces, elements, STL),
+    - measurement location,
+    - mode shapes,...
