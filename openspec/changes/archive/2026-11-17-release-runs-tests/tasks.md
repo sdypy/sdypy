@@ -2,7 +2,7 @@
 
 - [x] 1.1 `python-package.yml`: add `workflow_call` to `on:`; triggers, matrix and steps otherwise unchanged
 - [x] 1.2 `release-and-publish-to-pypi.yml`: move the default-branch refusal into a first job `default-branch`; add a job `test` (`uses: ./.github/workflows/python-package.yml`, `needs: default-branch`, `permissions: contents: read`, no secrets); `release` declares `needs: test`
-- [ ] 1.3 Both workflows parse as YAML (done, PyYAML); actionlint not run — not installed locally, run it before merge or rely on GitHub rejecting an invalid workflow on the PR (not run: actionlint unavailable; workflows parse and CI passes)
+- [x] 1.3 Both workflows parse as YAML (PyYAML) and pass actionlint 1.7.12
 
 ## 2. Checker
 
