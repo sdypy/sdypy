@@ -4,10 +4,9 @@
 The contract for how the SEP 5 unified-timeseries standard is surfaced in SDyPy: the umbrella facade alias `sd.sep005` over the standalone `sdypy_sep005` distribution (explicitly not a namespace portion), its presence in the umbrella public surface, its documentation as the SEP 5 standard, and the SEP 5 ratification path. Established by the `expose-sep005-standard` change (SEP 5).
 
 **Scope:** Umbrella-local — the umbrella's `sd.sep005` facade alias and its documentation. Governed by SEP 5.
-
 ## Requirements
 ### Requirement: Umbrella exposes sep005 as a facade alias
-The `sdypy` umbrella SHALL expose `sep005` as an attribute that resolves, lazily on first access, to the installed `sdypy_sep005` distribution. The alias MUST be defined separately from the first-level sub-package mechanism (`_SUBPACKAGES`), because `sdypy_sep005` is a standalone top-level module and not a `sdypy.sep005` namespace portion. Accessing `sep005` MUST NOT attempt to import a non-existent `sdypy.sep005` module.
+The `sdypy` umbrella SHALL expose `sep005` as an attribute that resolves, lazily on first access, to the validator module `sdypy_sep005.sep005` of the installed `sdypy_sep005` distribution (the package `__init__` holds only `__version__`). The alias MUST be defined separately from the first-level sub-package mechanism (`_SUBPACKAGES`), because `sdypy_sep005` is a standalone top-level module and not a `sdypy.sep005` namespace portion. Accessing `sep005` MUST NOT attempt to import a non-existent `sdypy.sep005` module.
 
 #### Scenario: sd.sep005 resolves to the sdypy_sep005 validator module
 - **WHEN** a user runs `import sdypy as sd` and accesses `sd.sep005`

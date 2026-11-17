@@ -4,9 +4,7 @@
 The contract for the `sdypy` umbrella documentation: a unified pydata-Sphinx site free of foreign-project residue, a reStructuredText README, a landing page and unified toctree, autodoc for own-code packages, unified SEP rendering via `build_index.py`, a standardised `readthedocs.yaml`, and a docs conformance checker with a CI job. Established by the `establish-docs-website` change.
 
 **Scope:** Umbrella-local — the `sdypy` umbrella documentation site and its build.
-
 ## Requirements
-
 ### Requirement: No foreign-project residue
 
 The core repository SHALL contain no SciPy or NumPy artefacts that were never adapted for SDyPy. Specifically: the `docs/source/building/` subtree (files `index.rst`, `linux.rst`, `windows.rst`, `macosx.rst`, `faq.rst`) MUST be deleted; `docs/seps/conf.py` MUST NOT reference NumPy-branded assets (`numpylogo.svg`, NumPy GitHub/Twitter URLs, `htmlhelp_basename`, LaTeX/man/texinfo titles reading "NumPy Enhancement Proposals", or intersphinx mappings to `numpy`/`scipy`); `sep-0000.rst` footnotes and links MUST point at SDyPy resources rather than the NumPy mailing list or NEPs; the dead `www.sdypy.org/devdocs` link in `roadmap.rst` MUST be removed; the `ttps://` clone-URL typo in `dev/contributing.rst` MUST be corrected; and the `__init__.py` module docstring "A project template for the SDyPy effort…" MUST be removed from `sdypy-io`, `sdypy-FRF`, and `sdypy-excitation`. Governance and CoC prose that intentionally acknowledges SciPy origin SHALL be preserved; an allowlist MUST cover these acknowledgements and example code such as `import numpy as np` so the conformance checker does not flag them as residue.
@@ -23,7 +21,7 @@ The core repository SHALL contain no SciPy or NumPy artefacts that were never ad
 - **WHEN** `docs/seps/sep-0000.rst` is read
 - **THEN** no footnote or hyperlink target points at the NumPy mailing list or the NumPy Enhancement Proposals (NEPs) site
 
-#### Scenario: Template docstring removed from shim packages
+#### Scenario: Template docstring removed from io, FRF and excitation
 - **WHEN** the `__init__.py` of `sdypy-io`, `sdypy-FRF`, and `sdypy-excitation` are read
 - **THEN** none contains the text "A project template for the SDyPy effort"
 
@@ -113,7 +111,7 @@ The core `docs/source/index.rst` SHALL be a real landing page with a mission sta
 
 ### Requirement: Unified SEP rendering via build_index.py
 
-The `docs/seps/build_index.py` generator SHALL be the single source of truth for the SEP index, covering all SEPs including SEP 0005. It SHALL be invoked as part of the RTD build (via a `build.jobs.pre_build` step in `readthedocs.yaml` or a `conf.py` hook) so the rendered umbrella site always reflects the current SEP state. The manual `docs/source/SEPs.rst` include list (which manually `.. include::`s seps 0000–0004 and omits 0005) SHALL be retired and removed.
+The `docs/seps/tools/build_index.py` generator SHALL be the single source of truth for the SEP index, covering all SEPs including SEP 0005. It SHALL be invoked as part of the RTD build (via a `build.jobs.pre_build` step in `readthedocs.yaml` or a `conf.py` hook) so the rendered umbrella site always reflects the current SEP state. The manual `docs/source/SEPs.rst` include list (which manually `.. include::`s seps 0000–0004 and omits 0005) SHALL be retired and removed.
 
 #### Scenario: SEP 0005 appears in the rendered SEP index
 - **WHEN** `build_index.py` is run and the umbrella docs are built
@@ -203,7 +201,7 @@ context, deprecation policy and status.
 
 ### Requirement: Standardised readthedocs.yaml on the oldest supported Python
 
-All seven `readthedocs.yaml` files (core + six siblings) SHALL conform to one shape: `version: 2`, `build.os: ubuntu-24.04`, `build.tools.python` set to the oldest version of the supported set (`sibling-package-template` *Supported Python versions follow SPEC 0*), `sphinx.configuration: docs/source/conf.py`, and `python.install` using pip with the `docs` extra (`pip install .[docs]`). The Documentation URL in each package's `pyproject.toml` `[project.urls]` SHALL reflect the package's class: EMA and io keep their own RTD URLs; `sdypy-view` switches to `https://sdypy-view.readthedocs.io/`; `sdypy-model` gains a Documentation URL pointing at `https://sdypy-model.readthedocs.io/`; FRF and excitation retain their upstream backend documentation URLs per change #3 D6.
+All seven `readthedocs.yaml` files (core + six siblings) SHALL conform to one shape: `version: 2`, `build.os: ubuntu-24.04`, `build.tools.python` set to the oldest version of the supported set (`sibling-package-template` *Supported Python versions follow SPEC 0*), `sphinx.configuration: docs/source/conf.py`, and `python.install` using pip with the `docs` extra (`pip install .[docs]`). The Documentation URL in each package's `pyproject.toml` `[project.urls]` SHALL reflect the package's class: EMA and io keep their own RTD URLs; `sdypy-view` switches to `https://sdypy-view.readthedocs.io/`; `sdypy-model` gains a Documentation URL pointing at `https://sdypy-model.readthedocs.io/`; `sdypy-FRF` points at its own Read the Docs site, because it is a regular package; only the shim `sdypy-excitation`, which has no hosted documentation, keeps its backend's (pyExSi) documentation URL.
 
 #### Scenario: Core readthedocs.yaml uses ubuntu-24.04 and the oldest supported Python
 - **WHEN** the core `readthedocs.yaml` is read
@@ -221,6 +219,11 @@ All seven `readthedocs.yaml` files (core + six siblings) SHALL conform to one sh
 - **WHEN** `[project.urls]` in `sdypy-view/pyproject.toml` is read
 - **THEN** the `Documentation` key value is `https://sdypy-view.readthedocs.io/` or equivalent own-RTD URL
 
+#### Scenario: sdypy-FRF Documentation URL points at its own RTD
+- **WHEN** `tools/check_docs.py --path <sdypy-FRF>` is run on a `sdypy-FRF` clone whose Documentation URL points at `pyfrf.readthedocs.io`
+- **THEN** the script exits non-zero and reports that the Documentation URL must be the package's own readthedocs.io site
+
 #### Scenario: check_docs.py detects wrong Documentation URL class
 - **WHEN** `tools/check_docs.py --path <sdypy-view>` is run on a `sdypy-view` clone whose Documentation URL still points at its GitHub homepage
 - **THEN** the script exits non-zero and reports the URL class mismatch
+

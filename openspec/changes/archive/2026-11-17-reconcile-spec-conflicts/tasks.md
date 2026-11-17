@@ -10,8 +10,8 @@
 
 - [x] 2.1 `openspec validate reconcile-spec-conflicts --strict` and `openspec validate --all --strict` pass
 - [x] 2.2 `pytest -m "not pypi_artifacts"` passes
-- [ ] 2.3 CI green on the PR
+- [x] 2.3 CI green on the PR
 
 ## 3. Archive
 
-- [ ] 3.1 With the archive: update `REQUIREMENTS.md` rows (drop the two removed `testing-ci` rows and the fork-CI item in § Pending A; fix the *Conformance checking* row and the `build_index.py` path) and hand-edit the `testing-ci` Purpose/Scope line that names the removed fork-CI requirement
+- [x] 3.1 With the archive: update `REQUIREMENTS.md` rows (drop the two removed `testing-ci` rows and the fork-CI item in § Pending A; fix the *Conformance checking* row and the `build_index.py` path) and hand-edit the `testing-ci` Purpose/Scope line that names the removed fork-CI requirement
