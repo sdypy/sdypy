@@ -158,13 +158,14 @@ Spec: `openspec/specs/sibling-package-template/spec.md` · Checker: `tools/check
 | Repository scaffolding | `check_sibling_template.py` |
 | Conformance checking (distribution layer in core CI; repo layer by `check_sibling_template.py`) | `pytest::test_published_sdist_has_no_stale_packaging`, `test_published_wheel_ships_only_own_portion`, `test_sibling_version_resolvable_from_metadata` (`pypi_artifacts`); `check_sibling_template.py` with `tests/test_sibling_template.py` |
 | Release workflow is the hub's file, copied verbatim | `check_sibling_template.py`; `pytest::test_a_verbatim_copy_of_the_hub_workflow_passes`, `test_a_drifted_copy_is_reported`, `test_the_old_tag_triggered_workflow_is_reported`, `test_a_missing_release_workflow_is_reported`, `test_an_underscore_named_release_workflow_is_reported`, `test_an_unreadable_hub_copy_is_reported_not_silently_passed` in `tests/test_release_workflow.py` |
-| Releases start only by hand from the default branch | `pytest::test_the_workflow_is_started_only_by_hand_with_a_version`, `test_a_hand_pushed_tag_publishes_nothing`, `test_a_run_off_the_default_branch_fails` |
+| Releases start only by hand from the default branch | `pytest::test_the_workflow_is_started_only_by_hand_with_a_version`, `test_a_hand_pushed_tag_publishes_nothing`, `test_a_run_off_the_default_branch_fails` (the first job refuses, and the tests wait for it) |
+| The release runs the repository's tests first | `check_sibling_template.py` (test workflow is callable); `pytest::test_the_release_job_needs_the_test_job`, `test_a_release_not_gated_on_the_tests_is_detected`, `test_the_test_workflow_can_be_called_and_keeps_its_triggers` in `tests/test_release_workflow.py` |
 | The release workflow writes the version into `pyproject.toml` | `pytest::test_the_bump_writes_the_project_version_only` |
 | The release tag sits on the version commit | `pytest::test_the_tag_sits_on_the_bump_commit` |
 | The release is pushed atomically before it is published (runs serialised) | `pytest::test_the_release_commit_and_tag_are_pushed_atomically_before_publishing`, `test_releases_are_serialised` |
 | The release workflow refuses an inconsistent version | `pytest::test_a_malformed_version_is_refused`, `test_an_existing_tag_is_refused`, `test_a_version_not_newer_than_the_current_one_is_refused`, `test_a_dynamic_version_is_refused`, `test_a_distribution_with_another_version_is_refused`, `test_a_missing_sdist_is_refused` |
 | Releasing is documented once, in the hub | `pytest::test_the_hub_agents_md_has_a_releasing_section`, `test_the_hub_link_block_links_to_the_releasing_section` |
-| Canonical test workflow on the supported Python set (`pip install .[<extras>]` allowed, never `requirements*.txt`) | `check_sibling_template.py`; `pytest::test_pip_install_with_extras_is_accepted`, `test_requirements_txt_is_still_rejected`, `test_matrix_not_covering_the_supported_set_is_reported`, `test_matrix_covering_the_supported_set_passes` |
+| Canonical test workflow on the supported Python set (`pip install .[<extras>]` allowed, never `requirements*.txt`) | `check_sibling_template.py`; `pytest::test_pip_install_with_extras_is_accepted`, `test_requirements_txt_is_still_rejected`, `test_matrix_not_covering_the_supported_set_is_reported`, `test_matrix_covering_the_supported_set_passes`, `test_a_callable_test_workflow_passes`, `test_a_test_workflow_without_workflow_call_is_reported` |
 | Metadata consistency with the supported Python set | `check_sibling_template.py`; `pytest::test_requires_python_floor_is_the_oldest_supported_version`, `test_wrong_requires_python_floor_is_reported`, `test_classifiers_not_matching_the_supported_set_are_reported` |
 | Agent instructions link to the hub's org-wide rules (`AGENTS.md` link block) | `check_sibling_template.py`; `pytest::test_agents_md_carries_the_hub_link_block`, `test_missing_agents_md_is_reported`, `test_agents_md_with_an_edited_link_block_is_reported` and the other `AGENTS.md` tests in `tests/test_sibling_template.py` |
 | Claude Code reads AGENTS.md (`CLAUDE.md` is `@AGENTS.md`) | `check_sibling_template.py`; `pytest::test_claude_md_is_the_one_line_pointer`, `test_missing_claude_md_is_reported`, `test_extended_claude_md_is_reported` |
@@ -179,7 +180,7 @@ Spec: `openspec/specs/testing-ci/spec.md` · Scope: **mixed** (see rows)
 |---|---|
 | `pypi_artifacts` marker registered and applied to PyPI-dependent tests | `pyproject.toml` `[tool.pytest.ini_options]`; marker usage in `tests/` |
 | GitHub CI deselects `pypi_artifacts`; matrix (the supported set) green | `.github/workflows/python-package.yml` |
-| Core test + release workflows have the required shape | review of `python-package.yml`; release workflow: `pytest::test_the_workflow_uses_current_actions_and_publishes_with_either_auth` (`tests/test_release_workflow.py`); matrix equals the supported set: `pytest::test_the_hub_follows_the_supported_set` |
+| Core test + release workflows have the required shape | review of `python-package.yml`; `workflow_call` trigger: `pytest::test_the_test_workflow_can_be_called_and_keeps_its_triggers`; release workflow: `pytest::test_the_workflow_uses_current_actions_and_publishes_with_either_auth` (`tests/test_release_workflow.py`); matrix equals the supported set: `pytest::test_the_hub_follows_the_supported_set` |
 | Every first-level package has a functional test baseline **(org-wide)** | sibling repos' suites |
 | Core interop suite exercises cross-package composition | `pytest tests/test_interop.py` (EMA/FRF/io/excitation/model chains, ±2–5 % tolerances) |
 | Every umbrella-runnable checker executes in core CI | `check_seps.py` + `check_docs.py` steps in `.github/workflows/docs.yml`; review of § Canonical sources |
@@ -213,7 +214,11 @@ Acceptance: the `pypi_artifacts`-marked tests flip from red to green from a fres
       umbrella 0.7.0, 2026-11-17.
 - [ ] Each sibling copies the canonical release workflow and the `AGENTS.md`
       link block verbatim (six PRs; `check_sibling_template.py` reports the
-      drift). Not verified here.
+      drift). Not verified here. Recommended, not required (`release-runs-tests`):
+      in the same PR each sibling also adds `workflow_call` to its
+      `python-package.yml`, so the copied release workflow runs its tests first,
+      when its ongoing template work allows. Current sibling releases keep
+      working; nothing waits on it.
 - [ ] Optional: a `v*` tag ruleset on each repository, so a hand-pushed tag is
       refused as well as ignored.
 - [ ] Protect `main` on `sdypy/sdypy` (required checks: Testing, Docs; PRs
