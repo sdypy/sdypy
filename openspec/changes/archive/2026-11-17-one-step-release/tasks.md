@@ -23,9 +23,9 @@
 - [x] 4.3 Embedded guards run from the workflow: bump writes only `[project] version`; malformed, existing-tag, not-newer and dynamic versions refused; distribution check passes and refuses
 - [x] 4.4 Docs: `## Releasing` exists and the link block links to it
 - [x] 4.5 `pytest -m "not pypi_artifacts"` on Python 3.13 locally — 182 passed
-- [ ] 4.6 CI green on the PR
+- [x] 4.6 CI green on the PR (PR #34: Testing 3.13/3.14/3.15 and build-docs SUCCESS)
 
 ## 5. Verification and roster
 
 - [x] 5.1 `openspec validate one-step-release --strict` is clean
-- [ ] 5.2 At archive: update the `REQUIREMENTS.md` rows (*Canonical release workflow* and the new requirements → `check_sibling_template.py` and `tests/test_release_workflow.py`; *Core release workflow* → `tests/test_release_workflow.py`), and add § Pending entries: each sibling copies the workflow and the link block (six PRs), first hub release made by the workflow, optional `v*` tag ruleset
+- [x] 5.2 At archive: update the `REQUIREMENTS.md` rows (*Canonical release workflow* and the new requirements → `check_sibling_template.py` and `tests/test_release_workflow.py`; *Core release workflow* → `tests/test_release_workflow.py`), and add § Pending entries: each sibling copies the workflow and the link block (six PRs), first hub release made by the workflow, optional `v*` tag ruleset

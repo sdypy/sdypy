@@ -4,9 +4,7 @@
 The contract for the SDyPy testing and CI baseline: a registered `pypi_artifacts` marker deselected on GitHub CI, a green core test matrix, canonical core test and release workflows, a real functional test baseline for every first-level package, and a core interop suite exercising cross-package composition. Established by the `establish-testing-ci-baseline` change.
 
 **Scope:** Mixed — umbrella-local for the core test suite, marker, and workflow shape; **org-wide** for the *Every first-level package has a real functional test baseline* and *All seven fork CIs are green* requirements, which bind the six siblings.
-
 ## Requirements
-
 ### Requirement: pypi_artifacts marker registered and applied to all PyPI-dependent tests
 The core `pyproject.toml` SHALL register a pytest marker named `pypi_artifacts` under `[tool.pytest.ini_options]`, and `testpaths` SHALL be set to `["tests"]`. Every core test that fetches published artifacts from PyPI over HTTP (`test_published_sdist_has_no_stale_packaging`, `test_published_wheel_ships_only_own_portion`) or that asserts conformance of installed distributions that come from PyPI in CI (`test_sibling_ships_no_namespace_init` in `test_namespace_conformance.py`; the per-sibling `__all__` tests in `test_public_api.py`: `test_subpackage_declares_nonempty_all`, `test_every_all_entry_resolves`, `test_no_banned_leak_names_in_all`, `test_module_entries_only_where_sanctioned`, `test_curated_surface_matches_spec`) MUST be decorated with `@pytest.mark.pypi_artifacts`. Umbrella-level tests (`test_umbrella_all_is_exactly_the_six_names`, the star-import test, and the drift advisory test) MUST remain unmarked.
 
@@ -56,13 +54,18 @@ The core `python-package.yml` MUST be triggered on `push`, `pull_request`, and `
 - **THEN** a step running `python -m build` is present after the pytest step
 
 ### Requirement: Core release workflow has the required shape
-The core `release-and-publish-to-pypi.yml` MUST use `actions/checkout@v7`, `actions/setup-python@v7`, build via `pip install --upgrade pip build` then `python -m build`, and publish via `pypa/gh-action-pypi-publish@release/v1` with `password: ${{ secrets.PYPI_API_TOKEN }}` (token auth; trusted publishing is deferred).
+The core `release-and-publish-to-pypi.yml` is the canonical release workflow of the `sibling-package-template` spec. It MUST use `actions/checkout@v7`, `actions/setup-python@v7`, `actions/upload-artifact@v7` and `actions/download-artifact@v8`, build via `python -m build`, and publish via `pypa/gh-action-pypi-publish@release/v1` from a job in the `pypi` environment with `id-token: write` and `password: ${{ secrets.PYPI_API_TOKEN }}`, so that a repository with that secret publishes with the token and one without it publishes by trusted publishing.
 
 #### Scenario: Release workflow uses current action versions and token auth
 - **WHEN** `release-and-publish-to-pypi.yml` is inspected
-- **THEN** `actions/checkout@v7` and `actions/setup-python@v7` are used
-- **AND** the publish step uses `pypa/gh-action-pypi-publish@release/v1` with `password: ${{ secrets.PYPI_API_TOKEN }}`
+- **THEN** `actions/checkout@v7`, `actions/setup-python@v7`, `actions/upload-artifact@v7`, `actions/download-artifact@v8` and `pypa/gh-action-pypi-publish@release/v1` are used
+- **AND** the publish step passes `password: ${{ secrets.PYPI_API_TOKEN }}`
 - **AND** no Node 20 or older action majors remain (`@v1.4.2`, `@v2`, `@v3`, `actions/checkout@v4`, `actions/setup-python@v5`)
+
+#### Scenario: One publish step serves token and trusted publishing
+- **WHEN** the publish job is inspected
+- **THEN** it runs in the `pypi` environment with `id-token: write` and passes `password: ${{ secrets.PYPI_API_TOKEN }}`
+- **AND** in a repository without that secret the password is empty, and the publish action uses trusted publishing
 
 ### Requirement: Every first-level package has a real functional test baseline
 Every first-level package (`sdypy-FRF`, `sdypy-excitation`, `sdypy-io`, `sdypy-view`, `sdypy-model`, `sdypy-EMA`) MUST have at least one real functional test (i.e., a test that exercises the package's own code and asserts a non-trivial behavioral property, not a bare `assert True`). Tests MUST be seeded, require no network access, and require no display. The minimum per-package baselines are: FRF — H1 estimation peak, axis length, and `assert_sep005` valid/invalid paths; excitation — shape/dtype and statistical properties for the eleven curated functions; io — `uff` write→read round-trip, `lvm` parse of a generated file, `sfmov` if hand-constructable (else document-and-skip); view — pure helper shapes and `Plotter3D` `ImportError` path (Qt-free); model — `Beam.solve()` vs analytical frequencies (rtol ≤ 5%), `solve_eigenvalue` on analytic 2-DOF, `lumped` 1-DOF eigenfrequency, `Shell`/`Tetrahedron` matrix properties; EMA — existing accuracy assertions pass unchanged after `pol_order_high` reduction.
@@ -154,3 +157,4 @@ At the time of this requirement, `tools/check_seps.py` and `tools/check_docs.py`
 #### Scenario: Documented invocations succeed as written
 - **WHEN** a reader runs any checker invocation shown in `AGENTS.md` § Common commands, in the directory that entry specifies
 - **THEN** the command runs to a verdict — it does not fail with "expected exactly one portion under .../sdypy"
+
