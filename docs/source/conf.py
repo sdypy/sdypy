@@ -139,3 +139,6 @@ os.makedirs(_dst, exist_ok=True)
 for _fn in os.listdir(_seps):
     if _fn.endswith('.rst') and _fn != 'content.rst':
         shutil.copy(os.path.join(_seps, _fn), os.path.join(_dst, _fn))
+# SEP figures referenced as ``_static/...`` from the SEP sources.
+shutil.copytree(os.path.join(_seps, '_static'), os.path.join(_dst, '_static'),
+                dirs_exist_ok=True)

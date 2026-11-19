@@ -27,7 +27,7 @@ the facade, packaging, docs, tests, and governance. See
 | `REQUIREMENTS.md` | Single-source roster: every requirement → its verifying test/checker |
 | `openspec/specs/` | Canonical capability specs (8) — the normative contracts |
 | `openspec/changes/` | In-flight OpenSpec changes; `archive/` holds completed ones |
-| `docs/seps/` | SEP governance docs (SEP 1 levels, 2 API, 3 namespace, 5 sep005) |
+| `docs/seps/` | SEP governance docs (SEP 0–6) |
 | `tools/check_*.py` | Executable conformance checkers (docs, seps, public-api, nomenclature, template) |
 | `tests/` | Functional, interop, and conformance test suites |
 | `.github/workflows/` | CI: `python-package.yml`, `docs.yml`, `release-and-publish-to-pypi.yml` |
@@ -38,6 +38,8 @@ the facade, packaging, docs, tests, and governance. See
   in `tools/check_sibling_template.py`. Use **`uv`** for envs and installs
   (`uv venv`, `uv pip install -e ".[dev]"`), not plain `pip`/`conda`.
 - Build backend is **hatchling**; there is no `setup.py`.
+- On headless machines run the tests with `QT_QPA_PLATFORM=offscreen` (the
+  `view`/`model` siblings need a Qt binding; the `dev` extra installs PySide6).
 
 ## Common commands
 
@@ -190,6 +192,7 @@ home, so edit it only in this file.
 - Requirements & their verification → `REQUIREMENTS.md`
 - Normative contracts → `openspec/specs/<capability>/spec.md`
 - Governance & design rationale → `docs/seps/sep-000*.rst`
+- Values behind "Conventions & virtues" → `docs/seps/sep-0006.rst` (SEP 6)
 - Contribution process, style, CoC → `CONTRIBUTING.rst`, `docs/source/dev/`
 - Naming a new public term → `docs/source/dev/nomenclature.rst` (SEP 2 states
   the rule; that page carries the procedure and the checker's limits)

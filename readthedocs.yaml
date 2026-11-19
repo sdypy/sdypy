@@ -15,6 +15,7 @@ build:
 
 # Build documentation in the "docs/source/" directory with Sphinx
 sphinx:
+  fail_on_warning: true
   configuration: docs/source/conf.py
 
 # Install sdypy itself plus the docs toolchain from pyproject.toml

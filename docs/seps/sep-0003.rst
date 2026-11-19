@@ -100,7 +100,7 @@ References and Footnotes
 
 .. _SDyPy organization: https://github.com/sdypy
 
-.. _core SDyPy pacakge: https://github.com/sdypy/sdypy
+.. _core SDyPy package: https://github.com/sdypy/sdypy
 
 .. _namespace package: https://packaging.python.org/guides/packaging-namespace-packages/
 

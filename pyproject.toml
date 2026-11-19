@@ -47,6 +47,8 @@ dev = [
     "wheel",
     "pytest",
     "build",
+    "flake8",
+    "PySide6-Essentials",
 ]
 
 [tool.pytest.ini_options]

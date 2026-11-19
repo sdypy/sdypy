@@ -180,7 +180,7 @@ serious calls to do so (similar to the BDFL role). The Chair will be
 responsible for:
 
 - Starting a review of the technical direction of the project (as captured by
-  the :ref:`sdypy-roadmap`) bi-yearly, around mid-April and mid-October.
+  the :doc:`roadmap </seps/roadmap>`) bi-yearly, around mid-April and mid-October.
 - At the same times of the year, summarizing any relevant
   organizational updates and issues in the preceding period, and asking for
   feedback/suggestions on the mailing list.
@@ -202,7 +202,7 @@ includes:
 - Creating the release and announcing it on the relevant public channels.
 
 For more details on what those responsibilities look like in practice, see
-:ref:`making-a-release`.
+`AGENTS.md § Releasing <https://github.com/sdypy/sdypy/blob/main/AGENTS.md#releasing>`__.
 
 Conflict of interest
 ~~~~~~~~~~~~~~~~~~~~

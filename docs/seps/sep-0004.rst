@@ -26,9 +26,10 @@ organisation.
 SDyPy organisation was established to provide this long-term stability. If individual packages are based 
 on the SDyPy project template then they can easily transition from level 4 or 3 to level 2 or 1 namespace 
 packages. The integration to the SDyPy package/organisation is made if:
-   * the authors propose such integration and
-   * the functionalities of the package extend the capabilities of the sdypy package as written in this SEP 
-     (this SEP is open always for discussion and extensions).
+
+* the authors propose such integration and
+* the functionalities of the package extend the capabilities of the sdypy package as written in this SEP 
+  (this SEP is open always for discussion and extensions).
 
 The transition to SDyPy should preserve as much of development history as possible (git).
 
