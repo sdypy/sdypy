@@ -4,6 +4,8 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  # The release workflow calls this workflow and releases only if it passes.
+  workflow_call:
 
 jobs:
   test:
