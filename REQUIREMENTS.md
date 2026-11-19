@@ -131,7 +131,7 @@ Spec: `openspec/specs/documentation/spec.md` · Checker: `tools/check_docs.py` �
 | Docs extras/requirements aligned with theme | `check_docs.py`; docs build (`docs.yml`) |
 | README standardised as reStructuredText | `check_docs.py` |
 | Umbrella landing page + unified toctree; autodoc for own-code | docs build (`docs.yml`) |
-| Unified SEP rendering via `build_index.py` | `python tools/build_index.py` (in `docs.yml`) |
+| Unified SEP rendering via `build_index.py` | `python docs/seps/tools/build_index.py` (in `docs.yml`) |
 | Canonical variable table surfaced in the narrative docs by transclusion (single definition) | `manual` — `docs/source/dev/nomenclature.rst` includes the marker-delimited region of `sep-0002.rst`; verified by docs build |
 | Standardised `readthedocs.yaml` on the oldest supported Python | docs Python: `check_sibling_template.py` (siblings), `pytest::test_the_hub_follows_the_supported_set` (core), `test_a_docs_python_other_than_the_oldest_supported_version_is_reported`; `pip install .[docs]`: `check_sibling_template.py`; other shape fields: review |
 | Docs conformance checker and CI job | `check_docs.py` in CI |
@@ -156,7 +156,7 @@ Spec: `openspec/specs/sibling-package-template/spec.md` · Checker: `tools/check
 | Native namespace portion + wheel contents (no `sdypy/__init__.py`) | `check_sibling_template.py`; `pytest::test_published_wheel_ships_only_own_portion` (`pypi_artifacts`) |
 | sdist is an explicit allow-list | `check_sibling_template.py` |
 | Repository scaffolding | `check_sibling_template.py` |
-| Conformance checking (distribution layer in core CI; repo layer by `check_sibling_template.py`) | `pytest::test_published_sdist_has_no_stale_packaging`, `test_published_wheel_ships_only_own_portion`, `test_sibling_version_resolvable_from_metadata` (`pypi_artifacts`); `check_sibling_template.py` with `tests/test_sibling_template.py` |
+| Conformance checking (distribution layer is the local `pypi_artifacts` release gate, not core CI; repo layer by `check_sibling_template.py`) | `pytest::test_published_sdist_has_no_stale_packaging`, `test_published_wheel_ships_only_own_portion`, `test_sibling_version_resolvable_from_metadata` (`pypi_artifacts`); `check_sibling_template.py` with `tests/test_sibling_template.py` |
 | Release workflow is the hub's file, copied verbatim | `check_sibling_template.py`; `pytest::test_a_verbatim_copy_of_the_hub_workflow_passes`, `test_a_drifted_copy_is_reported`, `test_the_old_tag_triggered_workflow_is_reported`, `test_a_missing_release_workflow_is_reported`, `test_an_underscore_named_release_workflow_is_reported`, `test_an_unreadable_hub_copy_is_reported_not_silently_passed` in `tests/test_release_workflow.py` |
 | Releases start only by hand from the default branch | `pytest::test_the_workflow_is_started_only_by_hand_with_a_version`, `test_a_hand_pushed_tag_publishes_nothing`, `test_a_run_off_the_default_branch_fails` (the first job refuses, and the tests wait for it) |
 | The release runs the repository's tests first | `check_sibling_template.py` (test workflow is callable); `pytest::test_the_release_job_needs_the_test_job`, `test_a_release_not_gated_on_the_tests_is_detected`, `test_the_test_workflow_can_be_called_and_keeps_its_triggers` in `tests/test_release_workflow.py` |
@@ -184,8 +184,6 @@ Spec: `openspec/specs/testing-ci/spec.md` · Scope: **mixed** (see rows)
 | Every first-level package has a functional test baseline **(org-wide)** | sibling repos' suites |
 | Core interop suite exercises cross-package composition | `pytest tests/test_interop.py` (EMA/FRF/io/excitation/model chains, ±2–5 % tolerances) |
 | Every umbrella-runnable checker executes in core CI | `check_seps.py` + `check_docs.py` steps in `.github/workflows/docs.yml`; review of § Canonical sources |
-| Sibling workflow files are not modified by the baseline change **(org-wide)** | `manual` — one-off constraint on that change's diffs, since archived; nothing to re-verify |
-| All seven fork CIs green after pushes **(org-wide)** | `manual` — see Pending |
 
 ---
 
@@ -233,8 +231,6 @@ Acceptance: the `pypi_artifacts`-marked tests flip from red to green from a fres
       tests green (`test_public_api`, `test_namespace_conformance` flip green).
       Green on 2026-11-06; `test_nomenclature` stayed red then. On 2026-11-17
       only the `view` case is still red, see § C.
-- [ ] Verify GitHub Actions concludes green on all seven ladisk fork repos
-      (the four previously-silent forks show their first successful run).
 - [ ] Register `sdypy-FRF`, `sdypy-excitation`, `sdypy-view` on Read the Docs;
       rebuild the stale `sdypy-model` RTD site; decide the `sdypy.org` domain.
 
@@ -256,7 +252,7 @@ they stay team-gated.
 - [ ] Flip `docs/seps/sep-0002.rst` (SEP 2, public API) `Draft` → `Accepted` + `:Resolution:`.
 - [ ] Flip `docs/seps/sep-0003.rst` (SEP 3, namespace) `Draft` → `Accepted` + `:Resolution:`.
 - [ ] Flip `docs/seps/sep-0005.rst` (SEP 5, sep005) `Draft` → `Accepted` + `:Resolution:`.
-- [ ] Rebuild the SEP index (`python tools/build_index.py` in `docs/seps/`).
+- [ ] Rebuild the SEP index (`python docs/seps/tools/build_index.py`).
 
 ### C. Align sibling nomenclature with SEP 2 (org-wide)
 Acceptance: every name below is available under its canonical spelling, the

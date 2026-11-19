@@ -3,10 +3,10 @@
 ## Purpose
 The contract for the SDyPy testing and CI baseline: a registered `pypi_artifacts` marker deselected on GitHub CI, a green core test matrix, canonical core test and release workflows, a real functional test baseline for every first-level package, and a core interop suite exercising cross-package composition. Established by the `establish-testing-ci-baseline` change.
 
-**Scope:** Mixed — umbrella-local for the core test suite, marker, and workflow shape; **org-wide** for the *Every first-level package has a real functional test baseline* and *All seven fork CIs are green* requirements, which bind the six siblings.
+**Scope:** Mixed — umbrella-local for the core test suite, marker, and workflow shape; **org-wide** for the *Every first-level package has a real functional test baseline* requirement, which binds the six siblings.
 ## Requirements
 ### Requirement: pypi_artifacts marker registered and applied to all PyPI-dependent tests
-The core `pyproject.toml` SHALL register a pytest marker named `pypi_artifacts` under `[tool.pytest.ini_options]`, and `testpaths` SHALL be set to `["tests"]`. Every core test that fetches published artifacts from PyPI over HTTP (`test_published_sdist_has_no_stale_packaging`, `test_published_wheel_ships_only_own_portion`) or that asserts conformance of installed distributions that come from PyPI in CI (`test_sibling_ships_no_namespace_init` in `test_namespace_conformance.py`; the per-sibling `__all__` tests in `test_public_api.py`: `test_subpackage_declares_nonempty_all`, `test_every_all_entry_resolves`, `test_no_banned_leak_names_in_all`, `test_module_entries_only_where_sanctioned`, `test_curated_surface_matches_spec`) MUST be decorated with `@pytest.mark.pypi_artifacts`. Umbrella-level tests (`test_umbrella_all_is_exactly_the_six_names`, the star-import test, and the drift advisory test) MUST remain unmarked.
+The core `pyproject.toml` SHALL register a pytest marker named `pypi_artifacts` under `[tool.pytest.ini_options]`, and `testpaths` SHALL be set to `["tests"]`. Every core test that fetches published artifacts from PyPI over HTTP (`test_published_sdist_has_no_stale_packaging`, `test_published_wheel_ships_only_own_portion`) or that asserts conformance of installed distributions that come from PyPI in CI (`test_sibling_ships_no_namespace_init` in `test_namespace_conformance.py`; the per-sibling `__all__` tests in `test_public_api.py`: `test_subpackage_declares_nonempty_all`, `test_every_all_entry_resolves`, `test_no_banned_leak_names_in_all`, `test_module_entries_only_where_sanctioned`, `test_curated_surface_matches_spec`) MUST be decorated with `@pytest.mark.pypi_artifacts`. Umbrella-level tests (`test_umbrella_all_is_the_six_subpackages_plus_sep005`, the star-import test, and the drift advisory test) MUST remain unmarked.
 
 #### Scenario: Marker is registered in pyproject.toml
 - **WHEN** `pyproject.toml` in the core repo is inspected
@@ -20,7 +20,7 @@ The core `pyproject.toml` SHALL register a pytest marker named `pypi_artifacts` 
 
 #### Scenario: Umbrella-level tests remain unmarked
 - **WHEN** `tests/test_public_api.py` is inspected
-- **THEN** `test_umbrella_all_is_exactly_the_six_names`, the star-import test, and the drift advisory test have no `pypi_artifacts` decoration
+- **THEN** `test_umbrella_all_is_the_six_subpackages_plus_sep005`, the star-import test, and the drift advisory test have no `pypi_artifacts` decoration
 
 ### Requirement: GitHub CI deselects pypi_artifacts and the matrix is green
 The core GitHub CI test workflow SHALL run pytest with `-m "not pypi_artifacts"` to deselect the marked set. A plain local `pytest` invocation (no `-m` flag) SHALL still collect and run all tests, including the marked set. The marked set constitutes the local, release-time gate; it MUST NOT be required to pass on the GitHub server.
@@ -120,25 +120,6 @@ The core repo SHALL contain `tests/test_interop.py` with four test areas: (1) `s
 #### Scenario: Interop tests run in CI (no pypi_artifacts marker)
 - **WHEN** `pytest --collect-only -m "not pypi_artifacts"` is run in the core repo
 - **THEN** all tests from `test_interop.py` appear in the collected set
-
-### Requirement: Sibling workflow files are not modified by this change
-The workflow files (`.github/workflows/`) in all six sibling repositories (`sdypy-EMA`, `sdypy-io`, `sdypy-FRF`, `sdypy-excitation`, `sdypy-view`, `sdypy-model`) MUST remain byte-identical after this change's commits. Only test files (in `tests/`) are added or modified in sibling repositories; no version bumps and no packaging changes are introduced.
-
-#### Scenario: Sibling workflow files unchanged after this change
-- **WHEN** the diff for each sibling repository produced by this change is inspected
-- **THEN** no `.github/workflows/` file appears in the diff for any sibling repo
-
-#### Scenario: Sibling test additions fold into pending unreleased versions
-- **WHEN** the sdist of any sibling package that gained new tests is built from the pending unreleased version
-- **THEN** the built sdist includes the new test files (via the existing template allow-list) and the package version number is unchanged from the pending release version
-
-### Requirement: All seven fork CIs are green after this change's pushes
-After the test-suite commits are pushed to all sibling forks and the core workflow rewrite is pushed to the core fork, the latest GitHub Actions workflow run on each of the seven `ladisk` fork repositories (sdypy, sdypy-EMA, sdypy-io, sdypy-FRF, sdypy-excitation, sdypy-view, sdypy-model) SHALL conclude with a success status. Forks that have never had a workflow run (EMA, io, FRF, excitation) SHALL receive their first successful run from the pushes in this change.
-
-#### Scenario: All seven fork CI runs conclude success
-- **WHEN** the pushes from this change have been made to all seven ladisk forks
-- **THEN** the latest workflow run on each of the seven ladisk fork repositories shows a success conclusion
-- **AND** the four previously-silent forks (sdypy-EMA, sdypy-io, sdypy-FRF, sdypy-excitation) show their first-ever successful run
 
 ### Requirement: Every umbrella-runnable checker executes in core CI
 Every `tools/check_*.py` conformance checker that is capable of running against the umbrella repository root SHALL be executed as a step in the core GitHub Actions workflows. Checkers that require a single-portion sibling clone and therefore cannot run at the umbrella root SHALL NOT be claimed as CI-covered; the documentation that lists them MUST record where they do run and show an invocation that succeeds.

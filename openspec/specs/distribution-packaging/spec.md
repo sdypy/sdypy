@@ -2,9 +2,7 @@
 The contract that the `sdypy` core repository maintains exactly one authoritative build and dependency definition (`pyproject.toml`), carries no stale packaging scripts or dead CI configurations, tracks no generated build artefacts in git, single-sources the package version in all locations it appears (package facade and documentation build), and publishes metadata classifiers that accurately reflect the tested Python support matrix. Established by the `packaging-hygiene-sweep` change.
 
 **Scope:** Umbrella-local — the `sdypy` core distribution's own build, packaging, and metadata. The parallel contract for the six first-level sibling packages is `sibling-package-template`.
-
 ## Requirements
-
 ### Requirement: Single build definition
 The repository SHALL define build metadata, runtime dependencies, optional extras, and the package version in `pyproject.toml` only. No secondary build script (`setup.py`, `setup.cfg`) or standalone dependency file (`requirements*.txt`) SHALL exist at the repository root or under `docs/`.
 
@@ -26,7 +24,8 @@ The repository SHALL define build metadata, runtime dependencies, optional extra
 
 #### Scenario: pip install docs extra installs docs deps
 - **WHEN** a user runs `pip install .[docs]` in a clean virtual environment
-- **THEN** sphinx, sphinx-rtd-theme, and sphinx-copybutton are installed at their required minimum versions
+- **THEN** sphinx, pydata-sphinx-theme, and sphinx-copybutton are installed at their required minimum versions
+- **AND** no competing theme (`sphinx-rtd-theme`, `sphinx-book-theme`) is installed by the extra
 
 ### Requirement: No dead CI configuration
 The repository SHALL NOT contain CI configuration files for services that are no longer used. The authoritative CI is GitHub Actions; no `.travis.yml` or other legacy CI file SHALL exist.
@@ -62,8 +61,8 @@ The package version SHALL appear in exactly one authoritative location (`pyproje
 - **THEN** the `release` variable is set to the value of `importlib.metadata.version("sdypy")` rather than a hard-coded string
 
 #### Scenario: docs version matches installed package version
-- **WHEN** `sdypy` version 0.6.0 is installed and a docs build is run
-- **THEN** the generated documentation reports release `0.6.0` and version `0.6` without any manual update to `conf.py`
+- **WHEN** `sdypy` version `X.Y.Z` is installed and a docs build is run
+- **THEN** the generated documentation reports release `X.Y.Z` and version `X.Y` without any manual update to `conf.py`
 
 ### Requirement: sdist contains only source artefacts
 The published sdist SHALL contain source code, tests, documentation source, examples, and project metadata files. It SHALL NOT contain generated build output (`_build/`), development workflow files (`openspec/`, `.claude/`), or deleted packaging artefacts.
@@ -101,3 +100,4 @@ The Read the Docs build SHALL install `sdypy` and its documentation dependencies
 #### Scenario: RTD build can import all documented sub-packages
 - **WHEN** a Read the Docs build runs after `pip install .[docs]`
 - **THEN** the Sphinx autodoc extensions can import `sdypy.EMA`, `sdypy.io`, `sdypy.FRF`, `sdypy.excitation`, `sdypy.model`, and `sdypy.view` without import errors (subject to the sub-packages being installed as runtime deps)
+
