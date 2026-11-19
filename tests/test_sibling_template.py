@@ -338,11 +338,11 @@ build-backend = "hatchling.build"
 name = "sdypy-EMA"
 version = "1.0.0"
 requires-python = "%(floor)s"
-license = {text = "MIT"}
+%(license)s
 readme = {file = "README.rst"}
 classifiers = [
 %(classifiers)s
-    "License :: OSI Approved :: MIT License",
+%(license_classifiers)s
     "Development Status :: 4 - Beta",
 ]
 
@@ -362,8 +362,12 @@ include = ["sdypy"]
 """
 
 
-def write_pyproject(tmp_path, floor=None, classifiers=None):
-    """Write a conforming pyproject.toml, varying only floor and classifiers."""
+MIT_CLASSIFIER = "License :: OSI Approved :: MIT License"
+
+
+def write_pyproject(tmp_path, floor=None, classifiers=None,
+                    license='license = {text = "MIT"}', license_classifiers=(MIT_CLASSIFIER,)):
+    """Write a conforming pyproject.toml, varying floor, classifiers and license."""
     (tmp_path / "README.rst").write_text("readme\n", encoding="utf-8")
     versions = classifiers if classifiers is not None else sorted(SUPPORTED_PYTHON)
     classifiers_block = "\n".join(
@@ -372,6 +376,8 @@ def write_pyproject(tmp_path, floor=None, classifiers=None):
     text = CONFORMING_PYPROJECT % {
         "floor": floor or (">=%s" % PYTHON_FLOOR),
         "classifiers": classifiers_block,
+        "license": license,
+        "license_classifiers": "\n".join('    "%s",' % c for c in license_classifiers),
     }
     write(tmp_path, "pyproject.toml", text)
 
@@ -395,6 +401,69 @@ def test_classifiers_not_matching_the_supported_set_are_reported(tmp_path):
     violations = []
     check_pyproject(tmp_path, "EMA", violations)
     assert any("do not match the supported set" in v for v in violations)
+
+
+def pyproject_violations(tmp_path, **kwargs):
+    write_pyproject(tmp_path, **kwargs)
+    violations = []
+    check_pyproject(tmp_path, "EMA", violations)
+    return violations
+
+
+APACHE_CLASSIFIER = "License :: OSI Approved :: Apache Software License"
+MISSING_MIT_CLASSIFIER = "pyproject: missing '%s' classifier" % MIT_CLASSIFIER
+
+
+def test_a_spdx_expression_without_a_classifier_passes(tmp_path):
+    assert pyproject_violations(tmp_path, license='license = "MIT"', license_classifiers=()) == []
+
+
+def test_a_spdx_expression_with_the_mit_classifier_passes(tmp_path):
+    assert pyproject_violations(tmp_path, license='license = "MIT"') == []
+
+
+def test_a_spdx_expression_with_another_license_classifier_is_reported(tmp_path):
+    violations = pyproject_violations(
+        tmp_path, license='license = "MIT"', license_classifiers=(MIT_CLASSIFIER, APACHE_CLASSIFIER))
+    assert any(repr(APACHE_CLASSIFIER) in v and "contradicts the MIT license" in v for v in violations)
+
+
+def test_the_legacy_table_with_the_mit_classifier_passes(tmp_path):
+    assert pyproject_violations(tmp_path) == []
+
+
+def test_the_legacy_table_without_the_mit_classifier_is_reported(tmp_path):
+    violations = pyproject_violations(tmp_path, license_classifiers=())
+    assert MISSING_MIT_CLASSIFIER in violations
+
+
+def test_the_legacy_table_with_another_license_classifier_is_reported(tmp_path):
+    violations = pyproject_violations(
+        tmp_path, license_classifiers=(MIT_CLASSIFIER, APACHE_CLASSIFIER))
+    assert any(repr(APACHE_CLASSIFIER) in v and "contradicts the MIT license" in v for v in violations)
+
+
+@pytest.mark.parametrize("license_line", [
+    'license = "GPL-3.0-only"',
+    'license = "MIT OR Apache-2.0"',
+    'license = "mit"',
+    'license = {text = "Apache-2.0"}',
+    'license = {file = "LICENSE"}',
+    "",
+])
+@pytest.mark.parametrize("classifiers", [(), (MIT_CLASSIFIER,)])
+def test_a_license_other_than_mit_is_reported(tmp_path, license_line, classifiers):
+    violations = pyproject_violations(
+        tmp_path, license=license_line, license_classifiers=classifiers)
+    assert any(v.startswith("pyproject: license is ") and "expected 'MIT'" in v for v in violations)
+
+
+@pytest.mark.parametrize("expression", ["MIT OR Apache-2.0", "mit"])
+def test_a_license_other_than_mit_gets_no_contradiction_message(tmp_path, expression):
+    violations = pyproject_violations(
+        tmp_path, license='license = "%s"' % expression, license_classifiers=(APACHE_CLASSIFIER,))
+    assert any("expected 'MIT'" in v for v in violations)
+    assert not any("contradicts" in v for v in violations)
 
 
 # --------------------------------------------------------------------------

@@ -125,8 +125,13 @@ def check_pyproject(root, pkg, violations):
         violations.append("pyproject: license is %r, expected 'MIT'" % (lic,))
 
     classifiers = project.get("classifiers", [])
-    if "License :: OSI Approved :: MIT License" not in classifiers:
-        violations.append("pyproject: missing 'License :: OSI Approved :: MIT License' classifier")
+    mit_classifier = "License :: OSI Approved :: MIT License"
+    if lic_text == "MIT":
+        for c in classifiers:
+            if c.startswith("License ::") and c != mit_classifier:
+                violations.append("pyproject: classifier %r contradicts the MIT license - remove it" % c)
+    if not isinstance(lic, str) and mit_classifier not in classifiers:
+        violations.append("pyproject: missing '%s' classifier" % mit_classifier)
     if not any(c.startswith("Development Status ::") for c in classifiers):
         violations.append("pyproject: missing a 'Development Status' classifier")
 
