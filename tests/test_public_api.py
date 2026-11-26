@@ -5,7 +5,6 @@ Enforces the contract from the standardize-public-api change (amended SEP 2):
   * no third-party / stdlib name leaks into a curated surface,
   * module-type entries appear only where sanctioned,
   * the umbrella's __all__ is exactly the six first-level names,
-  * the shim drift check is advisory (never fails).
 
 NOTE: these tests run against the INSTALLED distributions. They are
 expected-red against the packages currently published on PyPI (which predate
@@ -26,7 +25,7 @@ from sdypy import _SUBPACKAGES, _ALIASES
 
 # Single source of truth for curated lists + drift logic lives in the checker.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
-from check_public_api import CURATED, SHIM_BACKENDS  # noqa: E402
+from check_public_api import CURATED  # noqa: E402
 
 BANNED_LEAK_NAMES = {
     "np", "scipy", "warnings", "os", "io", "platform", "subprocess", "pickle",
@@ -141,13 +140,3 @@ def test_star_import_of_umbrella_yields_subpackages_and_sep005():
     assert result.returncode == 0, result.stderr
     got = result.stdout.strip().splitlines()[-1].split(",")
     assert sorted(got) == sorted(list(_SUBPACKAGES) + list(_ALIASES)), got
-
-
-@pytest.mark.parametrize("name", sorted(SHIM_BACKENDS))
-def test_shim_drift_check_is_advisory(name, capsys):
-    """The drift check reports uncurated backend callables but never fails."""
-    from check_public_api import drift_report
-
-    drift_report(name, CURATED[name])  # must not raise regardless of drift
-    out = capsys.readouterr().out
-    assert "DRIFT [%s]" % name in out

@@ -7,12 +7,6 @@ Audits a sibling clone's ``sdypy/<pkg>/__init__.py`` without importing it:
 
 Violations print to stdout and the script exits non-zero.
 
-For the backend shim (excitation) it additionally runs an ADVISORY
-drift check: backend public callables missing from the curated ``__all__`` are
-reported so they get a conscious curation decision, but never affect the exit
-code. Drift requires the backend to be importable in the running environment;
-if it is not, the drift check is skipped with a notice.
-
 Usage:
     python tools/check_public_api.py --path ../packages/sdypy-EMA
 
@@ -21,7 +15,6 @@ on purpose: the two checkers evolve independently.
 """
 import argparse
 import ast
-import importlib
 import sys
 from pathlib import Path
 
@@ -45,10 +38,6 @@ CURATED = {
     ],
     "model": ["Beam", "Shell", "Tetrahedron", "solve_eigenvalue", "lumped", "mesh"],
 }
-
-# Shim packages whose curated list is a deliberate subset of a backend.
-SHIM_BACKENDS = {"excitation": "pyExSi"}
-
 
 def find_portion_init(clone_root):
     """Return (pkg_name, path to sdypy/<pkg>/__init__.py) for a sibling clone."""
@@ -95,31 +84,6 @@ def star_import_lines(tree):
     ]
 
 
-def drift_report(pkg, curated):
-    """Advisory: backend public callables not in the shim's curated __all__."""
-    backend_name = SHIM_BACKENDS[pkg]
-    try:
-        backend = importlib.import_module(backend_name)
-    except ImportError as exc:
-        print("DRIFT [%s]: backend %s not importable, skipped (%s)" % (pkg, backend_name, exc))
-        return
-    uncurated = sorted(
-        name for name in dir(backend)
-        if not name.startswith("_")
-        and callable(getattr(backend, name))
-        and not isinstance(getattr(backend, name), type(importlib))
-        and name not in curated
-    )
-    if uncurated:
-        print(
-            "DRIFT [%s]: %s exposes public callables not curated in __all__ "
-            "(advisory, decide whether to re-export): %s"
-            % (pkg, backend_name, ", ".join(uncurated))
-        )
-    else:
-        print("DRIFT [%s]: no uncurated %s callables" % (pkg, backend_name))
-
-
 def check_clone(clone_root):
     """Return a list of violation strings for one sibling clone."""
     violations = []
@@ -131,7 +95,7 @@ def check_clone(clone_root):
     stars = star_import_lines(tree)
     if stars:
         violations.append(
-            "%s: `import *` found on line(s) %s - shims must re-export explicitly"
+            "%s: `import *` found on line(s) %s - import the curated names explicitly"
             % (init_path, stars)
         )
 
@@ -148,8 +112,6 @@ def check_clone(clone_root):
             "(missing: %s, extra: %s)" % (init_path, missing or "-", extra or "-")
         )
 
-    if pkg in SHIM_BACKENDS:
-        drift_report(pkg, CURATED[pkg])
     return violations
 
 
