@@ -6,7 +6,7 @@ Audits a repo (core or a sibling clone) WITHOUT building the docs:
   * the pyproject docs extra lists pydata-sphinx-theme and no competing theme;
   * no foreign-project residue strings appear (outside an allowlist);
   * the [project.urls] Documentation target matches the package's class
-    (own Read the Docs site, or upstream backend docs for the thin shim).
+    (its own Read the Docs site).
 
 Usage:
     python tools/check_docs.py --path .                       # core
@@ -42,10 +42,6 @@ RESIDUE_REGEX = re.compile(r"(?<!h)ttps://")
 
 # Lines containing any allowlist token are exempt from the residue scan.
 ALLOWLIST_TOKENS = ("adapted from", "import numpy")
-
-# Upstream-backend doc target for the thin-wrapper shim; everyone else
-# must point at their own readthedocs.io site.
-UPSTREAM_DOC_TARGET = {"sdypy-excitation": "pyexsi"}
 
 
 def _load_pyproject(root):
@@ -109,21 +105,13 @@ def check_doc_url(data, root, violations):
     doc_url = next(
         (v for k, v in urls.items() if k.lower() in ("documentation", "docs")), None
     )
-    upstream = UPSTREAM_DOC_TARGET.get(name)
-    if upstream is not None:
-        if doc_url is None or upstream not in doc_url.lower():
-            violations.append(
-                "%s: %s Documentation URL must point at upstream '%s' (got %r)"
-                % (root, name, upstream, doc_url)
-            )
-    else:
-        if doc_url is None:
-            violations.append("%s: %s has no Documentation URL" % (root, name))
-        elif "readthedocs.io" not in doc_url.lower():
-            violations.append(
-                "%s: %s Documentation URL must be its own readthedocs.io site (got %r)"
-                % (root, name, doc_url)
-            )
+    if doc_url is None:
+        violations.append("%s: %s has no Documentation URL" % (root, name))
+    elif "readthedocs.io" not in doc_url.lower():
+        violations.append(
+            "%s: %s Documentation URL must be its own readthedocs.io site (got %r)"
+            % (root, name, doc_url)
+        )
 
 
 def check_residue(root, violations):

@@ -186,16 +186,10 @@ def test_a_config_with_no_marker_block_is_reported(tmp_path):
     assert violations == ["on-ramp: openspec/config.yaml has no shared rules block"]
 
 
-def test_a_missing_configuration_is_reported_for_a_non_shim_sibling(tmp_path):
+def test_a_missing_configuration_is_reported_for_a_sibling(tmp_path):
     violations = []
     check_openspec_config(tmp_path, "EMA", HUB_RULES_BLOCK, violations)
     assert violations == ["on-ramp: openspec/config.yaml missing"]
-
-
-def test_a_shim_is_not_required_to_carry_openspec_configuration(tmp_path):
-    violations = []
-    check_openspec_config(tmp_path, "excitation", HUB_RULES_BLOCK, violations)
-    assert violations == []
 
 
 def test_frf_is_not_exempt_from_openspec_configuration(tmp_path):
@@ -205,23 +199,22 @@ def test_frf_is_not_exempt_from_openspec_configuration(tmp_path):
     assert violations == ["on-ramp: openspec/config.yaml missing"]
 
 
+def test_excitation_is_not_exempt_from_openspec_configuration(tmp_path):
+    """sdypy-excitation holds its own code and is no longer a shim."""
+    violations = []
+    check_openspec_config(tmp_path, "excitation", HUB_RULES_BLOCK, violations)
+    assert violations == ["on-ramp: openspec/config.yaml missing"]
+
+
 def test_a_broken_hub_rules_block_is_reported_not_silently_passed(tmp_path):
     """Same masking risk as AGENTS.md: a hub-side regression in
-    openspec/config.yaml must not read as every non-shim sibling conforming
+    openspec/config.yaml must not read as every sibling conforming
     (review round 1, finding 3)."""
     write(tmp_path, "openspec/config.yaml", "context: |\n  own context\n\nrules:\n%s\n" % HUB_RULES_BLOCK)
     violations = []
     check_openspec_config(tmp_path, "EMA", None, violations)
     assert len(violations) == 1
     assert "hub openspec/config.yaml shared rules block not found" in violations[0]
-
-
-def test_a_shim_stays_exempt_even_when_the_hub_rules_block_is_broken(tmp_path):
-    """The shim exemption is checked first: a shim needs no openspec/config.yaml
-    regardless of whether the hub's own block is intact."""
-    violations = []
-    check_openspec_config(tmp_path, "excitation", None, violations)
-    assert violations == []
 
 
 # --------------------------------------------------------------------------

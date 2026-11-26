@@ -54,13 +54,6 @@ AGENTS_LINKS_END = "<!-- <<< sdypy hub links -->"
 SHARED_RULES_START = "# >>> shared rules from the sdypy hub"
 SHARED_RULES_END = "# <<< shared rules"
 
-# The backend shim (excitation) is exempt from carrying openspec/config.yaml (*A shim is not
-# required to carry OpenSpec configuration*). Mirrors the portion names
-# tools/check_public_api.py already uses for its own shim handling
-# (SHIM_BACKENDS keys); kept as a local constant so the two checkers do not
-# import each other.
-SHIM_PACKAGES = {"excitation"}
-
 # The hub's own root, resolved from this file's location - never from the
 # working directory, so the checker gives the same verdict regardless of where
 # it is invoked from (spec: *Read the hub's files relative to the checker*).
@@ -416,16 +409,12 @@ def check_claude_md(root, violations):
 
 
 def check_openspec_config(root, pkg, hub_block, violations):
-    """*OpenSpec configuration carries the hub's shared rules*, non-shims only.
+    """*OpenSpec configuration carries the hub's shared rules*.
 
     A `hub_block` of `None` means the hub's own `openspec/config.yaml` has no
     valid marker-delimited block - a hub-side regression, not a sibling
-    problem - and is reported rather than silently letting every non-shim
-    sibling pass. Checked after the shim exemption: a shim needs no
-    `openspec/` regardless of whether the hub's block is intact.
+    problem - and is reported rather than silently letting every sibling pass.
     """
-    if pkg in SHIM_PACKAGES:
-        return
     if hub_block is None:
         violations.append(
             "on-ramp: hub openspec/config.yaml shared rules block not found - "
